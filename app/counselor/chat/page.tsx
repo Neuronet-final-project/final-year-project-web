@@ -11,11 +11,13 @@ type AuthMeResponse =
 type Conversation = {
   _id?: string;
   id?: string;
+  conversation_id?: string;
   conversation_type: "counselor_adolescent" | "counselor_guardian" | "adolescent_guardian" | "channel";
   adolescent_id?: string;
   guardian_email?: string;
   counselor_email?: string;
-  participant_emails: string[];
+  participant_emails?: string[];
+  participants?: string[];
   created_at: string;
 };
 
@@ -156,8 +158,9 @@ export default function CounselorChatPage() {
 
   // Get display name for conversation
   function getConvName(conv: Conversation) {
-    if (!("authenticated" in me)) return "Unknown";
-    const others = conv.participant_emails?.filter((e) => e !== me.email) || [];
+    if (!me.authenticated) return "Unknown";
+    const pList = conv.participants || conv.participant_emails || [];
+    const others = pList.filter((e) => e !== me.email);
     if (conv.conversation_type === "counselor_guardian") return `Guardian: ${others[0] || "Unknown"}`;
     if (conv.conversation_type === "counselor_adolescent") return `Adolescent: ${others[0] || "Unknown"}`;
     return conv.conversation_type || "Conversation";
@@ -166,12 +169,14 @@ export default function CounselorChatPage() {
   // Initiate conversation with contact
   async function handleInitiateContact(adolescentId: string, type: "counselor_adolescent" | "counselor_guardian") {
     // Check if conversation already exists in state
-    const existing = conversations.find(c => 
-      c.conversation_type === type && 
-      (c.adolescent_id === adolescentId || c.participant_emails.some(e => e.includes(adolescentId)))
-    );
+    const existing = conversations.find(c => {
+      const pList = c.participants || c.participant_emails || [];
+      return c.conversation_type === type && 
+        (c.adolescent_id === adolescentId || pList.some(e => e.includes(adolescentId)));
+    });
+
     if (existing) {
-      setActiveConvId(existing._id || existing.id || null);
+      setActiveConvId(existing.conversation_id || existing._id || existing.id || null);
       return;
     }
 
@@ -187,7 +192,7 @@ export default function CounselorChatPage() {
       if (res.ok) {
         const newConv = await res.json();
         setConversations(prev => [...prev, newConv]);
-        setActiveConvId(newConv._id || newConv.id);
+        setActiveConvId(newConv.conversation_id || newConv._id || newConv.id);
       } else {
         alert("Failed to initiate thread with this contact.");
       }
@@ -203,7 +208,24 @@ export default function CounselorChatPage() {
   // Filter out any channel objects from this 1-on-1 direct messaging view
   const dmsOnly = conversations.filter(c => c.conversation_type !== "channel");
 
-  const activeConv = dmsOnly.find(c => (c._id || c.id) === activeConvId);
+  const getConvId = (c: Conversation) => c.conversation_id || c._id || c.id;
+  const activeConv = dmsOnly.find(c => getConvId(c) === activeConvId);
+
+  // De-duplicate contacts natively mapping by ID
+  const uniqueContacts = Array.from(new Map(assignedContacts.map(c => [c.adolescent_id, c])).values());
+
+  // Group contacts by guardian
+  const guardianGroups: Record<string, AssignedAdolescent[]> = {};
+  const independentAdolescents: AssignedAdolescent[] = [];
+
+  uniqueContacts.forEach(contact => {
+    if (contact.guardian_email) {
+      if (!guardianGroups[contact.guardian_email]) guardianGroups[contact.guardian_email] = [];
+      guardianGroups[contact.guardian_email].push(contact);
+    } else {
+      independentAdolescents.push(contact);
+    }
+  });
 
   return (
     <div className="flex h-screen flex-col bg-slate-50 relative overflow-hidden">
@@ -247,84 +269,105 @@ export default function CounselorChatPage() {
           </div>
           <div className="flex-1 overflow-y-auto p-2 space-y-2">
             {error && <div className="p-3 text-xs text-red-600">{error}</div>}
-            {dmsOnly.length === 0 && !error ? (
-              <div className="p-4 text-center text-sm text-zinc-500">No active direct messages.</div>
-            ) : (
-              dmsOnly.map((conv, idx) => {
-                const cId = conv.id || conv._id || String(idx);
-                const isActive = cId === activeConvId;
-                const name = getConvName(conv);
-                const initials = name.replace("Adolescent: ", "").replace("Guardian: ", "").substring(0,2).toUpperCase();
-                
-                return (
-                  <button
-                    key={cId}
-                    onClick={() => setActiveConvId(cId)}
-                    className={`w-full flex items-center gap-3 p-3 text-left rounded-2xl transition-all duration-300 ${
-                      isActive 
-                        ? "bg-gradient-to-r from-[#6366f1]/10 to-[#06b6d4]/10 border border-[#06b6d4]/30 shadow-sm" 
-                        : "hover:bg-zinc-50 border border-transparent"
-                    }`}
-                  >
-                    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl font-bold text-xs shadow-inner ${isActive ? 'bg-gradient-to-br from-[#6366f1] to-[#06b6d4] text-white' : 'bg-zinc-100 text-zinc-600'}`}>
-                      {initials}
-                    </div>
-                    <div className="overflow-hidden flex-1">
-                      <h4 className={`truncate text-sm font-semibold ${isActive ? 'text-transparent bg-clip-text bg-gradient-to-r from-[#6366f1] to-[#06b6d4]' : 'text-zinc-900'}`}>{name}</h4>
-                      <p className="truncate text-xs text-zinc-500 mt-0.5">
-                        {conv.conversation_type.replace('_', ' ')}
-                      </p>
-                    </div>
-                  </button>
-                )
-              })
-            )}
-
-            {/* ASSIGNED CONTACTS LIST */}
-            <div className="pt-4 mt-2 border-t border-zinc-200/50">
-              <h3 className="px-3 text-xs font-bold uppercase tracking-widest text-zinc-400 mb-2">Initiate Contact</h3>
-              {assignedContacts.length === 0 ? (
-                <div className="p-3 text-xs text-zinc-400 italic">No assigned adolescents yet.</div>
+            
+            <div className="pt-2">
+              <h3 className="px-3 text-xs font-bold uppercase tracking-widest text-zinc-400 mb-2">My Caseload</h3>
+              {uniqueContacts.length === 0 && !error ? (
+                <div className="p-3 text-xs text-zinc-400 italic">No assigned contacts found.</div>
               ) : (
-                assignedContacts.map((contact, idx) => {
-                  const initials = contact.adolescent_email.substring(0, 2).toUpperCase();
-                  
-                  return (
-                    <div key={`contact-${idx}`} className="mb-2">
-                       <button
-                         onClick={() => handleInitiateContact(contact.adolescent_id, "counselor_adolescent")}
-                         className="w-full flex items-center gap-3 p-3 text-left rounded-2xl transition-all hover:bg-zinc-50 border border-transparent hover:border-zinc-200"
-                       >
-                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-zinc-200 text-zinc-500 font-bold text-xs shadow-inner">
-                           {initials}
-                         </div>
-                         <div className="overflow-hidden flex-1">
-                           <h4 className="truncate text-sm font-semibold text-zinc-700">{contact.adolescent_email}</h4>
-                           <p className="truncate text-xs text-indigo-500 mt-0.5 font-medium flex items-center gap-1">
-                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                             Start Thread
-                           </p>
-                         </div>
-                       </button>
+                <div className="space-y-4">
+                  {Object.entries(guardianGroups).map(([gEmail, adolescents]) => {
+                    const gInitials = gEmail.substring(0, 1).toUpperCase();
+                    
+                    // We need a specific adolescent to establish the context of a guardian chat
+                    const representativeAdolescentId = adolescents[0].adolescent_id;
+                    const aConvPList = activeConv?.participants || activeConv?.participant_emails || [];
+                    const isGuardActive = activeConv?.conversation_type === "counselor_guardian" && 
+                      (activeConv.adolescent_id === representativeAdolescentId || aConvPList.some((p: string) => p.includes(representativeAdolescentId)));
 
-                       {/* Optional Guardian initiate handle */}
-                       {contact.guardian_email && (
+                    return (
+                      <div key={`guard-${gEmail}`} className="bg-zinc-50/50 rounded-[1.5rem] p-2 border border-zinc-100">
+                         {/* GUARDIAN HEADER */}
                          <button
-                           onClick={() => handleInitiateContact(contact.adolescent_id, "counselor_guardian")}
-                           className="w-full flex items-center gap-3 p-2 pl-12 text-left rounded-2xl transition-all hover:bg-zinc-50 opacity-80"
+                           onClick={() => handleInitiateContact(representativeAdolescentId, "counselor_guardian")}
+                           className={`w-full flex items-center gap-3 p-2 text-left rounded-xl transition-all duration-300 ${isGuardActive ? 'bg-gradient-to-r from-[#6366f1]/10 to-[#06b6d4]/10 shadow-sm' : 'hover:bg-white'}`}
                          >
-                           <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-zinc-400 font-bold text-[10px] border border-zinc-200">
-                             {contact.guardian_email.substring(0, 1).toUpperCase()}
+                           <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-bold text-xs shadow-inner ${isGuardActive ? 'bg-gradient-to-br from-[#6366f1] to-[#06b6d4] text-white border-0' : 'bg-white text-zinc-600 border border-zinc-200'}`}>
+                             {gInitials}
                            </div>
                            <div className="overflow-hidden flex-1">
-                             <h4 className="truncate text-xs text-zinc-500">Guardian</h4>
-                             <p className="truncate text-[10px] text-zinc-400">{contact.guardian_email}</p>
+                             <h4 className={`truncate text-sm ${isGuardActive ? 'font-bold text-[#6366f1]' : 'font-semibold text-zinc-700'}`}>Guardian Portal</h4>
+                             <p className={`truncate text-[10px] ${isGuardActive ? 'font-semibold text-zinc-500' : 'text-zinc-400'}`}>{gEmail}</p>
                            </div>
                          </button>
-                       )}
-                    </div>
-                  )
-                })
+
+                         {/* NESTED ADOLESCENTS */}
+                         <div className="pl-5 mt-2 space-y-1 relative">
+                            {/* Connector Line */}
+                            <div className="absolute left-6 top-2 bottom-4 w-px bg-zinc-200" />
+                            
+                            {adolescents.map(contact => {
+                               const adolInitials = contact.adolescent_email.substring(0, 2).toUpperCase();
+                               const contactPList = activeConv?.participants || activeConv?.participant_emails || [];
+                               const isAdolActive = activeConv?.conversation_type === "counselor_adolescent" && 
+                                 (activeConv.adolescent_id === contact.adolescent_id || contactPList.some((p: string) => p.includes(contact.adolescent_id)));
+
+                               return (
+                                 <div key={`nest-${contact.adolescent_id}`} className="relative pl-6">
+                                    <div className="absolute left-1 top-1/2 w-4 h-px bg-zinc-200" />
+                                    <button
+                                      onClick={() => handleInitiateContact(contact.adolescent_id, "counselor_adolescent")}
+                                      className={`w-full flex items-center gap-3 p-2.5 text-left rounded-xl transition-all duration-300 ${isAdolActive ? 'bg-gradient-to-r from-[#6366f1]/10 to-[#06b6d4]/10 border border-[#06b6d4]/30 shadow-sm' : 'hover:bg-white border border-transparent'}`}
+                                    >
+                                      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl font-bold text-[10px] shadow-inner ${isAdolActive ? 'bg-gradient-to-br from-[#6366f1] to-[#06b6d4] text-white' : 'bg-zinc-200 text-zinc-500'}`}>
+                                        {adolInitials}
+                                      </div>
+                                      <div className="overflow-hidden flex-1">
+                                        <h4 className={`truncate text-[13px] font-semibold ${isAdolActive ? 'text-transparent bg-clip-text bg-gradient-to-r from-[#6366f1] to-[#06b6d4]' : 'text-zinc-600'}`}>
+                                          {contact.adolescent_email}
+                                        </h4>
+                                      </div>
+                                    </button>
+                                 </div>
+                               )
+                            })}
+                         </div>
+                      </div>
+                    )
+                  })}
+
+                  {/* INDEPENDENT ADOLESCENTS */}
+                  {independentAdolescents.length > 0 && (
+                     <div className="space-y-1">
+                       {independentAdolescents.map(contact => {
+                          const adolInitials = contact.adolescent_email.substring(0, 2).toUpperCase();
+                          const indPList = activeConv?.participants || activeConv?.participant_emails || [];
+                          const isAdolActive = activeConv?.conversation_type === "counselor_adolescent" && 
+                            (activeConv.adolescent_id === contact.adolescent_id || indPList.some((p: string) => p.includes(contact.adolescent_id)));
+
+                          return (
+                            <button
+                              key={`indep-${contact.adolescent_id}`}
+                              onClick={() => handleInitiateContact(contact.adolescent_id, "counselor_adolescent")}
+                              className={`w-full flex items-center gap-3 p-3 text-left rounded-2xl transition-all duration-300 ${isAdolActive ? 'bg-gradient-to-r from-[#6366f1]/10 to-[#06b6d4]/10 border border-[#06b6d4]/30 shadow-sm' : 'hover:bg-zinc-50 border border-transparent'}`}
+                            >
+                              <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl font-bold text-xs shadow-inner ${isAdolActive ? 'bg-gradient-to-br from-[#6366f1] to-[#06b6d4] text-white' : 'bg-zinc-200 text-zinc-500'}`}>
+                                {adolInitials}
+                              </div>
+                              <div className="overflow-hidden flex-1">
+                                <h4 className={`truncate text-sm font-semibold ${isAdolActive ? 'text-transparent bg-clip-text bg-gradient-to-r from-[#6366f1] to-[#06b6d4]' : 'text-zinc-700'}`}>
+                                  {contact.adolescent_email}
+                                </h4>
+                                <p className={`truncate text-xs mt-0.5 font-medium flex items-center gap-1 ${isAdolActive ? 'text-[#06b6d4]' : 'text-zinc-400'}`}>
+                                   Counselor/Adolescent
+                                </p>
+                              </div>
+                            </button>
+                          )
+                       })}
+                     </div>
+                  )}
+                </div>
               )}
             </div>
           </div>

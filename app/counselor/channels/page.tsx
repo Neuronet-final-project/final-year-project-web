@@ -9,7 +9,8 @@ type AuthMeResponse =
   | { authenticated: true; email: string; role: string; _id: string };
 
 type Channel = {
-  id: string;
+  id?: string;
+  channel_id?: string;
   name: string;
   description?: string;
   is_group: boolean;
@@ -187,9 +188,9 @@ export default function CounselorChannelsPage() {
                     <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
                     <span className="text-xs font-bold text-emerald-600">Active</span>
                   </div>
-                  <button className="text-sm font-bold text-[#6366f1] flex items-center gap-1 hover:text-[#06b6d4] transition-colors">
+                  <Link href={`/counselor/channels/${ch.channel_id}`} className="text-sm font-bold text-[#6366f1] flex items-center gap-1 hover:text-[#06b6d4] transition-colors">
                     View <span className="group-hover:translate-x-1 transition-transform">&rarr;</span>
-                  </button>
+                  </Link>
                 </div>
               </div>
             ))}
