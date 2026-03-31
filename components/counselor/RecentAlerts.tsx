@@ -15,11 +15,11 @@ export function RecentAlerts({ alerts }: { alerts: Alert[] }) {
   const displayAlerts = alerts.slice(0, 4);
 
   return (
-    <div className="flex flex-col h-full rounded-[2rem] border border-zinc-200 bg-white p-6 shadow-sm">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-bold text-zinc-900">Recent Alerts</h3>
-        <Link href="#alerts" className="text-sm font-medium text-indigo-600 hover:underline">
-          View All &rarr;
+    <div className="flex flex-col h-full rounded-[2rem] border border-white/60 bg-white/70 backdrop-blur-xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-500">
+      <div className="flex items-center justify-between mb-8">
+        <h3 className="text-2xl font-black tracking-tight text-zinc-900">Recent Alerts</h3>
+        <Link href="#alerts" className="group flex items-center gap-1 text-sm font-bold text-[#4F46E5] hover:text-indigo-700 transition">
+          View All <span className="group-hover:translate-x-1 transition-transform">&rarr;</span>
         </Link>
       </div>
 
@@ -36,31 +36,32 @@ export function RecentAlerts({ alerts }: { alerts: Alert[] }) {
             return (
               <div
                 key={alert._id}
-                className={`relative flex items-center justify-between overflow-hidden rounded-2xl border p-4 transition-all hover:shadow-sm ${
+                className={`group relative flex items-center justify-between overflow-hidden rounded-2xl border p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${
                   isHigh
-                    ? "border-red-100 bg-red-50/50"
+                    ? "border-red-200 bg-gradient-to-r from-red-50 to-white hover:shadow-[0_10px_30px_rgb(239,68,68,0.15)]"
                     : isMed
-                    ? "border-orange-100 bg-orange-50/50"
-                    : "border-blue-100 bg-blue-50/50"
+                    ? "border-orange-200 bg-gradient-to-r from-orange-50 to-white hover:shadow-[0_10px_30px_rgb(249,115,22,0.15)]"
+                    : "border-blue-200 bg-gradient-to-r from-blue-50 to-white hover:shadow-[0_10px_30px_rgb(59,130,246,0.15)]"
                 }`}
               >
                 <div
-                  className={`absolute left-0 top-0 h-full w-1.5 ${
+                  className={`absolute left-0 top-0 h-full w-1.5 transition-all duration-300 group-hover:w-2 ${
                     isHigh
-                      ? "bg-red-500"
+                      ? "bg-red-500 shadow-[0_0_15px_rgb(239,68,68,0.8)]"
                       : isMed
-                      ? "bg-orange-500"
-                      : "bg-blue-500"
+                      ? "bg-orange-500 shadow-[0_0_15px_rgb(249,115,22,0.8)]"
+                      : "bg-blue-500 shadow-[0_0_15px_rgb(59,130,246,0.8)]"
                   }`}
                 />
-                <div className="ml-3 flex items-center gap-3">
+                
+                <div className="ml-4 flex items-center gap-4">
                   <div
-                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full shadow-sm text-white ${
+                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl shadow-inner text-white transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6 ${
                       isHigh
-                        ? "bg-red-500"
+                        ? "bg-gradient-to-br from-red-400 to-red-600"
                         : isMed
-                        ? "bg-orange-500"
-                        : "bg-blue-500"
+                        ? "bg-gradient-to-br from-orange-400 to-orange-600"
+                        : "bg-gradient-to-br from-blue-400 to-blue-600"
                     }`}
                   >
                     {isHigh ? (

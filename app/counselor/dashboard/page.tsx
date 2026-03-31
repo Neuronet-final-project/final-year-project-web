@@ -73,8 +73,12 @@ export default function CounselorDashboardPage() {
   const activeChannelsCount = channels.length;
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#f8fafc]">
-      <main className="mx-auto w-full max-w-7xl px-4 py-6 md:px-8">
+    <div className="flex min-h-screen flex-col bg-slate-50 relative overflow-hidden">
+      {/* Dynamic Background Mesh */}
+      <div className="absolute inset-0 z-0 opacity-40 pointer-events-none bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-indigo-100 via-transparent to-transparent"></div>
+      <div className="absolute inset-0 z-0 opacity-40 pointer-events-none bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-cyan-100 via-transparent to-transparent"></div>
+      
+      <main className="relative z-10 mx-auto w-full max-w-7xl px-4 py-8 md:px-8 animate-in fade-in duration-700">
         
         <DashboardHeader 
           email={me.email} 

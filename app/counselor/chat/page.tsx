@@ -9,7 +9,8 @@ type AuthMeResponse =
   | { authenticated: true; email: string; role: string; _id: string };
 
 type Conversation = {
-  _id: string;
+  _id?: string;
+  id?: string;
   conversation_type: "counselor_adolescent" | "counselor_guardian" | "adolescent_guardian" | "channel";
   adolescent_id?: string;
   guardian_email?: string;
@@ -147,12 +148,16 @@ export default function CounselorChatPage() {
     return <div className="flex min-h-screen items-center justify-center bg-[#f4f7fb] text-zinc-500">Loading secure chat...</div>;
   }
 
-  const activeConv = conversations.find(c => c._id === activeConvId);
+  const activeConv = conversations.find(c => (c._id || c.id) === activeConvId);
 
   return (
-    <div className="flex h-screen flex-col bg-[#f4f7fb]">
+    <div className="flex h-screen flex-col bg-slate-50 relative overflow-hidden">
+      {/* Dynamic Background Mesh */}
+      <div className="absolute inset-0 z-0 opacity-40 pointer-events-none bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-indigo-100 via-transparent to-transparent"></div>
+      <div className="absolute inset-0 z-0 opacity-40 pointer-events-none bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-cyan-100 via-transparent to-transparent"></div>
+
       {/* HEADER */}
-      <header className="shrink-0 border-b border-zinc-200 bg-white shadow-sm z-30">
+      <header className="shrink-0 border-b border-white/20 bg-white/60 backdrop-blur-md shadow-sm z-30">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-4">
              <Link href="/counselor/dashboard" className="rounded-xl border border-zinc-200 bg-white p-2 text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900 transition">
@@ -178,27 +183,28 @@ export default function CounselorChatPage() {
       </header>
 
       {/* MAIN CHAT AREA */}
-      <main className="flex flex-1 overflow-hidden mx-auto w-full max-w-7xl p-4 md:p-6 gap-6">
+      <main className="relative z-10 flex flex-1 overflow-hidden mx-auto w-full max-w-7xl p-4 md:p-6 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
         
         {/* SIDEBAR: Conversation List */}
-        <div className={`w-full md:w-80 shrink-0 flex flex-col rounded-[2rem] border border-zinc-200 bg-white shadow-sm overflow-hidden ${activeConvId ? 'hidden md:flex' : 'flex'}`}>
-          <div className="p-5 border-b border-zinc-100 bg-zinc-50">
-            <h2 className="font-bold text-zinc-900">Active Contacts</h2>
+        <div className={`w-full md:w-80 shrink-0 flex flex-col rounded-[2rem] border border-white/60 bg-white/70 backdrop-blur-xl shadow-lg overflow-hidden transition-all duration-300 ${activeConvId ? 'hidden md:flex' : 'flex'}`}>
+          <div className="p-5 border-b border-white/40 bg-white/40">
+            <h2 className="font-black tracking-tight text-zinc-900">Active Contacts</h2>
           </div>
           <div className="flex-1 overflow-y-auto p-2 space-y-2">
             {error && <div className="p-3 text-xs text-red-600">{error}</div>}
             {conversations.length === 0 && !error ? (
               <div className="p-4 text-center text-sm text-zinc-500">No active conversations.</div>
             ) : (
-              conversations.map((conv) => {
-                const isActive = conv._id === activeConvId;
+              conversations.map((conv, idx) => {
+                const cId = conv.id || conv._id || String(idx);
+                const isActive = cId === activeConvId;
                 const name = getConvName(conv);
                 const initials = name.replace("Adolescent: ", "").replace("Guardian: ", "").substring(0,2).toUpperCase();
                 
                 return (
                   <button
-                    key={conv._id}
-                    onClick={() => setActiveConvId(conv._id)}
+                    key={cId}
+                    onClick={() => setActiveConvId(cId)}
                     className={`w-full flex items-center gap-3 p-3 text-left rounded-2xl transition-colors ${
                       isActive ? "bg-indigo-50 border border-indigo-100" : "hover:bg-zinc-50 border border-transparent"
                     }`}
@@ -220,19 +226,19 @@ export default function CounselorChatPage() {
         </div>
 
         {/* ACTIVE CHAT AREA */}
-        <div className={`flex-1 flex flex-col rounded-[2rem] border border-zinc-200 bg-white shadow-sm overflow-hidden ${!activeConvId ? 'hidden md:flex' : 'flex'}`}>
+        <div className={`flex-1 flex flex-col rounded-[2rem] border border-white/60 bg-white/70 backdrop-blur-xl shadow-lg overflow-hidden transition-all duration-300 ${!activeConvId ? 'hidden md:flex' : 'flex'}`}>
           {!activeConvId ? (
             <div className="flex flex-1 flex-col items-center justify-center text-center p-8">
-               <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-zinc-50 text-zinc-300">
-                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+               <div className="mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-indigo-50/50 text-indigo-300 shadow-inner">
+                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                </div>
-               <h3 className="text-xl font-bold text-zinc-400">Select a conversation</h3>
-               <p className="mt-2 text-sm text-zinc-500 max-w-sm">Choose a contact from the sidebar to start a secure messaging session protecting adolescent privacy.</p>
+               <h3 className="text-2xl font-black tracking-tight text-zinc-400">Select a conversation</h3>
+               <p className="mt-2 text-sm font-medium text-zinc-500 max-w-sm">Choose a contact from the sidebar to start a secure messaging session protecting adolescent privacy.</p>
             </div>
           ) : (
             <>
               {/* Chat Header */}
-               <div className="flex items-center gap-4 border-b border-zinc-100 bg-zinc-50/50 p-4 shrink-0">
+               <div className="flex items-center gap-4 border-b border-white/40 bg-white/40 p-4 shrink-0">
                  <button className="md:hidden p-2 text-zinc-500" onClick={() => setActiveConvId(null)}>
                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
                  </button>
@@ -282,14 +288,14 @@ export default function CounselorChatPage() {
               </div>
 
               {/* Chat Input */}
-              <div className="border-t border-zinc-100 bg-white p-4 shrink-0">
+              <div className="border-t border-white/40 bg-white/60 p-4 shrink-0">
                 <form onSubmit={handleSendMessage} className="flex items-center gap-3">
                   <input
                     type="text"
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
-                    placeholder="Type your message..."
-                    className="flex-1 rounded-full border border-zinc-200 bg-zinc-50 px-5 py-3 text-sm outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-100"
+                    placeholder="Type your secure message..."
+                    className="flex-1 rounded-full border border-white/60 bg-white/80 px-5 py-3 text-sm outline-none transition-all focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 shadow-sm"
                     disabled={sending}
                   />
                   <button

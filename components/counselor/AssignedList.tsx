@@ -16,11 +16,11 @@ export function AssignedList({
   adolescents: AssignedAdolescent[];
 }) {
   return (
-    <div className="flex flex-col h-full rounded-[2rem] border border-zinc-200 bg-white p-6 shadow-sm">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-bold text-zinc-900">Assigned Adolescents</h3>
-        <span className="text-sm font-medium text-indigo-600 cursor-pointer hover:underline">
-          View All &rarr;
+    <div className="flex flex-col h-full rounded-[2rem] border border-white/60 bg-white/70 backdrop-blur-xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-500">
+      <div className="flex items-center justify-between mb-8">
+        <h3 className="text-2xl font-black tracking-tight text-zinc-900">Assigned Adolescents</h3>
+        <span className="group flex items-center gap-1 text-sm font-bold text-[#4F46E5] cursor-pointer hover:text-indigo-700 transition">
+          View All <span className="group-hover:translate-x-1 transition-transform">&rarr;</span>
         </span>
       </div>
 
@@ -44,10 +44,12 @@ export function AssignedList({
             return (
               <div
                 key={a.adolescent_id || Math.random()}
-                className="group flex items-center justify-between rounded-2xl border border-zinc-100 p-4 transition-all hover:border-indigo-100 hover:bg-indigo-50/30"
+                className="group relative flex items-center justify-between rounded-2xl border border-white/50 bg-white/50 p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-100 hover:bg-indigo-50/50 hover:shadow-md"
               >
-                <div className="flex items-center gap-4">
-                  <div className={`flex h-12 w-12 items-center justify-center rounded-full text-sm font-bold shadow-sm ${
+                <div className="absolute left-0 top-0 h-full w-1 rounded-l-2xl bg-gradient-to-b from-indigo-400 to-cyan-400 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                
+                <div className="flex items-center gap-4 pl-2">
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-2xl text-sm font-black shadow-inner transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 ${
                     isRed ? 'bg-red-50 text-red-600 border border-red-100' :
                     isGreen ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' :
                     isOrange ? 'bg-orange-50 text-orange-600 border border-orange-100' :
