@@ -187,6 +187,7 @@ export default function CounselorApplyPage() {
               src="/Images/counselor.jpg"
               alt="Professional counselor"
               fill
+              sizes="(max-width: 768px) 0vw, 45vw"
               className="object-cover object-top"
               priority
             />

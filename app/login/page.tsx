@@ -204,6 +204,7 @@ export default function LoginPage() {
                   src="/Images/admin.jpg"
                   alt="Admin portal"
                   fill
+                  sizes="(max-width: 768px) 0vw, 50vw"
                   className="object-cover object-top"
                   priority
                 />
@@ -218,6 +219,7 @@ export default function LoginPage() {
                 src="/Images/counselor.jpg"
                 alt="Counselor professional"
                 fill
+                sizes="(max-width: 768px) 0vw, 50vw"
                 className="object-cover object-top"
                 priority
               />
