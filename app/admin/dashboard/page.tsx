@@ -46,8 +46,11 @@ export default function AdminDashboardPage() {
   return (
     <div className="flex flex-1">
       <div className="mx-auto w-full max-w-6xl px-6 py-10">
-        <div className="flex items-end justify-between">
+        <div className="neuro-card flex items-end justify-between p-5">
           <div>
+            <p className="text-xs font-medium uppercase tracking-wider text-[#4F46E5]">
+              Administrator workspace
+            </p>
             <h1 className="text-2xl font-semibold text-zinc-900">Admin Dashboard</h1>
             {"authenticated" in me && me.authenticated && (
               <p className="mt-1 text-sm text-zinc-600">{me.email}</p>
@@ -71,22 +74,22 @@ export default function AdminDashboardPage() {
           </div>
         )}
 
-        <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-3">
           <div className="neuro-card p-5">
             <div className="text-sm text-zinc-600">Total users</div>
-            <div className="mt-2 text-2xl font-semibold text-zinc-900">
+            <div className="mt-2 text-3xl font-bold text-[#4F46E5]">
               {data?.total_users ?? "—"}
             </div>
           </div>
           <div className="neuro-card p-5">
             <div className="text-sm text-zinc-600">Total adolescents</div>
-            <div className="mt-2 text-2xl font-semibold text-zinc-900">
+            <div className="mt-2 text-3xl font-bold text-zinc-900">
               {data?.total_adolescents ?? "—"}
             </div>
           </div>
           <div className="neuro-card p-5">
             <div className="text-sm text-zinc-600">Pending counselor applications</div>
-            <div className="mt-2 text-2xl font-semibold text-zinc-900">
+            <div className="mt-2 text-3xl font-bold text-zinc-900">
               {data?.pending_counselor_applications ?? "—"}
             </div>
           </div>

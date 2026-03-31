@@ -59,8 +59,11 @@ export default function CounselorDashboardPage() {
   return (
     <div className="flex flex-1">
       <div className="mx-auto w-full max-w-6xl px-6 py-10">
-        <div className="flex items-end justify-between">
+        <div className="neuro-card flex items-end justify-between p-5">
           <div>
+            <p className="text-xs font-medium uppercase tracking-wider text-[#4F46E5]">
+              Counselor workspace
+            </p>
             <h1 className="text-2xl font-semibold text-zinc-900">
               Counselor Dashboard
             </h1>
@@ -86,22 +89,22 @@ export default function CounselorDashboardPage() {
           </div>
         )}
 
-        <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-3">
           <div className="neuro-card p-5">
             <div className="text-sm text-zinc-600">Assigned adolescents</div>
-            <div className="mt-2 text-2xl font-semibold text-zinc-900">
+            <div className="mt-2 text-3xl font-bold text-[#4F46E5]">
               {data?.assigned_adolescents?.length ?? "—"}
             </div>
           </div>
           <div className="neuro-card p-5">
             <div className="text-sm text-zinc-600">Risk alerts (window)</div>
-            <div className="mt-2 text-2xl font-semibold text-zinc-900">
+            <div className="mt-2 text-3xl font-bold text-zinc-900">
               {data?.risk_alerts_count ?? "—"}
             </div>
           </div>
           <div className="neuro-card p-5">
             <div className="text-sm text-zinc-600">Negative journals</div>
-            <div className="mt-2 text-2xl font-semibold text-zinc-900">
+            <div className="mt-2 text-3xl font-bold text-zinc-900">
               {data?.negative_journal_frequency ?? "—"}
             </div>
           </div>

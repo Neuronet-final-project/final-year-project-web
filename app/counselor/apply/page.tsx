@@ -48,12 +48,15 @@ export default function CounselorApplyPage() {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center px-6 py-16">
-      <div className="neuro-card w-full max-w-xl p-8">
-        <h1 className="text-xl font-semibold text-zinc-900">
+    <div className="flex flex-1 items-center justify-center px-5 py-10 md:px-8">
+      <div className="neuro-card w-full max-w-2xl p-8 md:p-10">
+        <div className="inline-flex rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold text-[#4F46E5]">
+          COUNSELOR ONBOARDING
+        </div>
+        <h1 className="mt-4 text-3xl font-bold text-zinc-900">
           Counselor Application
         </h1>
-        <p className="mt-1 text-sm text-zinc-600">
+        <p className="mt-2 text-sm text-zinc-600">
           Submit your details. Admin will review and approve your account.
         </p>
 
