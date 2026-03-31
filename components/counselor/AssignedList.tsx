@@ -1,0 +1,92 @@
+import Link from "next/link";
+import React from "react";
+
+type AssignedAdolescent = {
+  adolescent_id?: string;
+  full_name?: string;
+  email?: string;
+  last_activity?: string;
+  // Synthetic props added by page for display
+  status?: "Declining" | "Improving" | "Stable" | "Needs Attention";
+};
+
+export function AssignedList({
+  adolescents,
+}: {
+  adolescents: AssignedAdolescent[];
+}) {
+  return (
+    <div className="flex flex-col h-full rounded-[2rem] border border-zinc-200 bg-white p-6 shadow-sm">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-xl font-bold text-zinc-900">Assigned Adolescents</h3>
+        <span className="text-sm font-medium text-indigo-600 cursor-pointer hover:underline">
+          View All &rarr;
+        </span>
+      </div>
+
+      <div className="flex-1 overflow-y-auto pr-2 space-y-4 max-h-[400px]">
+        {adolescents.length === 0 ? (
+          <div className="flex h-full items-center justify-center text-sm text-zinc-500">
+            No adolescents assigned yet.
+          </div>
+        ) : (
+          adolescents.map((a, i) => {
+            const initials = a.full_name
+              ? a.full_name.split(" ").map((n) => n[0]).join("").substring(0, 2).toUpperCase()
+              : "??";
+
+            // Determine fake badge/color based on index just for the visual layout matching 
+            // the requested UI. In production, this would come from the AI mood engine endpoint.
+            const isRed = i % 4 === 0;
+            const isGreen = i % 4 === 1;
+            const isOrange = i % 4 === 2;
+
+            return (
+              <div
+                key={a.adolescent_id || Math.random()}
+                className="group flex items-center justify-between rounded-2xl border border-zinc-100 p-4 transition-all hover:border-indigo-100 hover:bg-indigo-50/30"
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-full text-sm font-bold shadow-sm ${
+                    isRed ? 'bg-red-50 text-red-600 border border-red-100' :
+                    isGreen ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' :
+                    isOrange ? 'bg-orange-50 text-orange-600 border border-orange-100' :
+                    'bg-zinc-100 text-zinc-600 border border-zinc-200'
+                  }`}>
+                    {initials}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-zinc-900">{a.full_name || a.email}</h4>
+                    <p className="text-xs text-zinc-500 mt-0.5">
+                      Last activity: {a.last_activity ? new Date(a.last_activity).toLocaleDateString() : "Never"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <div className="hidden sm:flex items-center gap-2">
+                     <span className="text-xl">{isRed ? "😟" : isGreen ? "😃" : isOrange ? "😐" : "🙂"}</span>
+                     <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md ${
+                        isRed ? 'bg-red-50 text-red-600' :
+                        isGreen ? 'bg-emerald-50 text-emerald-600' :
+                        isOrange ? 'bg-orange-50 text-orange-600' :
+                        'bg-zinc-100 text-zinc-600'
+                     }`}>
+                       {a.status || (isRed ? "Needs Attention" : isGreen ? "Improving" : isOrange ? "Stable" : "Stable")}
+                     </span>
+                  </div>
+                  <Link
+                    href={`/counselor/adolescent/${a.adolescent_id}`}
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-100 text-zinc-400 transition-colors group-hover:bg-[#4F46E5] group-hover:text-white"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                  </Link>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
+}
