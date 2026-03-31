@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
 
 export default function CounselorApplyPage() {
   const [email, setEmail] = useState("");
@@ -52,8 +54,10 @@ export default function CounselorApplyPage() {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center px-5 py-10 md:px-8">
-      <div className="neuro-card grid w-full max-w-5xl grid-cols-1 overflow-hidden md:grid-cols-[1.05fr_0.95fr]">
+    <>
+      <Navbar />
+      <main className="flex flex-1 items-center justify-center px-5 py-10 md:px-8">
+        <div className="neuro-card grid w-full max-w-5xl grid-cols-1 overflow-hidden md:grid-cols-[1.05fr_0.95fr]">
         {/* ── LEFT: form ─────────────────────────────── */}
         <div className="p-8 md:p-10">
           <div className="inline-flex rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold text-[#4F46E5]">
@@ -227,6 +231,8 @@ export default function CounselorApplyPage() {
           </div>
         </div>
       </div>
-    </div>
+      </main>
+      <Footer />
+    </>
   );
 }

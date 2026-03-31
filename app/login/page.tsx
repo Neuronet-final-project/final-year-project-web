@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
 
 type AuthMeResponse =
   | { authenticated: false }
@@ -77,8 +79,10 @@ export default function LoginPage() {
       };
 
   return (
-    <div className="flex flex-1 items-center justify-center px-5 py-10 md:px-8">
-      <div className="neuro-card grid w-full max-w-5xl grid-cols-1 overflow-hidden md:grid-cols-[0.95fr_1.05fr]">
+    <>
+      <Navbar />
+      <main className="flex flex-1 items-center justify-center px-5 py-10 md:px-8">
+        <div className="neuro-card grid w-full max-w-5xl grid-cols-1 overflow-hidden md:grid-cols-[0.95fr_1.05fr]">
         {/* ── LEFT: form ─────────────────────────────── */}
         <div className="p-8 md:p-10">
           {/* Role tabs */}
@@ -238,6 +242,8 @@ export default function LoginPage() {
           )}
         </div>
       </div>
-    </div>
+      </main>
+      <Footer />
+    </>
   );
 }
