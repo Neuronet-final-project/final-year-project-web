@@ -19,6 +19,15 @@ type Conversation = {
   created_at: string;
 };
 
+type AssignedAdolescent = {
+  adolescent_id: string;
+  adolescent_email: string;
+  guardian_email?: string;
+  guardian_id?: string;
+  matched_at: string;
+  status: string;
+};
+
 type Message = {
   _id: string;
   conversation_id: string;
@@ -35,6 +44,7 @@ export default function CounselorChatPage() {
   const [error, setError] = useState<string | null>(null);
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [assignedContacts, setAssignedContacts] = useState<AssignedAdolescent[]>([]);
   const [activeConvId, setActiveConvId] = useState<string | null>(null);
   
   const [messages, setMessages] = useState<Message[]>([]);
@@ -59,15 +69,24 @@ export default function CounselorChatPage() {
           return;
         }
 
-        const convsRes = await fetch("/api/proxy/backend/messaging/conversations");
+        const [convsRes, assignRes] = await Promise.all([
+          fetch("/api/proxy/backend/messaging/conversations"),
+          fetch("/api/proxy/backend/counselor/assignments/me")
+        ]);
+
         if (convsRes.ok) {
           const data = await convsRes.json();
           setConversations(data || []);
         } else {
           setError("Failed to load conversations.");
         }
+
+        if (assignRes.ok) {
+          const aData = await assignRes.json();
+          setAssignedContacts(aData || []);
+        }
       } catch (err) {
-        setError("Network error while loading chat.");
+        setError("Network error while loading data.");
       } finally {
         setLoading(false);
       }
@@ -142,6 +161,39 @@ export default function CounselorChatPage() {
     if (conv.conversation_type === "counselor_guardian") return `Guardian: ${others[0] || "Unknown"}`;
     if (conv.conversation_type === "counselor_adolescent") return `Adolescent: ${others[0] || "Unknown"}`;
     return conv.conversation_type || "Conversation";
+  }
+
+  // Initiate conversation with contact
+  async function handleInitiateContact(adolescentId: string, type: "counselor_adolescent" | "counselor_guardian") {
+    // Check if conversation already exists in state
+    const existing = conversations.find(c => 
+      c.conversation_type === type && 
+      (c.adolescent_id === adolescentId || c.participant_emails.some(e => e.includes(adolescentId)))
+    );
+    if (existing) {
+      setActiveConvId(existing._id || existing.id || null);
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/proxy/backend/messaging/conversations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          conversation_type: type,
+          adolescent_id: adolescentId
+        })
+      });
+      if (res.ok) {
+        const newConv = await res.json();
+        setConversations(prev => [...prev, newConv]);
+        setActiveConvId(newConv._id || newConv.id);
+      } else {
+        alert("Failed to initiate thread with this contact.");
+      }
+    } catch (e) {
+      alert("Network error.");
+    }
   }
 
   if (loading || !me.authenticated) {
@@ -227,6 +279,54 @@ export default function CounselorChatPage() {
                 )
               })
             )}
+
+            {/* ASSIGNED CONTACTS LIST */}
+            <div className="pt-4 mt-2 border-t border-zinc-200/50">
+              <h3 className="px-3 text-xs font-bold uppercase tracking-widest text-zinc-400 mb-2">Initiate Contact</h3>
+              {assignedContacts.length === 0 ? (
+                <div className="p-3 text-xs text-zinc-400 italic">No assigned adolescents yet.</div>
+              ) : (
+                assignedContacts.map((contact, idx) => {
+                  const initials = contact.adolescent_email.substring(0, 2).toUpperCase();
+                  
+                  return (
+                    <div key={`contact-${idx}`} className="mb-2">
+                       <button
+                         onClick={() => handleInitiateContact(contact.adolescent_id, "counselor_adolescent")}
+                         className="w-full flex items-center gap-3 p-3 text-left rounded-2xl transition-all hover:bg-zinc-50 border border-transparent hover:border-zinc-200"
+                       >
+                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-zinc-200 text-zinc-500 font-bold text-xs shadow-inner">
+                           {initials}
+                         </div>
+                         <div className="overflow-hidden flex-1">
+                           <h4 className="truncate text-sm font-semibold text-zinc-700">{contact.adolescent_email}</h4>
+                           <p className="truncate text-xs text-indigo-500 mt-0.5 font-medium flex items-center gap-1">
+                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                             Start Thread
+                           </p>
+                         </div>
+                       </button>
+
+                       {/* Optional Guardian initiate handle */}
+                       {contact.guardian_email && (
+                         <button
+                           onClick={() => handleInitiateContact(contact.adolescent_id, "counselor_guardian")}
+                           className="w-full flex items-center gap-3 p-2 pl-12 text-left rounded-2xl transition-all hover:bg-zinc-50 opacity-80"
+                         >
+                           <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-zinc-400 font-bold text-[10px] border border-zinc-200">
+                             {contact.guardian_email.substring(0, 1).toUpperCase()}
+                           </div>
+                           <div className="overflow-hidden flex-1">
+                             <h4 className="truncate text-xs text-zinc-500">Guardian</h4>
+                             <p className="truncate text-[10px] text-zinc-400">{contact.guardian_email}</p>
+                           </div>
+                         </button>
+                       )}
+                    </div>
+                  )
+                })
+              )}
+            </div>
           </div>
         </div>
 

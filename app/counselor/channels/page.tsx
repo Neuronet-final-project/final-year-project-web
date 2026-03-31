@@ -24,6 +24,11 @@ export default function CounselorChannelsPage() {
   const [channels, setChannels] = useState<Channel[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newDesc, setNewDesc] = useState("");
+  const [creating, setCreating] = useState(false);
+
   useEffect(() => {
     (async () => {
       try {
@@ -55,6 +60,43 @@ export default function CounselorChannelsPage() {
       }
     })();
   }, [router]);
+
+  async function handleCreateChannel(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newName.trim()) return;
+
+    setCreating(true);
+    try {
+      const res = await fetch("/api/proxy/backend/channels/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: newName,
+          description: newDesc,
+          is_group: true
+        })
+      });
+      if (res.ok) {
+        const result = await res.json();
+        // Assuming backend returns {"channel_id": "..."} or {"message": "...", "channel": {...}}
+        // Refresh the channels list to be safe
+        const chRes = await fetch("/api/proxy/backend/channels/me");
+        if (chRes.ok) {
+          const data = await chRes.json();
+          setChannels(data || []);
+        }
+        setIsCreateOpen(false);
+        setNewName("");
+        setNewDesc("");
+      } else {
+        alert("Failed to create topic.");
+      }
+    } catch (err) {
+      alert("Network error.");
+    } finally {
+      setCreating(false);
+    }
+  }
 
   if (loading || !me.authenticated) {
     return <div className="flex h-screen items-center justify-center bg-slate-50 text-zinc-500">Loading channel directory...</div>;
@@ -100,7 +142,10 @@ export default function CounselorChannelsPage() {
             <h2 className="text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#6366f1] to-[#06b6d4]">Active Subscriptions</h2>
             <p className="text-zinc-500 font-medium">Browse and manage your active group channels.</p>
           </div>
-          <button className="hidden sm:flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-[#6366f1] to-[#06b6d4] text-white font-bold rounded-2xl shadow-[0_8px_30px_rgb(99,102,241,0.3)] hover:scale-105 transition-all duration-300">
+          <button 
+            onClick={() => setIsCreateOpen(true)}
+            className="hidden sm:flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-[#6366f1] to-[#06b6d4] text-white font-bold rounded-2xl shadow-[0_8px_30px_rgb(99,102,241,0.3)] hover:scale-105 transition-all duration-300"
+          >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
             Create Topic
           </button>
@@ -148,6 +193,51 @@ export default function CounselorChannelsPage() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* CREATE CHANNEL MODAL */}
+        {isCreateOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/40 backdrop-blur-sm animate-in fade-in zoom-in-95 duration-300">
+            <div className="w-full max-w-md rounded-[2.5rem] bg-white p-8 shadow-2xl relative overflow-hidden">
+               <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#6366f1] to-[#06b6d4]"></div>
+               <button onClick={() => setIsCreateOpen(false)} className="absolute top-6 right-6 text-zinc-400 hover:text-zinc-600 transition-colors">
+                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+               </button>
+               
+               <h3 className="text-2xl font-black text-zinc-900 tracking-tight">Create Topic</h3>
+               <p className="text-sm text-zinc-500 font-medium mt-1">Provision a new broadcast channel.</p>
+
+               <form onSubmit={handleCreateChannel} className="mt-8 flex flex-col gap-5">
+                 <div>
+                   <label className="block text-xs font-bold uppercase tracking-widest text-zinc-400 mb-2 pl-1">Topic Name</label>
+                   <input
+                     type="text"
+                     value={newName}
+                     onChange={e => setNewName(e.target.value)}
+                     className="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-5 py-4 text-sm font-semibold text-zinc-900 placeholder:text-zinc-400 focus:border-[#6366f1] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#6366f1]/10 transition-all"
+                     placeholder="e.g. Teen Health Assembly"
+                     required
+                   />
+                 </div>
+                 <div>
+                   <label className="block text-xs font-bold uppercase tracking-widest text-zinc-400 mb-2 pl-1">Description <span className="text-zinc-300 normal-case font-medium">(Optional)</span></label>
+                   <textarea
+                     value={newDesc}
+                     onChange={e => setNewDesc(e.target.value)}
+                     className="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-5 py-4 text-sm font-medium text-zinc-900 placeholder:text-zinc-400 focus:border-[#6366f1] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#6366f1]/10 transition-all min-h-[100px] resize-none"
+                     placeholder="What is this channel about?"
+                   />
+                 </div>
+                 <button
+                   type="submit"
+                   disabled={creating || !newName.trim()}
+                   className="mt-4 w-full rounded-2xl bg-gradient-to-br from-[#6366f1] to-[#06b6d4] py-4 text-sm font-bold text-white shadow-[0_8px_20px_rgb(99,102,241,0.25)] hover:shadow-[0_12px_25px_rgb(99,102,241,0.4)] hover:-translate-y-1 transition-all disabled:opacity-50 disabled:pointer-events-none"
+                 >
+                   {creating ? "Provisioning..." : "Launch Topic"}
+                 </button>
+               </form>
+            </div>
           </div>
         )}
       </main>

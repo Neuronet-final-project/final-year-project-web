@@ -21,7 +21,7 @@ export function DashboardHeader({
   const initial = email ? email[0].toUpperCase() : "C";
 
   return (
-    <div className="relative w-full overflow-hidden rounded-[2rem] bg-gradient-to-r from-[#4F46E5] to-cyan-500 px-8 py-10 shadow-lg mt-6">
+    <div className="relative w-full overflow-hidden rounded-[2rem] bg-gradient-to-r from-[#6366f1] to-[#06b6d4] px-8 py-10 shadow-lg mt-6">
       <div className="absolute -right-20 -top-40 h-96 w-96 rounded-full bg-white/10 blur-3xl mix-blend-overlay" />
       <div className="absolute -left-20 -bottom-40 h-80 w-80 rounded-full bg-white/10 blur-3xl mix-blend-overlay" />
       
@@ -64,20 +64,20 @@ export function DashboardHeader({
             )}
           </Link>
 
-          <div className="flex items-center gap-4 border-l border-white/20 pl-6">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-lg text-lg font-bold text-[#4F46E5]">
+          <Link href="/counselor/profile" className="flex items-center gap-4 border-l border-white/20 pl-6 group transition-all hover:opacity-80">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-[0_4px_15px_rgb(255,255,255,0.4)] text-lg font-bold text-[#6366f1] group-hover:scale-105 transition-transform duration-300">
               {initial}
             </div>
             <div className="hidden sm:block text-right">
-              <div className="font-semibold text-white">Professional</div>
+              <div className="font-semibold text-white group-hover:underline">Edit Profile</div>
               <button
-                onClick={handleSignOut}
-                className="text-xs text-indigo-200 hover:text-white hover:underline transition-colors"
+                onClick={(e) => { e.preventDefault(); handleSignOut(); }}
+                className="text-xs text-indigo-200 hover:text-white transition-colors block ml-auto mt-0.5"
               >
                 Sign out
               </button>
             </div>
-          </div>
+          </Link>
         </div>
       </div>
     </div>
