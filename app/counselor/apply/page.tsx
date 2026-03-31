@@ -18,15 +18,8 @@ export default function CounselorApplyPage() {
     setSubmitting(true);
     setResult(null);
 
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-    if (!baseUrl) {
-      setResult({ ok: false, message: "Missing NEXT_PUBLIC_API_BASE_URL" });
-      setSubmitting(false);
-      return;
-    }
-
     try {
-      const res = await fetch(`${baseUrl}/counselor/apply`, {
+      const res = await fetch("/api/proxy/counselor/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -43,6 +36,12 @@ export default function CounselorApplyPage() {
         return;
       }
       setResult({ ok: true, message: data?.message || "Application submitted" });
+    } catch {
+      setResult({
+        ok: false,
+        message:
+          "Unable to reach backend. Check NEXT_PUBLIC_API_BASE_URL and server status.",
+      });
     } finally {
       setSubmitting(false);
     }
