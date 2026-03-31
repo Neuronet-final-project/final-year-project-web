@@ -48,8 +48,8 @@ export default function CounselorApplyPage() {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center bg-zinc-50 px-6 py-16">
-      <div className="w-full max-w-xl rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
+    <div className="flex flex-1 items-center justify-center px-6 py-16">
+      <div className="neuro-card w-full max-w-xl p-8">
         <h1 className="text-xl font-semibold text-zinc-900">
           Counselor Application
         </h1>
@@ -61,7 +61,7 @@ export default function CounselorApplyPage() {
           <div className="space-y-2">
             <label className="text-sm font-medium text-zinc-900">Full name</label>
             <input
-              className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-zinc-900/10"
+              className="neuro-input"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               required
@@ -71,7 +71,7 @@ export default function CounselorApplyPage() {
           <div className="space-y-2">
             <label className="text-sm font-medium text-zinc-900">Email</label>
             <input
-              className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-zinc-900/10"
+              className="neuro-input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               type="email"
@@ -82,7 +82,7 @@ export default function CounselorApplyPage() {
           <div className="space-y-2">
             <label className="text-sm font-medium text-zinc-900">Password</label>
             <input
-              className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-zinc-900/10"
+              className="neuro-input"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               type="password"
@@ -95,7 +95,7 @@ export default function CounselorApplyPage() {
               Qualification
             </label>
             <input
-              className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-zinc-900/10"
+              className="neuro-input"
               value={qualification}
               onChange={(e) => setQualification(e.target.value)}
               placeholder="e.g. BSc Psychology"
@@ -108,7 +108,7 @@ export default function CounselorApplyPage() {
               Experience (years)
             </label>
             <input
-              className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-zinc-900/10"
+              className="neuro-input"
               value={experienceYears}
               onChange={(e) => setExperienceYears(Number(e.target.value))}
               type="number"
@@ -132,7 +132,7 @@ export default function CounselorApplyPage() {
 
           <button
             disabled={submitting}
-            className="mt-2 inline-flex w-full items-center justify-center rounded-xl bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50"
+            className="neuro-primary-btn mt-2 w-full"
             type="submit"
           >
             {submitting ? "Submitting..." : "Submit application"}
@@ -141,7 +141,7 @@ export default function CounselorApplyPage() {
 
         <div className="mt-6 text-sm text-zinc-600">
           Already approved?{" "}
-          <a className="font-medium text-zinc-900 hover:underline" href="/login">
+          <a className="font-medium text-blue-700 hover:underline" href="/login">
             Sign in
           </a>
           .

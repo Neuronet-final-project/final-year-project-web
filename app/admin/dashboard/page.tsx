@@ -44,7 +44,7 @@ export default function AdminDashboardPage() {
   }, [router]);
 
   return (
-    <div className="flex flex-1 bg-zinc-50">
+    <div className="flex flex-1">
       <div className="mx-auto w-full max-w-6xl px-6 py-10">
         <div className="flex items-end justify-between">
           <div>
@@ -59,7 +59,7 @@ export default function AdminDashboardPage() {
               window.location.href = "/login";
             }}
           >
-            <button className="rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-50">
+            <button className="neuro-secondary-btn">
               Sign out
             </button>
           </form>
@@ -72,19 +72,19 @@ export default function AdminDashboardPage() {
         )}
 
         <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
-          <div className="rounded-2xl border border-zinc-200 bg-white p-5">
+          <div className="neuro-card p-5">
             <div className="text-sm text-zinc-600">Total users</div>
             <div className="mt-2 text-2xl font-semibold text-zinc-900">
               {data?.total_users ?? "—"}
             </div>
           </div>
-          <div className="rounded-2xl border border-zinc-200 bg-white p-5">
+          <div className="neuro-card p-5">
             <div className="text-sm text-zinc-600">Total adolescents</div>
             <div className="mt-2 text-2xl font-semibold text-zinc-900">
               {data?.total_adolescents ?? "—"}
             </div>
           </div>
-          <div className="rounded-2xl border border-zinc-200 bg-white p-5">
+          <div className="neuro-card p-5">
             <div className="text-sm text-zinc-600">Pending counselor applications</div>
             <div className="mt-2 text-2xl font-semibold text-zinc-900">
               {data?.pending_counselor_applications ?? "—"}
@@ -92,7 +92,7 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        <div className="mt-8 rounded-2xl border border-zinc-200 bg-white p-5">
+        <div className="neuro-card mt-8 p-5">
           <div className="text-sm font-medium text-zinc-900">Risk snapshot</div>
           <div className="mt-2 text-sm text-zinc-600">
             High-risk adolescents (last 7 days):{" "}
