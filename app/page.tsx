@@ -2,73 +2,172 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="flex flex-1 items-center justify-center px-4 py-6 md:px-6 md:py-10">
-      <main className="neuro-card w-full max-w-6xl overflow-hidden">
-        <div className="flex items-center justify-between border-b border-blue-100/80 px-5 py-3.5 md:px-8 md:py-4">
-          <div className="inline-flex rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
-            NEURONET PORTAL
+    <div className="min-h-screen bg-[#F3F4F6] text-zinc-900">
+      <div className="mx-auto w-full max-w-7xl px-5 py-6 md:px-8">
+        <nav className="mb-8 flex items-center justify-between rounded-2xl border border-indigo-100 bg-white px-5 py-4 shadow-sm">
+          <div className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1">
+            <span className="h-2 w-2 rounded-full bg-[#4F46E5]" />
+            <span className="text-sm font-semibold text-[#4F46E5]">NEURONET</span>
           </div>
-          <a className="neuro-primary-btn px-5" href="/login">
-            Log in
+          <div className="hidden items-center gap-6 text-sm font-medium text-zinc-600 md:flex">
+            <a href="#home" className="hover:text-zinc-900">Home</a>
+            <a href="#features" className="hover:text-zinc-900">Features</a>
+            <a href="#how-it-works" className="hover:text-zinc-900">How It Works</a>
+            <a href="/login" className="hover:text-zinc-900">Dashboard</a>
+          </div>
+          <a
+            href="/login"
+            className="rounded-xl bg-[#4F46E5] px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+          >
+            Login
           </a>
-        </div>
+        </nav>
 
-        <div className="grid grid-cols-1 gap-6 p-5 md:grid-cols-2 md:gap-10 md:p-8">
-          <section className="flex flex-col justify-center pr-0 md:pr-2">
-            <p className="text-sm font-medium uppercase tracking-wider text-blue-700">
-              Counselor & Admin Web
-            </p>
-            <h1 className="mt-3 text-4xl font-bold leading-[1.05] text-zinc-900 md:text-5xl">
-              Mental Health
-              <br />
-              Support In One
-              <br />
-              Secure Dashboard
+        <section
+          id="home"
+          className="grid grid-cols-1 gap-8 rounded-3xl border border-indigo-100 bg-gradient-to-br from-indigo-50 via-purple-50 to-cyan-50 p-6 shadow-sm md:grid-cols-2 md:p-10"
+        >
+          <div className="flex flex-col justify-center">
+            <h1 className="text-4xl font-bold leading-tight text-zinc-900 md:text-5xl">
+              AI-Powered Mental Health Support in One Platform
             </h1>
-            <p className="mt-4 max-w-xl text-sm leading-7 text-zinc-600">
-              Review counselor applications, monitor adolescent risk alerts, and coordinate support workflows with privacy-aware access rules.
+            <p className="mt-5 text-base leading-8 text-zinc-600">
+              Supporting adolescents through intelligent monitoring, secure communication, and ethical AI-driven insights.
             </p>
-
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <a className="neuro-primary-btn" href="/login">
-                Open dashboard
+            <div className="mt-7 flex flex-wrap gap-3">
+              <a
+                href="/login"
+                className="rounded-xl bg-[#4F46E5] px-5 py-3 text-sm font-semibold text-white hover:bg-indigo-700"
+              >
+                Get Started
               </a>
-              <a className="neuro-secondary-btn" href="/counselor/apply">
-                Apply as counselor
+              <a
+                href="#features"
+                className="rounded-xl border border-zinc-300 bg-white px-5 py-3 text-sm font-semibold text-zinc-800 hover:bg-zinc-50"
+              >
+                Learn More
               </a>
             </div>
+          </div>
 
-            <div className="mt-7 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
-              <div className="rounded-xl border border-blue-100 bg-blue-50 p-3">
-                <p className="font-semibold text-zinc-900">RBAC</p>
-                <p className="mt-1 text-zinc-600">Role-based protected modules</p>
-              </div>
-              <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-3">
-                <p className="font-semibold text-zinc-900">Live API</p>
-                <p className="mt-1 text-zinc-600">Connected to deployed backend</p>
-              </div>
-            </div>
-          </section>
-
-          <section className="relative flex items-center">
-            <div className="relative h-[320px] w-full overflow-hidden rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-100 to-cyan-100 shadow-inner md:h-[430px]">
+          <div className="relative">
+            <div className="relative h-[360px] overflow-hidden rounded-2xl border border-indigo-100 bg-white md:h-[430px]">
               <Image
                 src="/Images/counselor.jpg"
-                alt="Counselor dashboard preview"
+                alt="Doctor"
                 fill
                 className="object-cover"
                 priority
               />
             </div>
-            <div className="absolute left-2 bottom-3 rounded-xl border border-white/70 bg-white/90 px-3 py-2 text-xs text-zinc-700 shadow md:-left-3 md:bottom-4">
-              Built for counselor/admin workflows
+            <div className="absolute left-3 top-4 rounded-xl border border-indigo-100 bg-white/95 px-3 py-2 text-xs font-medium text-[#4F46E5] shadow">
+              AI detects emotional patterns
             </div>
-            <div className="absolute right-2 top-3 rounded-xl border border-blue-200 bg-blue-600 px-3 py-2 text-xs font-medium text-white shadow md:-right-3 md:top-4">
-              Consent-aware & audit-ready
+            <div className="absolute right-3 top-20 rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 shadow">
+              +100 Active Counselors
             </div>
-          </section>
-        </div>
-      </main>
+            <div className="absolute bottom-4 right-3 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-xs font-medium text-zinc-700 shadow">
+              Secure &amp; Private System
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+            <h2 className="text-2xl font-semibold text-zinc-900">The Challenge</h2>
+            <ul className="mt-4 list-inside list-disc space-y-2 text-zinc-600">
+              <li>Rising adolescent mental health issues</li>
+              <li>Limited access to professionals</li>
+              <li>Stigma prevents seeking help</li>
+            </ul>
+          </div>
+          <div className="rounded-2xl border border-indigo-100 bg-indigo-50 p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-[#4F46E5]">Solution</h3>
+            <p className="mt-3 text-zinc-700">
+              NEURONET provides a safe, AI-supported, and privacy-first platform for early detection and support.
+            </p>
+          </div>
+        </section>
+
+        <section id="features" className="mt-12">
+          <h2 className="text-3xl font-bold text-zinc-900">Key Features</h2>
+          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {[
+              ["AI Analysis", "Detects emotional patterns from journals"],
+              ["Dashboard", "Visual insights for counselors"],
+              ["Privacy First", "Secure and encrypted data handling"],
+              ["Secure Chat", "Counselor-adolescent communication"],
+              ["Alert System", "Real-time risk notifications"],
+              ["Consent Control", "Guardian-based access management"],
+            ].map(([title, desc]) => (
+              <div
+                key={title}
+                className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm"
+              >
+                <h3 className="font-semibold text-zinc-900">{title}</h3>
+                <p className="mt-2 text-sm text-zinc-600">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section id="how-it-works" className="mt-12 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+          <h2 className="text-3xl font-bold text-zinc-900">How It Works</h2>
+          <ol className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-5">
+            {[
+              "Adolescent writes journal",
+              "AI analyzes emotional state",
+              "System detects risk",
+              "Alert sent to counselor/guardian",
+              "Counselor provides support",
+            ].map((step, idx) => (
+              <li
+                key={step}
+                className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 text-sm text-zinc-700"
+              >
+                <span className="font-semibold text-[#4F46E5]">{idx + 1}.</span> {step}
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+            <h2 className="text-2xl font-semibold text-zinc-900">Dashboard Preview</h2>
+            <p className="mt-3 text-zinc-600">
+              Powerful dashboards designed for counselors and administrators to monitor, analyze, and support users effectively.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+            <h2 className="text-2xl font-semibold text-zinc-900">Security &amp; Privacy</h2>
+            <ul className="mt-4 list-inside list-disc space-y-2 text-zinc-600">
+              <li>End-to-end encryption</li>
+              <li>Role-based access control</li>
+              <li>HIPAA, FERPA, COPPA compliance</li>
+              <li>Consent-based data sharing</li>
+            </ul>
+          </div>
+        </section>
+
+        <section className="mt-12 rounded-2xl bg-gradient-to-r from-[#4F46E5] to-purple-600 p-8 text-center text-white shadow-sm">
+          <h2 className="text-3xl font-bold">Start Supporting Mental Health Today</h2>
+          <a
+            href="/login"
+            className="mt-5 inline-flex rounded-xl bg-white px-5 py-3 text-sm font-semibold text-[#4F46E5] hover:bg-zinc-100"
+          >
+            Login to Dashboard
+          </a>
+        </section>
+
+        <footer className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-zinc-200 py-6 text-sm text-zinc-600 md:flex-row">
+          <div className="flex gap-5">
+            <a href="#" className="hover:text-zinc-900">About</a>
+            <a href="#" className="hover:text-zinc-900">Contact</a>
+            <a href="#" className="hover:text-zinc-900">Privacy Policy</a>
+          </div>
+          <p>© 2026 NEURONET</p>
+        </footer>
+      </div>
     </div>
   );
 }
