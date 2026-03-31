@@ -2,6 +2,14 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+### Environment
+
+Create `.env.local` in the project root:
+
+```bash
+NEXT_PUBLIC_API_BASE_URL=https://final-year-project-backend-production-da67.up.railway.app
+```
+
 First, run the development server:
 
 ```bash
