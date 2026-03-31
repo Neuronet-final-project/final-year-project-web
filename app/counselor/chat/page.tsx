@@ -148,7 +148,10 @@ export default function CounselorChatPage() {
     return <div className="flex min-h-screen items-center justify-center bg-[#f4f7fb] text-zinc-500">Loading secure chat...</div>;
   }
 
-  const activeConv = conversations.find(c => (c._id || c.id) === activeConvId);
+  // Filter out any channel objects from this 1-on-1 direct messaging view
+  const dmsOnly = conversations.filter(c => c.conversation_type !== "channel");
+
+  const activeConv = dmsOnly.find(c => (c._id || c.id) === activeConvId);
 
   return (
     <div className="flex h-screen flex-col bg-slate-50 relative overflow-hidden">
@@ -164,7 +167,7 @@ export default function CounselorChatPage() {
                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
              </Link>
              <div className="flex items-center gap-3">
-               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#4F46E5] to-cyan-500 shadow-inner">
+               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#6366f1] to-[#06b6d4] shadow-[0_4px_20px_rgb(99,102,241,0.3)]">
                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                </div>
                <div>
@@ -192,10 +195,10 @@ export default function CounselorChatPage() {
           </div>
           <div className="flex-1 overflow-y-auto p-2 space-y-2">
             {error && <div className="p-3 text-xs text-red-600">{error}</div>}
-            {conversations.length === 0 && !error ? (
-              <div className="p-4 text-center text-sm text-zinc-500">No active conversations.</div>
+            {dmsOnly.length === 0 && !error ? (
+              <div className="p-4 text-center text-sm text-zinc-500">No active direct messages.</div>
             ) : (
-              conversations.map((conv, idx) => {
+              dmsOnly.map((conv, idx) => {
                 const cId = conv.id || conv._id || String(idx);
                 const isActive = cId === activeConvId;
                 const name = getConvName(conv);
@@ -205,15 +208,17 @@ export default function CounselorChatPage() {
                   <button
                     key={cId}
                     onClick={() => setActiveConvId(cId)}
-                    className={`w-full flex items-center gap-3 p-3 text-left rounded-2xl transition-colors ${
-                      isActive ? "bg-indigo-50 border border-indigo-100" : "hover:bg-zinc-50 border border-transparent"
+                    className={`w-full flex items-center gap-3 p-3 text-left rounded-2xl transition-all duration-300 ${
+                      isActive 
+                        ? "bg-gradient-to-r from-[#6366f1]/10 to-[#06b6d4]/10 border border-[#06b6d4]/30 shadow-sm" 
+                        : "hover:bg-zinc-50 border border-transparent"
                     }`}
                   >
-                    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-bold text-xs ${isActive ? 'bg-[#4F46E5] text-white' : 'bg-zinc-100 text-zinc-600'}`}>
+                    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl font-bold text-xs shadow-inner ${isActive ? 'bg-gradient-to-br from-[#6366f1] to-[#06b6d4] text-white' : 'bg-zinc-100 text-zinc-600'}`}>
                       {initials}
                     </div>
-                    <div className="overflow-hidden">
-                      <h4 className={`truncate text-sm font-semibold ${isActive ? 'text-indigo-900' : 'text-zinc-900'}`}>{name}</h4>
+                    <div className="overflow-hidden flex-1">
+                      <h4 className={`truncate text-sm font-semibold ${isActive ? 'text-transparent bg-clip-text bg-gradient-to-r from-[#6366f1] to-[#06b6d4]' : 'text-zinc-900'}`}>{name}</h4>
                       <p className="truncate text-xs text-zinc-500 mt-0.5">
                         {conv.conversation_type.replace('_', ' ')}
                       </p>
@@ -229,7 +234,7 @@ export default function CounselorChatPage() {
         <div className={`flex-1 flex flex-col rounded-[2rem] border border-white/60 bg-white/70 backdrop-blur-xl shadow-lg overflow-hidden transition-all duration-300 ${!activeConvId ? 'hidden md:flex' : 'flex'}`}>
           {!activeConvId ? (
             <div className="flex flex-1 flex-col items-center justify-center text-center p-8">
-               <div className="mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-indigo-50/50 text-indigo-300 shadow-inner">
+               <div className="mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-[#6366f1]/10 to-[#06b6d4]/10 text-[#06b6d4] shadow-inner">
                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                </div>
                <h3 className="text-2xl font-black tracking-tight text-zinc-400">Select a conversation</h3>
@@ -269,10 +274,10 @@ export default function CounselorChatPage() {
                           </span>
                         )}
                         <div
-                          className={`relative max-w-[85%] sm:max-w-[70%] rounded-2xl px-5 py-3 text-sm shadow-sm ${
+                          className={`relative max-w-[85%] sm:max-w-[70%] rounded-2xl px-5 py-3 text-sm shadow-[0_4px_20px_rgb(0,0,0,0.03)] ${
                             isMe
-                              ? "bg-[#4F46E5] text-white rounded-tr-none"
-                              : "bg-white border border-zinc-200 text-zinc-900 rounded-tl-none"
+                              ? "bg-gradient-to-br from-[#6366f1] to-[#06b6d4] text-white rounded-tr-none"
+                              : "bg-white border border-zinc-200/60 text-zinc-900 rounded-tl-none backdrop-blur-md"
                           }`}
                         >
                           {msg.content}
@@ -301,7 +306,7 @@ export default function CounselorChatPage() {
                   <button
                     type="submit"
                     disabled={!replyText.trim() || sending}
-                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#4F46E5] text-white transition hover:bg-indigo-600 disabled:opacity-50 hover:shadow-md"
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#6366f1] to-[#06b6d4] text-white transition-all duration-300 hover:scale-105 disabled:opacity-50 hover:shadow-[0_4px_15px_rgb(99,102,241,0.4)]"
                   >
                     {sending ? (
                       <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
