@@ -54,6 +54,7 @@ export default function CounselorChatPage() {
   const [msgsLoading, setMsgsLoading] = useState(false);
   const [replyText, setReplyText] = useState("");
   const [sending, setSending] = useState(false);
+  const [aiSummary, setAiSummary] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -96,6 +97,11 @@ export default function CounselorChatPage() {
     })();
   }, [router]);
 
+  // Filter out any channel objects from this 1-on-1 direct messaging view
+  const dmsOnly = conversations.filter(c => c.conversation_type !== "channel");
+  const getConvId = (c: Conversation) => c.conversation_id || c._id || c.id;
+  const activeConv = dmsOnly.find(c => getConvId(c) === activeConvId);
+
   // Load messages when conversation is selected
   useEffect(() => {
     if (!activeConvId) return;
@@ -120,6 +126,29 @@ export default function CounselorChatPage() {
 
     fetchMessages();
 
+    // Fetch AI Summary if it's an adolescent conversation
+    const currentConv = dmsOnly.find(c => getConvId(c) === activeConvId);
+    if (currentConv && currentConv.conversation_type === "counselor_adolescent") {
+      const adolId = currentConv.adolescent_id;
+      if (adolId) {
+        (async () => {
+          try {
+            const res = await fetch(`/api/proxy/backend/alerts/adolescent/${adolId}/summary`);
+            if (res.ok) {
+              const data = await res.json();
+              setAiSummary(data.summary);
+            } else {
+              setAiSummary(null);
+            }
+          } catch (e) {
+            setAiSummary(null);
+          }
+        })();
+      }
+    } else {
+      setAiSummary(null);
+    }
+
     // Simple polling for real-time feel (every 5 seconds)
     const intervalId = setInterval(fetchMessages, 5000);
 
@@ -127,7 +156,7 @@ export default function CounselorChatPage() {
       isMounted = false;
       clearInterval(intervalId);
     };
-  }, [activeConvId]);
+  }, [activeConvId, dmsOnly]);
 
   // Auto-scroll to bottom of messages
   useEffect(() => {
@@ -205,12 +234,6 @@ export default function CounselorChatPage() {
   if (loading || !me.authenticated) {
     return <div className="flex min-h-screen items-center justify-center bg-[#f4f7fb] text-zinc-500">Loading secure chat...</div>;
   }
-
-  // Filter out any channel objects from this 1-on-1 direct messaging view
-  const dmsOnly = conversations.filter(c => c.conversation_type !== "channel");
-
-  const getConvId = (c: Conversation) => c.conversation_id || c._id || c.id;
-  const activeConv = dmsOnly.find(c => getConvId(c) === activeConvId);
 
   // De-duplicate contacts natively mapping by ID
   const uniqueContacts = Array.from(new Map(assignedContacts.map(c => [c.adolescent_id, c])).values());
@@ -372,6 +395,19 @@ export default function CounselorChatPage() {
                     </button>
                  </div>
                </div>
+
+               {/* AI Summary Banner */}
+               {aiSummary && (
+                 <div className="mx-6 mt-6 p-4 bg-gradient-to-r from-indigo-50 to-emerald-50 border border-indigo-100 rounded-2xl flex items-start gap-4 shadow-sm animate-in slide-in-from-top duration-500">
+                    <div className="h-8 w-8 bg-white rounded-lg flex items-center justify-center text-indigo-600 shadow-sm shrink-0">
+                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                    </div>
+                    <div className="flex-1">
+                       <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 mb-1">Clinical AI Insight</h5>
+                       <p className="text-xs font-semibold text-zinc-700 leading-relaxed">{aiSummary}</p>
+                    </div>
+                 </div>
+               )}
 
               {/* Chat Messages */}
               <div className="flex-1 overflow-y-auto p-6 space-y-8 bg-slate-50/20 custom-scrollbar">
