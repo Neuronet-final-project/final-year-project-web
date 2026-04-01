@@ -38,11 +38,19 @@ export default function CounselorAlertsPage() {
           return;
         }
 
-        const alertsRes = await fetch("/api/proxy/backend/alerts/unresolved");
+        const alertsRes = await fetch("/api/proxy/backend/alerts/counselor/me");
         if (alertsRes.ok) {
-          setAlerts(await alertsRes.json());
+          const data = await alertsRes.json();
+          setAlerts(Array.isArray(data) ? data : []);
         } else {
-          setError("Failed to load clinical alerts.");
+          // Fallback to unresolved endpoint (for admin users)
+          const fallbackRes = await fetch("/api/proxy/backend/alerts/unresolved");
+          if (fallbackRes.ok) {
+            const data = await fallbackRes.json();
+            setAlerts(Array.isArray(data) ? data : []);
+          } else {
+            setError("Failed to load clinical alerts.");
+          }
         }
       } catch (err) {
         setError("Network error while loading alerts.");
