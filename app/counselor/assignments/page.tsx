@@ -15,6 +15,7 @@ type AssignedAdolescent = {
   full_name?: string;
   assigned_at: string;
   guardian_email?: string;
+  guardian_full_name?: string;
 };
 
 export default function CounselorAssignmentsPage() {
@@ -135,13 +136,22 @@ export default function CounselorAssignmentsPage() {
                     <Mail size={14} className="shrink-0" />
                     <span className="text-xs font-bold truncate">{adolescent.email}</span>
                   </div>
-                  <div className="flex items-center gap-3 text-zinc-500">
+                  <div className="flex items-center gap-3 text-indigo-600/80 bg-indigo-50/50 p-2 rounded-xl border border-indigo-100/50">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-indigo-100 text-indigo-600">
+                       <UserPlus size={12} />
+                    </div>
+                    <div className="flex flex-col">
+                       <span className="text-[9px] font-black uppercase tracking-widest leading-none mb-0.5">Primary Guardian</span>
+                       <span className="text-[11px] font-bold truncate">{adolescent.guardian_full_name || "Searching..."}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 text-zinc-400">
                     <Calendar size={14} className="shrink-0" />
                     <span className="text-xs font-bold">Assigned: {new Date(adolescent.assigned_at).toLocaleDateString()}</span>
                   </div>
-                  <div className="flex items-center gap-3 text-zinc-500">
+                  <div className="flex items-center gap-3 text-zinc-400">
                     <ShieldCheck size={14} className="shrink-0" />
-                    <span className="text-xs font-black uppercase tracking-tighter text-indigo-600">ID: {adolescent.adolescent_id.substring(0, 8)}...</span>
+                    <span className="text-xs font-black uppercase tracking-tighter text-zinc-300">ID: {adolescent.adolescent_id.substring(0, 8)}...</span>
                   </div>
                 </div>
 

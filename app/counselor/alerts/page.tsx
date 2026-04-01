@@ -52,9 +52,29 @@ export default function CounselorAlertsPage() {
     })();
   }, [router]);
 
+  const handleDismiss = async (alertId: string) => {
+    try {
+      const res = await fetch(`/api/proxy/backend/alerts/resolve/${alertId}`, {
+        method: "PUT"
+      });
+      if (res.ok) {
+        setAlerts(prev => prev.filter(a => a._id !== alertId));
+      } else {
+        alert("Failed to resolve alert.");
+      }
+    } catch (e) {
+      alert("Network error.");
+    }
+  };
+
+  const handleReview = (adolescentId: string) => {
+    router.push(`/counselor/chat?adolescent_id=${adolescentId}`);
+  };
+
   const filteredAlerts = alerts.filter(a => {
     const matchesSearch = a.message.toLowerCase().includes(search.toLowerCase()) || 
-                          a.adolescent_id.toLowerCase().includes(search.toLowerCase());
+                          a.adolescent_id.toLowerCase().includes(search.toLowerCase()) ||
+                          (a as any).adolescent_name?.toLowerCase().includes(search.toLowerCase());
     const matchesFilter = filter === "all" || a.risk_level === filter;
     return matchesSearch && matchesFilter;
   });
@@ -153,15 +173,24 @@ export default function CounselorAlertsPage() {
                     </span>
                   </div>
                   <h4 className="text-base font-bold text-zinc-900 mb-2 leading-snug">{alert.message}</h4>
-                  <p className="text-xs font-medium text-zinc-500">Case ID: <span className="text-indigo-600 font-bold">{alert.adolescent_id}</span></p>
+                  <div className="flex items-center gap-4">
+                     <p className="text-xs font-medium text-zinc-500">Adolescent: <span className="text-indigo-600 font-bold">{(alert as any).adolescent_name || "Unknown Case"}</span></p>
+                     <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest border-l border-zinc-100 pl-4">Case ID: {alert.adolescent_id.substring(0, 8)}</p>
+                  </div>
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <button className="px-6 py-3 rounded-xl bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all hover:scale-105 active:scale-95">
-                    Review
+                  <button 
+                    onClick={() => handleReview(alert.adolescent_id)}
+                    className="px-6 py-3 rounded-xl bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all hover:scale-105 active:scale-95"
+                  >
+                    Open Chat
                   </button>
-                  <button className="px-6 py-3 rounded-xl bg-white border border-zinc-100 text-zinc-400 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-all">
-                    Dismiss
+                  <button 
+                    onClick={() => handleDismiss(alert._id)}
+                    className="px-6 py-3 rounded-xl bg-white border border-zinc-100 text-zinc-400 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-all"
+                  >
+                    Dismiss Alert
                   </button>
                 </div>
               </div>
