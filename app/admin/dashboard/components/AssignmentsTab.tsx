@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Link2, Send, CheckCircle2, AlertTriangle, Users } from 'lucide-react';
+import { Link2, Send, CheckCircle, AlertTriangle, Users } from 'lucide-react';
 
 interface AssignmentsProps {
   cEmail: string;
@@ -67,7 +67,7 @@ export default function AssignmentsTab({
                   ? 'bg-emerald-50 text-emerald-700 border-emerald-100' 
                   : 'bg-red-50 text-red-700 border-red-100'
               }`}>
-                {assignResult.ok ? <CheckCircle2 className="h-4 w-4" /> : <AlertTriangle className="h-4 w-4" />}
+                {assignResult.ok ? <CheckCircle className="h-4 w-4" /> : <AlertTriangle className="h-4 w-4" />}
                 {assignResult.msg}
               </div>
             )}

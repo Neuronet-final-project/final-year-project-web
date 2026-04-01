@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Search, RefreshCw, BadgeStatus } from 'lucide-react';
+import { Search, RefreshCw, ShieldCheck } from 'lucide-react';
 
 interface UserManagementProps {
   users: any[];

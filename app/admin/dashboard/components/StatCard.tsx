@@ -1,7 +1,6 @@
 "use client";
 
 import React from 'react';
-import { TrendUp, TrendDown } from 'lucide-react';
 
 interface Stat {
   label: string;
