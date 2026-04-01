@@ -34,6 +34,7 @@ export default function AdolescentCasePage() {
   
   const [journals, setJournals] = useState<Journal[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [aiSummary, setAiSummary] = useState<string | null>(null);
   const [patientName, setPatientName] = useState<string>("Adolescent Info");
 
   useEffect(() => {
@@ -63,6 +64,13 @@ export default function AdolescentCasePage() {
         if (aRes.ok) {
           const aData = await aRes.json();
           setAlerts(aData || []);
+        }
+
+        // 4. Fetch AI Alert Summary
+        const sumRes = await fetch(`/api/proxy/backend/alerts/adolescent/${adolescentId}/summary`);
+        if (sumRes.ok) {
+          const sData = await sumRes.json();
+          setAiSummary(sData?.summary || null);
         }
 
       } catch (err) {
@@ -162,6 +170,20 @@ export default function AdolescentCasePage() {
 
           {/* RIGHT: Alerts & Vitals */}
           <div className="space-y-6">
+            {aiSummary && (
+              <div className="rounded-2xl border border-indigo-200 bg-indigo-50 p-6 shadow-sm mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v10m0 0 8.66-5M12 12l-8.66-5"/><circle cx="12" cy="12" r="10"/></svg>
+                  </div>
+                  <h3 className="font-bold text-indigo-900">AI Overview</h3>
+                </div>
+                <p className="text-sm font-medium text-indigo-800/80 leading-relaxed">
+                  {aiSummary}
+                </p>
+              </div>
+            )}
+
             <h2 className="text-lg font-bold text-zinc-900 border-b border-zinc-200 pb-2">Active Alerts</h2>
             {alerts.filter(a => a.status === 'unresolved').length === 0 ? (
               <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-6 text-center shadow-sm">
