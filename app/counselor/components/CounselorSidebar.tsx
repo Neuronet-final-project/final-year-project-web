@@ -10,12 +10,16 @@ import {
   Settings, 
   LogOut,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Bell,
+  Users
 } from "lucide-react";
 import { useState } from "react";
 
 const navItems = [
   { name: "Overview", icon: LayoutDashboard, href: "/counselor/dashboard" },
+  { name: "Alerts", icon: Bell, href: "/counselor/alerts" },
+  { name: "Assignments", icon: Users, href: "/counselor/assignments" },
   { name: "SafeChat", icon: MessageSquare, href: "/counselor/chat" },
   { name: "Channels", icon: Hash, href: "/counselor/channels" },
 ];
