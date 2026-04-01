@@ -21,51 +21,54 @@ export default function DashboardHeader({
   const initial = email ? email[0].toUpperCase() : "C";
 
   return (
-    <div className="relative w-full overflow-hidden rounded-[2.5rem] bg-[#09090b] px-10 py-12 shadow-2xl border border-white/5 animate-in fade-in slide-in-from-top-4 duration-700">
-      {/* Decorative Elements */}
-      <div className="absolute -right-20 -top-40 h-96 w-96 rounded-full bg-indigo-600/10 blur-[100px]" />
-      <div className="absolute -left-20 -bottom-40 h-80 w-80 rounded-full bg-cyan-600/10 blur-[100px]" />
+    <div className="relative w-full overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#4f46e5] to-[#0891b2] px-8 py-10 shadow-xl shadow-indigo-200/50 animate-in fade-in slide-in-from-top-4 duration-700">
+      {/* Mesh Accents */}
+      <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/20 blur-[60px]" />
+      <div className="absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-cyan-400/20 blur-[60px]" />
       
-      <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
-        <div>
+      <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="flex-1">
           <div className="flex items-center gap-3 mb-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600/20 backdrop-blur-md border border-indigo-500/30 shadow-[0_0_15px_rgba(79,70,229,0.2)]">
-               <span className="h-2.5 w-2.5 rounded-full bg-indigo-400 shadow-[0_0_8px_white]" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20 backdrop-blur-md border border-white/30 shadow-inner">
+               <span className="h-2 w-2 rounded-full bg-white shadow-[0_0_8px_white] animate-pulse" />
             </div>
-            <h1 className="text-sm font-black uppercase tracking-[0.3em] text-indigo-400/80">
-              Neuronet Counselor OS
+            <h1 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/80">
+              Neuronet Counselor Workspace
             </h1>
           </div>
-          <h2 className="text-4xl font-black text-white tracking-tight sm:text-5xl">
-            Welcome back, <span className="text-indigo-400">Expert</span>
+          <h2 className="text-3xl font-black text-white tracking-tight sm:text-4xl">
+            Peace be upon you, <span className="opacity-70">Expert</span>
           </h2>
-          <p className="mt-3 text-zinc-400 font-medium tracking-wide flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            Active Session: {email}
-          </p>
+          <div className="mt-4 flex items-center gap-4 text-white/70">
+            <div className="flex items-center gap-1.5 text-xs font-bold bg-white/10 px-3 py-1.5 rounded-full border border-white/10 backdrop-blur-sm">
+               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#10b981]" />
+               {email}
+            </div>
+            <div className="hidden sm:flex items-center gap-1.5 text-xs font-bold bg-white/10 px-3 py-1.5 rounded-full border border-white/10 backdrop-blur-sm">
+               <span>ID: {initial}024-X</span>
+            </div>
+          </div>
         </div>
 
-        <div className="flex items-center gap-8">
-          <Link href="/counselor/dashboard#alerts" className="group relative rounded-2xl bg-white/5 p-5 transition-all hover:bg-white/10 hover:scale-110 border border-white/5">
-            <Bell className="h-6 w-6 text-zinc-400 transition-colors group-hover:text-indigo-400" />
+        <div className="flex items-center gap-4">
+          <Link href="/counselor/dashboard#alerts" className="group relative rounded-2xl bg-white/10 p-4 transition-all hover:bg-white/20 hover:scale-105 border border-white/20 backdrop-blur-sm">
+            <Bell className="h-5 w-5 text-white transition-colors" />
             {alertCount > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-rose-500 text-[10px] font-black text-white shadow-lg ring-4 ring-[#09090b] animate-bounce">
+              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-[9px] font-black text-white shadow-lg ring-2 ring-[#4f46e5]">
                 {alertCount}
               </span>
             )}
           </Link>
 
-          <div className="flex items-center gap-6 border-l border-white/10 pl-8">
-             <div className="text-right hidden sm:block">
-               <p className="text-xs font-black text-zinc-500 uppercase tracking-widest mb-1">Status</p>
-               <p className="text-sm font-bold text-emerald-400">On Duty</p>
-             </div>
+          <div className="flex items-center gap-4 border-l border-white/20 pl-4 h-12">
              <button
                onClick={handleSignOut}
-               className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 shadow-[0_10px_20px_-5px_rgba(79,70,229,0.4)] text-xl font-black text-white hover:scale-105 transition-transform active:scale-95 group"
-               title="Sign Out"
+               className="flex items-center gap-2 pr-2 pl-4 py-2 rounded-2xl bg-white text-indigo-600 font-black text-xs uppercase tracking-widest hover:bg-indigo-50 transition-all hover:scale-[1.02] active:scale-95 shadow-lg group"
              >
-               <LogOut className="h-6 w-6 group-hover:-translate-x-0.5 transition-transform" />
+               <span>Exit</span>
+               <div className="h-8 w-8 flex items-center justify-center bg-indigo-600 text-white rounded-xl shadow-inner group-hover:rotate-12 transition-transform">
+                 <LogOut className="h-4 w-4" />
+               </div>
              </button>
           </div>
         </div>
@@ -73,3 +76,4 @@ export default function DashboardHeader({
     </div>
   );
 }
+

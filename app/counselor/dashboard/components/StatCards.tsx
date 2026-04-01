@@ -16,31 +16,72 @@ export default function StatCards({
   activeChannels,
 }: StatCardsProps) {
   const stats = [
-    { label: "Active Alerts", value: activeAlerts, icon: AlertCircle, color: "text-rose-500", bg: "bg-rose-500/10", border: "border-rose-500/20" },
-    { label: "Assignments", value: assignedAdolescents, icon: Users, color: "text-indigo-400", bg: "bg-indigo-600/10", border: "border-indigo-500/20" },
-    { label: "Unread Msgs", value: unreadMessages, icon: MessageSquare, color: "text-cyan-400", bg: "bg-cyan-600/10", border: "border-cyan-500/20" },
-    { label: "Live Channels", value: activeChannels, icon: Radio, color: "text-emerald-400", bg: "bg-emerald-600/10", border: "border-emerald-500/20" },
+    { 
+      label: "Active Alerts", 
+      value: activeAlerts, 
+      icon: AlertCircle, 
+      color: "text-rose-600", 
+      bg: "bg-rose-50", 
+      border: "border-rose-100", 
+      href: "/counselor/dashboard#alerts",
+      desc: "Emergency pings"
+    },
+    { 
+      label: "Assignments", 
+      value: assignedAdolescents, 
+      icon: Users, 
+      color: "text-indigo-600", 
+      bg: "bg-indigo-50", 
+      border: "border-indigo-100", 
+      href: "/counselor/dashboard",
+      desc: "Managed cases"
+    },
+    { 
+      label: "Direct Chat", 
+      value: unreadMessages, 
+      icon: MessageSquare, 
+      color: "text-cyan-600", 
+      bg: "bg-cyan-50", 
+      border: "border-cyan-100", 
+      href: "/counselor/chat",
+      desc: "Secure messages"
+    },
+    { 
+      label: "Live Topics", 
+      value: activeChannels, 
+      icon: Radio, 
+      color: "text-emerald-600", 
+      bg: "bg-emerald-50", 
+      border: "border-emerald-100", 
+      href: "/counselor/channels",
+      desc: "Group broadcasts"
+    },
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mt-10">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mt-8">
       {stats.map((stat, i) => (
-        <div key={i} className="group relative overflow-hidden rounded-[2.5rem] border border-white/5 bg-[#09090b] p-8 shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:border-white/10">
-          <div className={`absolute top-0 right-0 h-32 w-32 rounded-full ${stat.bg} blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
-          
-          <div className={`mb-6 flex h-16 w-16 items-center justify-center rounded-[1.25rem] ${stat.bg} ${stat.color} border ${stat.border} shadow-lg transition-all duration-500 group-hover:scale-110 group-hover:rotate-6`}>
-            <stat.icon className="h-8 w-8" />
+        <Link 
+          key={i} 
+          href={stat.href}
+          className="group relative flex flex-col items-start overflow-hidden rounded-[2rem] border border-white bg-white/70 backdrop-blur-md p-6 shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-indigo-100 hover:-translate-y-1 ring-1 ring-zinc-200/50 hover:ring-indigo-200"
+        >
+          <div className="flex w-full items-start justify-between mb-4">
+            <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${stat.bg} ${stat.color} border ${stat.border} shadow-sm group-hover:scale-110 transition-transform`}>
+              <stat.icon className="h-6 w-6" />
+            </div>
+            <div className={`text-4xl font-black ${stat.color} tracking-tighter`}>{stat.value}</div>
           </div>
 
-          <div className="relative">
-            <div className="text-5xl font-black text-white tracking-tighter mb-2 group-hover:scale-105 transition-transform origin-left">{stat.value}</div>
-            <p className="text-xs font-black uppercase tracking-widest text-zinc-500">{stat.label}</p>
+          <div>
+            <h3 className="text-sm font-bold text-zinc-900 group-hover:text-indigo-600 transition-colors">{stat.label}</h3>
+            <p className="text-[10px] font-medium text-zinc-400 uppercase tracking-widest mt-1">{stat.desc}</p>
           </div>
 
-          <div className="absolute bottom-6 right-8 opacity-0 group-hover:opacity-20 transition-opacity duration-300 pointer-events-none">
-             <stat.icon className="h-12 w-12 text-white" />
+          <div className="absolute -bottom-2 -right-2 opacity-10 group-hover:opacity-20 transition-opacity">
+            <stat.icon className={`h-16 w-16 ${stat.color}`} />
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );
