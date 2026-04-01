@@ -127,40 +127,9 @@ export default function ChannelThreadPage() {
   if (!channel) return null;
 
   return (
-    <div className="flex h-screen flex-col bg-[#f8fafc] relative overflow-hidden">
-      {/* Dynamic Background Mesh */}
-      <div className="absolute inset-0 z-0 opacity-30 pointer-events-none bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-indigo-100 via-transparent to-transparent"></div>
-      <div className="absolute inset-0 z-0 opacity-30 pointer-events-none bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-cyan-100 via-transparent to-transparent"></div>
-
-      {/* HEADER */}
-      <header className="shrink-0 border-b border-white bg-white/60 backdrop-blur-md shadow-sm z-30">
-        <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 sm:px-6 py-4">
-          <div className="flex items-center gap-4">
-             <Link href="/counselor/channels" className="rounded-xl border border-zinc-200 bg-white p-2.5 text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900 transition shadow-sm">
-               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-             </Link>
-             <div className="flex items-center gap-3">
-               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#4f46e5] to-[#0891b2] shadow-lg shadow-indigo-200">
-                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/></svg>
-               </div>
-               <div>
-                 <h1 className="text-lg font-black text-zinc-900 tracking-tight leading-none">{channel.name}</h1>
-                 <p className="text-[10px] font-bold text-zinc-500 mt-1 uppercase tracking-widest">Topic: {channelId.substring(0, 8)}</p>
-               </div>
-             </div>
-          </div>
-          <div className="hidden sm:flex items-center gap-3">
-             <div className="text-right">
-               <p className="text-[10px] text-emerald-600 font-bold flex items-center justify-end gap-1.5 uppercase tracking-widest leading-none">
-                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]"></span> Live Thread
-               </p>
-             </div>
-          </div>
-        </div>
-      </header>
-
+    <div className="flex h-full flex-col relative overflow-hidden animate-in fade-in duration-700">
       {/* MAIN THREAD AREA */}
-      <main className="relative z-10 flex flex-1 flex-col overflow-hidden mx-auto w-full max-w-5xl animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <main className="relative z-10 flex flex-1 flex-col overflow-hidden">
         
         <div className="flex-1 overflow-y-auto p-6 sm:p-10 space-y-10 bg-slate-50/20 custom-scrollbar">
           <div className="text-center py-12 mb-8 border-b border-zinc-100/50">

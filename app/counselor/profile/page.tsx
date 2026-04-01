@@ -97,32 +97,13 @@ export default function CounselorProfilePage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50 relative overflow-hidden">
-      {/* Dynamic Background Mesh */}
-      <div className="absolute inset-0 z-0 opacity-40 pointer-events-none bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-100 via-zinc-50 to-zinc-50"></div>
-      
-      {/* HEADER */}
-      <header className="shrink-0 border-b border-white/20 bg-white/60 backdrop-blur-md shadow-sm z-30">
-        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-4">
-             <Link href="/counselor/dashboard" className="rounded-xl border border-zinc-200 bg-white p-2 text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900 transition">
-               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-             </Link>
-             <div className="flex items-center gap-3">
-               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#6366f1] to-[#06b6d4] shadow-[0_4px_20px_rgb(99,102,241,0.3)] text-white">
-                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-               </div>
-               <div>
-                 <h1 className="text-xl font-bold text-zinc-900 leading-none">Account Preferences</h1>
-                 <p className="text-xs font-medium text-zinc-500 mt-1">Manage your identity and credentials</p>
-               </div>
-             </div>
-          </div>
-        </div>
-      </header>
-
+    <div className="flex flex-col relative overflow-hidden animate-in fade-in duration-700">
       {/* MAIN CONTENT AREA */}
-      <main className="relative z-10 flex flex-1 flex-col mx-auto w-full max-w-3xl p-6 md:p-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <main className="relative z-10 flex flex-1 flex-col mx-auto w-full max-w-3xl p-8 md:p-16">
+        <div className="mb-12">
+          <h1 className="text-4xl font-black text-zinc-900 tracking-tight">Account Preferences</h1>
+          <p className="mt-2 text-sm font-medium text-zinc-500 max-w-md">Manage your clinical identity and secure credentials.</p>
+        </div>
         <div className="rounded-[2.5rem] border border-white/60 bg-white/70 backdrop-blur-xl shadow-xl overflow-hidden relative">
           <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#6366f1] to-[#06b6d4]"></div>
           
