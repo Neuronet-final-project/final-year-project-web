@@ -42,7 +42,7 @@ export default function CounselorDashboardPage() {
         // Fetch all required data concurrently
         const [dashRes, alertsRes, convsRes, chansRes] = await Promise.all([
           fetch("/api/proxy/dashboard/counselor"),
-          fetch("/api/proxy/backend/alerts/unresolved"),
+          fetch("/api/proxy/backend/alerts/counselor/me"),
           fetch("/api/proxy/backend/messaging/conversations"),
           fetch("/api/proxy/backend/channels/me")
         ]);
@@ -100,6 +100,19 @@ export default function CounselorDashboardPage() {
              </p>
           </div>
         </div>
+
+        {/* AI INSIGHTS BANNER */}
+        {dashData?.ai_alert_summary && (
+          <div className="mb-8 rounded-2xl bg-indigo-50 border border-indigo-100 p-6 flex items-start gap-4 shadow-sm">
+            <div className="mt-1 flex shrink-0 h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v10m0 0 8.66-5M12 12l-8.66-5"/><circle cx="12" cy="12" r="10"/></svg>
+            </div>
+            <div>
+              <h4 className="text-[10px] font-black text-indigo-900 mb-1 uppercase tracking-widest">AI Alert Summary</h4>
+              <p className="text-sm font-medium text-indigo-800/80">{dashData.ai_alert_summary}</p>
+            </div>
+          </div>
+        )}
 
         <StatCards 
           activeAlerts={activeAlertsCount}
