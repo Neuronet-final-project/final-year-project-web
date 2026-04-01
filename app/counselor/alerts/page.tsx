@@ -38,13 +38,13 @@ export default function CounselorAlertsPage() {
           return;
         }
 
-        const alertsRes = await fetch("/api/proxy/backend/alerts/counselor/me");
+        const alertsRes = await fetch("/api/proxy/backend/alerts/counselor/me", { cache: "no-store" });
         if (alertsRes.ok) {
           const data = await alertsRes.json();
           setAlerts(Array.isArray(data) ? data : []);
         } else {
           // Fallback to unresolved endpoint (for admin users)
-          const fallbackRes = await fetch("/api/proxy/backend/alerts/unresolved");
+          const fallbackRes = await fetch("/api/proxy/backend/alerts/unresolved", { cache: "no-store" });
           if (fallbackRes.ok) {
             const data = await fallbackRes.json();
             setAlerts(Array.isArray(data) ? data : []);
@@ -80,7 +80,7 @@ export default function CounselorAlertsPage() {
   };
 
   const filteredAlerts = alerts.filter(a => {
-    const matchesSearch = a.message.toLowerCase().includes(search.toLowerCase()) || 
+    const matchesSearch = (a.message || "").toLowerCase().includes(search.toLowerCase()) || 
                           a.adolescent_id.toLowerCase().includes(search.toLowerCase()) ||
                           (a as any).adolescent_name?.toLowerCase().includes(search.toLowerCase());
     const matchesFilter = filter === "all" || a.risk_level === filter;

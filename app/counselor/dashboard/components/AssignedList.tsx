@@ -48,7 +48,7 @@ export default function AssignedList({
               "Stable": "text-indigo-600 bg-indigo-50 border-indigo-100",
             };
  
-            const status = a.status || (i % 4 === 0 ? "Needs Attention" : i % 4 === 1 ? "Improving" : "Stable");
+            const status = a.status || ( (a as any).unresolved_alerts_count > 0 ? "Needs Attention" : "Stable" );
  
             return (
               <div

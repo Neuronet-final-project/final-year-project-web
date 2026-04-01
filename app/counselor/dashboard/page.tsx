@@ -41,10 +41,10 @@ export default function CounselorDashboardPage() {
 
         // Fetch all required data concurrently
         const [dashRes, alertsRes, convsRes, chansRes] = await Promise.all([
-          fetch("/api/proxy/dashboard/counselor"),
-          fetch("/api/proxy/backend/alerts/counselor/me"),
-          fetch("/api/proxy/backend/messaging/conversations"),
-          fetch("/api/proxy/backend/channels/me")
+          fetch("/api/proxy/dashboard/counselor", { cache: "no-store" }),
+          fetch("/api/proxy/backend/alerts/counselor/me", { cache: "no-store" }),
+          fetch("/api/proxy/backend/messaging/conversations", { cache: "no-store" }),
+          fetch("/api/proxy/backend/channels/me", { cache: "no-store" })
         ]);
 
         if (dashRes.ok) setDashData(await dashRes.json());
@@ -72,7 +72,8 @@ export default function CounselorDashboardPage() {
   }
 
   // Calculate stats
-  const activeAlertsCount = alerts.length;
+  // Prioritize counts from dashData (which uses the centralized counselor_dashboard_service aggregate)
+  const activeAlertsCount = dashData?.unresolved_alerts?.length ?? alerts.length;
   const assignedCount = dashData?.assigned_adolescents?.length || 0;
   const unreadMessagesCount = conversations.length; 
   const activeChannelsCount = channels.length;
