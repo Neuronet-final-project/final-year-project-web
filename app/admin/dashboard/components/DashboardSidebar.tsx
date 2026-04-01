@@ -25,7 +25,7 @@ interface SidebarProps {
 }
 
 export default function DashboardSidebar({ activeTab, setActiveTab, pendingApps, onLogout }: SidebarProps) {
-  const menuGroups = [
+  const menuGroups: { group: string | null, items: { id: string, label: string, icon: any, badge?: number }[] }[] = [
     {
       group: null,
       items: [
@@ -43,65 +43,52 @@ export default function DashboardSidebar({ activeTab, setActiveTab, pendingApps,
         { id: 'audit', label: 'Audit Logs', icon: History },
       ]
     },
-    {
-      group: 'REPORTS',
-      items: [
-        { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-        { id: 'reports', label: 'Generate Reports', icon: FileText },
-      ]
-    },
-    {
-      group: 'SECURITY',
-      items: [
-        { id: 'access', label: 'Access Control', icon: KeyRound },
-      ]
-    }
   ];
 
   return (
-    <aside className="w-72 shrink-0 bg-[#6b21a8] text-white flex flex-col h-screen overflow-y-auto">
-      <div className="p-8">
+    <aside className="w-72 shrink-0 bg-[#09090b] text-white flex flex-col h-screen overflow-hidden relative shadow-2xl border-r border-white/5">
+      <div className="p-8 flex-1 overflow-y-auto">
         {/* Logo Section */}
-        <div className="flex items-center gap-3 mb-12">
-          <div className="bg-white/20 p-2 rounded-xl">
+        <div className="flex items-center gap-4 mb-16 px-2">
+          <div className="bg-indigo-600/20 p-2.5 rounded-2xl backdrop-blur-md border border-indigo-500/30 shadow-[0_0_20px_rgba(79,70,229,0.2)]">
              <div className="w-8 h-8 flex items-center justify-center">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                   <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                   <path d="M2 17L12 22L22 17" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                   <path d="M2 12L12 17L22 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                   <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#818cf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                   <path d="M2 17L12 22L22 17" stroke="#818cf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                   <path d="M2 12L12 17L22 12" stroke="#818cf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
              </div>
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight">NEURONET</h1>
-            <p className="text-[10px] text-white/50 font-semibold tracking-wider">Admin Control Panel</p>
+            <h1 className="text-xl font-black tracking-widest leading-none bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">NEURONET</h1>
+            <p className="text-[9px] text-indigo-400/60 font-bold tracking-[0.2em] mt-1.5 uppercase">Admin Control Panel</p>
           </div>
         </div>
 
         {/* Navigation */}
-        <nav className="space-y-8">
+        <nav className="space-y-10">
           {menuGroups.map((group, idx) => (
-            <div key={idx} className="space-y-4">
+            <div key={idx} className="space-y-5">
               {group.group && (
-                <h3 className="text-[10px] font-bold text-white/40 tracking-[0.2em] px-4 uppercase">{group.group}</h3>
+                <h3 className="text-[10px] font-black text-zinc-600 tracking-[0.3em] px-5 uppercase">{group.group}</h3>
               )}
-              <div className="space-y-1">
+              <div className="space-y-1.5 px-2">
                 {group.items.map((item) => (
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
-                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all group ${
+                    className={`w-full flex items-center justify-between px-5 py-3.5 rounded-2xl transition-all duration-300 group ${
                       activeTab === item.id 
-                        ? 'bg-white/10 text-white shadow-lg' 
-                        : 'text-white/60 hover:bg-white/5 hover:text-white'
+                        ? 'bg-indigo-600 text-white shadow-[0_10px_25px_-5px_rgba(79,70,229,0.4)] translate-x-1' 
+                        : 'text-zinc-400 hover:bg-white/5 hover:text-white'
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <item.icon className={`h-5 w-5 ${activeTab === item.id ? 'text-white' : 'text-white/40 group-hover:text-white/70'}`} />
-                      <span className="text-sm font-semibold">{item.label}</span>
+                    <div className="flex items-center gap-4">
+                      <item.icon className={`h-5 w-5 transition-transform duration-300 ${activeTab === item.id ? 'scale-110 text-white' : 'opacity-40 group-hover:opacity-100 group-hover:text-indigo-400'}`} />
+                      <span className={`text-sm tracking-tight ${activeTab === item.id ? 'font-bold' : 'font-medium'}`}>{item.label}</span>
                     </div>
                     {item.badge ? (
-                      <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center">{item.badge}</span>
+                      <span className="bg-rose-500 text-white text-[10px] font-black h-5 min-w-[20px] flex items-center justify-center px-1.5 rounded-full shadow-lg border-2 border-zinc-950 animate-pulse">{item.badge}</span>
                     ) : null}
                   </button>
                 ))}
@@ -111,15 +98,23 @@ export default function DashboardSidebar({ activeTab, setActiveTab, pendingApps,
         </nav>
       </div>
 
-      {/* Logout Footer */}
-      <div className="mt-auto p-8 border-t border-white/10">
+      {/* Logout Footer & Branding Accent */}
+      <div className="p-8 border-t border-white/5 bg-zinc-950/50 relative">
         <button 
           onClick={onLogout}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white/60 hover:bg-white/5 hover:text-white transition-all text-sm font-semibold"
+          className="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-zinc-500 hover:bg-rose-500/10 hover:text-rose-400 transition-all duration-300 text-sm font-bold group"
         >
-          <LogOut className="h-5 w-5 text-white/40" />
-          Logout Session
+          <LogOut className="h-5 w-5 opacity-40 group-hover:opacity-100" />
+          Logout Terminal
         </button>
+
+        {/* Floating Branding Accent */}
+        <div className="absolute -bottom-4 -left-4 w-20 h-20 bg-indigo-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-6 -left-2 transform rotate-12 opacity-20 pointer-events-none">
+           <div className="bg-indigo-600 text-white p-2 rounded-xl text-xs font-black shadow-2xl shadow-indigo-500/20 border border-white/10">
+              N
+           </div>
+        </div>
       </div>
     </aside>
   );
