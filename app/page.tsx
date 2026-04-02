@@ -14,107 +14,105 @@ export default function Home() {
         {/* ── HERO SECTION ── */}
         <section
           id="home"
-          className="relative overflow-hidden pt-20 pb-24 md:pt-32 md:pb-40"
+          className="relative overflow-hidden pt-10 pb-20 md:pt-16 md:pb-32"
         >
           {/* Subtle background glow */}
           <div className="pointer-events-none absolute left-1/2 top-0 -z-10 h-[600px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-b from-indigo-500/20 to-transparent blur-[80px]" />
           
-          <div className="mx-auto max-w-7xl px-5 text-center md:px-8">
-            <div className="mx-auto mb-6 inline-flex max-w-fit items-center gap-2 rounded-full border border-indigo-200/50 bg-indigo-50/50 px-4 py-1.5 text-sm font-semibold text-[#4F46E5] backdrop-blur-md">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#4F46E5] opacity-75"></span>
-                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#4F46E5]"></span>
-              </span>
-              Next-Gen Mental Health Support
-            </div>
+          <div className="mx-auto max-w-7xl px-5 md:px-8">
+            <div className="flex flex-col items-center gap-12 lg:flex-row lg:gap-16">
+              {/* Text Column */}
+              <div className="flex-1 text-center lg:text-left">
+                <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-200/50 bg-indigo-50/50 px-4 py-1.5 text-sm font-semibold text-[#4F46E5] backdrop-blur-md">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#4F46E5] opacity-75"></span>
+                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#4F46E5]"></span>
+                  </span>
+                  Next-Gen Mental Health Support
+                </div>
 
-            <h1 className="mx-auto max-w-5xl text-5xl font-extrabold tracking-tight text-zinc-900 md:text-7xl lg:text-[5rem] lg:leading-[1.1]">
-              AI-Powered Care for the{" "}
-              <span className="relative whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-[#4F46E5] to-cyan-400">
-                Next Generation
-              </span>
-            </h1>
+                <h1 className="text-4xl font-extrabold tracking-tight text-zinc-900 md:text-6xl lg:text-7xl lg:leading-[1.1]">
+                  AI-Powered Care for the{" "}
+                  <span className="relative whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-[#4F46E5] to-cyan-400">
+                    Next Generation
+                  </span>
+                </h1>
 
-            <p className="mx-auto mt-8 max-w-2xl text-lg leading- relaxed text-zinc-600 md:text-xl">
-              Ethical AI meets professional counseling. NEURONET empowers schools, counselors, and guardians to detect risks early and provide secure, confidential support.
-            </p>
+                <p className="mt-8 max-w-2xl text-lg leading-relaxed text-zinc-600 md:text-xl">
+                  Ethical AI meets professional counseling. NEURONET empowers schools, counselors, and guardians to detect risks early and provide secure, confidential support.
+                </p>
 
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Link
-                href="/login"
-                className="group flex w-full items-center justify-center gap-2 rounded-2xl bg-[#4F46E5] px-8 py-4 text-base font-semibold text-white transition-all hover:bg-indigo-600 hover:shadow-[0_0_20px_rgba(79,70,229,0.3)] sm:w-auto"
-              >
-                Get Started
-                <svg
-                  className="transition-transform group-hover:translate-x-1"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </Link>
-              <a
-                href="#features"
-                className="flex w-full items-center justify-center rounded-2xl border border-zinc-200 bg-white px-8 py-4 text-base font-semibold text-zinc-800 transition-all hover:bg-zinc-50 hover:shadow-sm sm:w-auto"
-              >
-                Explore Features
-              </a>
-            </div>
-          </div>
+                <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row lg:justify-start">
+                  <Link
+                    href="/login"
+                    className="group flex w-full items-center justify-center gap-2 rounded-2xl bg-[#4F46E5] px-8 py-4 text-base font-semibold text-white transition-all hover:bg-indigo-600 hover:shadow-[0_0_20px_rgba(79,70,229,0.3)] sm:w-auto"
+                  >
+                    Get Started
+                    <svg
+                      className="transition-transform group-hover:translate-x-1"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                  <a
+                    href="#features"
+                    className="flex w-full items-center justify-center rounded-2xl border border-zinc-200 bg-white px-8 py-4 text-base font-semibold text-zinc-800 transition-all hover:bg-zinc-50 hover:shadow-sm sm:w-auto"
+                  >
+                    Explore Features
+                  </a>
+                </div>
+              </div>
 
-          {/* Hero Image / Dashboard Mockup */}
-          <div className="relative mx-auto mt-16 max-w-6xl px-5 md:mt-24 md:px-8">
-            <div className="relative overflow-hidden rounded-[2.5rem] border border-white/40 bg-white/20 p-2 shadow-2xl shadow-indigo-500/10 backdrop-blur-xl">
-              <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[2rem] bg-zinc-900 ring-1 ring-zinc-900/5">
-                <Image
-                  src="/Images/counselor.jpg"
-                  alt="Platform Preview"
-                  fill
-                  sizes="(max-width: 1200px) 100vw, 1200px"
-                  className="object-cover object-center opacity-90"
-                  priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/80 via-zinc-900/20 to-transparent" />
-                
-                {/* Floating UI Elements */}
-                <div className="absolute bottom-10 left-10 rounded-2xl border border-white/10 bg-white/10 p-5 backdrop-blur-md transition-transform hover:-translate-y-2 max-w-sm hidden md:block">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/20">
-                      <svg
-                        className="h-5 w-5 text-emerald-400"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
+              {/* Image Column */}
+              <div className="relative flex-[0.8] w-full max-w-lg lg:max-w-md xl:max-w-lg">
+                <div className="relative overflow-visible rounded-[2.5rem] border border-white/40 bg-white/20 p-1.5 shadow-xl shadow-indigo-500/10 backdrop-blur-xl">
+                  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[2rem] bg-zinc-900 ring-1 ring-zinc-900/5 lg:aspect-square">
+                    <Image
+                      src="/Images/counselor.jpg"
+                      alt="Counselor Professional"
+                      fill
+                      sizes="(max-width: 1200px) 100vw, 1200px"
+                      className="object-cover object-[center_15%] opacity-90 transition-transform duration-700 hover:scale-105"
+                      priority
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/40 via-transparent to-transparent" />
+                    
+                    {/* Floating UI Elements - Simplified for side view */}
+                    <div className="absolute -bottom-6 -left-6 rounded-2xl border border-white/20 bg-white/80 p-5 shadow-xl backdrop-blur-md transition-transform hover:-translate-y-2 hidden xl:block">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/20">
+                          <svg className="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-zinc-900">Risk Resolved</h4>
+                          <p className="text-xs text-zinc-500">Counselor assigned</p>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-semibold text-white">Risk Resolved</h4>
-                      <p className="text-xs text-zinc-300">Counselor assigned successfully</p>
+
+                    <div className="absolute -top-6 -right-6 rounded-2xl border border-white/20 bg-white/80 p-5 shadow-xl backdrop-blur-md transition-transform hover:-translate-y-2 hidden xl:block">
+                       <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500/20">
+                          <span className="text-lg font-bold text-blue-600">AI</span>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-zinc-900">Emotional Insight</h4>
+                          <p className="text-xs text-zinc-500">Positive trend detected</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-
-                <div className="absolute right-10 top-10 rounded-2xl border border-white/10 bg-white/10 p-5 backdrop-blur-md transition-transform hover:-translate-y-2 max-w-sm hidden md:block">
-                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500/20">
-                      <span className="text-lg font-bold text-blue-400">AI</span>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-white">Emotional Insight</h4>
-                      <p className="text-xs text-zinc-300">Positive trend detected this week</p>
-                    </div>
-                  </div>
-                </div>
-
               </div>
             </div>
           </div>
