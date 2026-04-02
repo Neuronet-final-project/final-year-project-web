@@ -61,6 +61,15 @@ export async function POST(req: Request) {
     return NextResponse.json(data, { status: res.status });
   }
 
+  // Role Restriction Check
+  const requiredRole = body.requiredRole;
+  if (requiredRole && data.role !== requiredRole) {
+    return NextResponse.json(
+      { detail: `Forbidden: This portal is only for ${requiredRole}s.` },
+      { status: 403 },
+    );
+  }
+
   const token = data?.access_token;
   if (!token) {
     return NextResponse.json(

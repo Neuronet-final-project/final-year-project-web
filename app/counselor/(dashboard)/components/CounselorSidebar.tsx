@@ -45,7 +45,7 @@ export default function CounselorSidebar() {
       }`}
     >
       {/* BRANDING */}
-      <div className="p-8 flex items-center gap-4">
+      <div className="p-6 flex items-center gap-4">
         <div className="shrink-0 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#4f46e5] to-[#0891b2] shadow-xl shadow-indigo-100">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
@@ -60,14 +60,14 @@ export default function CounselorSidebar() {
       </div>
 
       {/* NAVIGATION */}
-      <nav className="flex-1 px-4 mt-6 space-y-2">
+      <nav className="flex-1 px-4 mt-4 space-y-1">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/counselor/dashboard" && pathname.startsWith(item.href));
           return (
             <Link
               key={item.name}
               href={item.href}
-              className={`group flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-300 ${
+              className={`group flex items-center gap-4 px-4 py-2.5 rounded-2xl transition-all duration-300 ${
                 isActive 
                   ? "bg-indigo-600 text-white shadow-lg shadow-indigo-100" 
                   : "text-zinc-500 hover:bg-slate-50 hover:text-zinc-900"
@@ -86,17 +86,17 @@ export default function CounselorSidebar() {
       </nav>
 
       {/* FOOTER ACTIONS */}
-      <div className="p-4 space-y-2">
+      <div className="p-4 space-y-1">
         <Link 
           href="/counselor/profile"
-          className="flex items-center gap-4 px-4 py-4 rounded-2xl text-zinc-500 hover:bg-slate-50 hover:text-zinc-900 transition-all"
+          className="flex items-center gap-4 px-4 py-2.5 rounded-2xl text-zinc-500 hover:bg-slate-50 hover:text-zinc-900 transition-all"
         >
           <User size={22} className="shrink-0" />
           {!collapsed && <span className="font-bold text-sm tracking-tight">Account</span>}
         </Link>
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-4 px-4 py-4 rounded-2xl text-rose-500 hover:bg-rose-50 transition-all font-bold text-sm tracking-tight"
+          className="w-full flex items-center gap-4 px-4 py-2.5 rounded-2xl text-rose-500 hover:bg-rose-50 transition-all font-bold text-sm tracking-tight"
         >
           <LogOut size={22} className="shrink-0" />
           {!collapsed && <span>Logout</span>}
