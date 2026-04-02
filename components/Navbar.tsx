@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import Image from "next/image";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -17,8 +18,14 @@ export function Navbar() {
           href="/"
           className="group flex items-center gap-2 transition-transform hover:scale-105"
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-[#4F46E5] to-cyan-500 shadow-sm">
-            <span className="h-2.5 w-2.5 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)]" />
+          <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-zinc-200">
+            <Image
+              src="/Images/icons/neuroneticon.png"
+              alt="NEURONET Logo"
+              width={32}
+              height={32}
+              className="object-cover"
+            />
           </div>
           <span className="text-lg font-bold tracking-tight text-zinc-900">
             NEURO<span className="text-[#4F46E5]">NET</span>
