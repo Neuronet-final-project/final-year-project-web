@@ -26,7 +26,7 @@ async function fetchWithRetry(
 }
 
 export async function GET() {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "");
   if (!baseUrl) {
     return NextResponse.json(
       { detail: "Missing NEXT_PUBLIC_API_BASE_URL" },

@@ -21,7 +21,7 @@ async function fetchWithRetry(url: string, init: RequestInit, timeoutMs = 20000,
 }
 
 async function handleProxy(req: Request, { params }: { params: Promise<{ path: string[] }> }) {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "");
   if (!baseUrl) {
     return NextResponse.json({ detail: "Missing NEXT_PUBLIC_API_BASE_URL" }, { status: 500 });
   }
