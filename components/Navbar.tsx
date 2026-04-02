@@ -2,9 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Menu, X } from "lucide-react";
+import { useState } from "react";
 
 export function Navbar() {
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
   const isHome = pathname === "/";
 
   return (
@@ -58,8 +61,56 @@ export function Navbar() {
           >
             Join as Counselor
           </Link>
+
+          {/* MOBILE TOGGLE BUTTON */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white/50 text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 md:hidden"
+          >
+            {isOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
       </div>
+
+      {/* MOBILE MENU DROPDOWN */}
+      {isOpen && (
+        <div className="animate-in fade-in slide-in-from-top-4 duration-300 border-t border-zinc-100 bg-white p-5 md:hidden">
+          <nav className="flex flex-col gap-4">
+            {isHome && (
+              <>
+                <a
+                  href="#home"
+                  onClick={() => setIsOpen(false)}
+                  className="text-sm font-medium text-zinc-600 transition-colors hover:text-[#4F46E5]"
+                >
+                  Home
+                </a>
+                <a
+                  href="#features"
+                  onClick={() => setIsOpen(false)}
+                  className="text-sm font-medium text-zinc-600 transition-colors hover:text-[#4F46E5]"
+                >
+                  Features
+                </a>
+                <a
+                  href="#how-it-works"
+                  onClick={() => setIsOpen(false)}
+                  className="text-sm font-medium text-zinc-600 transition-colors hover:text-[#4F46E5]"
+                >
+                  How It Works
+                </a>
+              </>
+            )}
+            <Link
+              href="/login"
+              onClick={() => setIsOpen(false)}
+              className="text-sm font-medium text-zinc-600 transition-colors hover:text-[#4F46E5] sm:hidden"
+            >
+              Sign in
+            </Link>
+          </nav>
+        </div>
+      )}
     </header>
   );
 }
