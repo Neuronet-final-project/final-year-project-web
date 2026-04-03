@@ -16,6 +16,8 @@ import {
   KeyRound,
   LogOut
 } from 'lucide-react';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 interface SidebarProps {
   activeTab: string;
@@ -50,18 +52,17 @@ export default function DashboardSidebar({ activeTab, setActiveTab, pendingApps,
       <div className="p-8 flex-1 overflow-y-auto">
         {/* Logo Section */}
         <div className="flex items-center gap-4 mb-16 px-2">
-          <div className="bg-indigo-600/20 p-2.5 rounded-2xl backdrop-blur-md border border-indigo-500/30 shadow-[0_0_20px_rgba(79,70,229,0.2)]">
-             <div className="w-8 h-8 flex items-center justify-center">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                   <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#818cf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                   <path d="M2 17L12 22L22 17" stroke="#818cf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                   <path d="M2 12L12 17L22 12" stroke="#818cf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-             </div>
+          <div className="relative h-11 w-11 flex items-center justify-center overflow-hidden rounded-2xl bg-white shadow-lg ring-1 ring-white/20">
+             <Image 
+                src="/Images/icons/neuroneticon.png" 
+                alt="NEURONET" 
+                fill 
+                className="object-cover p-1.5"
+             />
           </div>
           <div>
-            <h1 className="text-xl font-black tracking-widest leading-none bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">NEURONET</h1>
-            <p className="text-[9px] text-indigo-400/60 font-bold tracking-[0.2em] mt-1.5 uppercase">Admin Control Panel</p>
+            <h1 className="text-xl font-black tracking-tighter leading-none text-white">NEURO<span className="text-indigo-400">NET</span></h1>
+            <p className="text-[9px] text-indigo-400/60 font-bold tracking-[0.2em] mt-1.5 uppercase">Admin Control</p>
           </div>
         </div>
 

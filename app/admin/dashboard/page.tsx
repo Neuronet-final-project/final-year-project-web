@@ -12,6 +12,8 @@ import UserManagementTab from "./components/UserManagementTab";
 import CounselorApplicationsTab from "./components/CounselorApplicationsTab";
 import AssignmentsTab from "./components/AssignmentsTab";
 import AuditVaultTab from "./components/AuditVaultTab";
+import AISettingsTab from "./components/AISettingsTab";
+import SystemConfigTab from "./components/SystemConfigTab";
 
 type AuthMeResponse =
   | { authenticated: false }
@@ -232,16 +234,8 @@ export default function AdminDashboardPage() {
             />
           )}
 
-          {/* Placeholder for other tabs */}
-          {["config", "ai"].includes(activeTab) && (
-            <div className="h-full flex flex-col items-center justify-center text-center p-20 animate-in fade-in zoom-in duration-500">
-               <div className="h-24 w-24 bg-violet-50 rounded-[2rem] flex items-center justify-center text-violet-600 mb-8 border border-violet-100 shadow-sm">
-                  <LayoutDashboard className="h-10 w-10" />
-               </div>
-               <h3 className="text-2xl font-black text-zinc-900 mb-2 capitalize">{activeTab.replace("-", " ")} Module</h3>
-               <p className="text-zinc-500 max-w-md font-medium">This functional module is currently being integrated with the production backend. Real-time controls will be available in the next deployment cycle.</p>
-            </div>
-          )}
+          {activeTab === "config" && <SystemConfigTab />}
+          {activeTab === "ai" && <AISettingsTab />}
         </main>
       </div>
     </div>

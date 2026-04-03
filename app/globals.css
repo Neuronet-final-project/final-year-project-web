@@ -44,3 +44,12 @@ body {
 .neuro-input {
   @apply w-full rounded-xl border border-blue-100 bg-white px-3 py-2 text-sm text-zinc-900 outline-none transition focus:border-blue-300 focus:ring-2 focus:ring-blue-200/60;
 }
+
+@keyframes bounce-subtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 2s infinite ease-in-out;
+}

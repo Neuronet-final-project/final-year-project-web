@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { UserCheck, UserX, Clock, MapPin, Briefcase } from 'lucide-react';
+import { UserCheck, UserX, Clock, MapPin, Briefcase, ShieldCheck } from 'lucide-react';
 
 interface CounselorApplicationsProps {
   applications: any[];
@@ -13,62 +13,86 @@ export default function CounselorApplicationsTab({
   applications, appsLoading, handleApplication 
 }: CounselorApplicationsProps) {
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-8">
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-10">
       {/* Header Info */}
-      <div className="bg-[#6b21a8] p-10 rounded-[3rem] text-white relative overflow-hidden shadow-xl">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl pointer-events-none" />
-        <div className="relative z-10">
-          <h2 className="text-3xl font-black mb-2">Credential Verification</h2>
-          <p className="text-white/70 font-medium max-w-xl">Review and approve incoming counselor applications. Verified professionals gain access to adolescent case data and secure messaging.</p>
+      <div className="bg-zinc-900 p-10 md:p-14 rounded-[3rem] text-white relative overflow-hidden shadow-2xl">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-500/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-[80px] pointer-events-none" />
+        <div className="relative z-10 max-w-2xl">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 border border-white/10 backdrop-blur-md mb-6">
+             <ShieldCheck className="h-4 w-4 text-indigo-400" />
+             <span className="text-[10px] font-black uppercase tracking-widest">Security Protocol Level 4</span>
+          </div>
+          <h2 className="text-4xl font-black mb-4 tracking-tighter leading-tight">Credential & Identity Verification</h2>
+          <p className="text-zinc-400 font-medium text-lg leading-relaxed">Review incoming counselor petitions. Verified professionals are granted cryptographic access to clinical case data and secure neuro-messaging gateways.</p>
         </div>
       </div>
 
       {/* Applications List */}
-      <div className="grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 gap-8">
         {appsLoading ? (
-           <div className="p-20 text-center animate-pulse text-zinc-400 font-bold uppercase tracking-widest text-xs">Syncing Pending Requests...</div>
+            <div className="p-40 text-center flex flex-col items-center gap-4">
+               <div className="h-10 w-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+               <span className="text-xs font-black text-zinc-400 uppercase tracking-widest">Scanning Petition Database...</span>
+            </div>
         ) : applications.length === 0 ? (
-          <div className="flex flex-col items-center justify-center p-20 bg-white border-2 border-dashed border-zinc-100 rounded-[3rem] text-zinc-400">
-             <Clock className="h-12 w-12 mb-4 opacity-20" />
-             <h3 className="text-lg font-bold text-zinc-600">All Caught Up!</h3>
-             <p className="text-sm font-medium">No pending counselor applications at this time.</p>
+          <div className="flex flex-col items-center justify-center p-32 rounded-[3.5rem] border border-zinc-100 bg-zinc-50/30 text-zinc-400 shadow-inner">
+             <div className="h-20 w-20 rounded-[2.5rem] bg-white shadow-sm flex items-center justify-center mb-8">
+                <Clock className="h-8 w-8 opacity-20" />
+             </div>
+             <h3 className="text-2xl font-black text-zinc-800 tracking-tight">Queue Clear</h3>
+             <p className="text-sm font-medium mt-2">No pending counselor applications require administrative attention.</p>
           </div>
         ) : applications.map((app) => (
-          <div key={app.email} className="p-8 bg-white border border-zinc-100 rounded-[2.5rem] shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-10 hover:shadow-md transition-all group">
-             <div className="flex gap-6 items-center">
-                <div className="h-20 w-20 rounded-[1.5rem] bg-zinc-50 border border-zinc-100 flex items-center justify-center text-2xl font-black text-purple-600 shadow-inner group-hover:scale-105 transition-transform">
-                  {app.full_name?.substring(0, 1) || "C"}
-                </div>
-                <div>
-                   <div className="flex items-center gap-3 mb-1">
-                     <h3 className="text-xl font-bold text-zinc-900">{app.full_name}</h3>
-                     <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${
-                        app.status === 'pending' ? 'bg-amber-50 text-amber-600' :
-                        app.status === 'approved' ? 'bg-emerald-50 text-emerald-600' :
-                        'bg-rose-50 text-rose-600'
-                     }`}>{app.status}</span>
+          <div key={app.email} className="group relative overflow-hidden rounded-[3rem] border border-white/40 bg-white/60 p-1 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md hover:shadow-xl transition-all duration-500">
+             <div className="p-8 md:p-10 flex flex-col lg:flex-row lg:items-center justify-between gap-10">
+                <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
+                   <div className="h-24 w-24 rounded-[2rem] bg-white shadow-lg ring-1 ring-zinc-100 flex items-center justify-center text-3xl font-black text-indigo-600 group-hover:scale-105 transition-transform duration-500 shrink-0">
+                     {app.full_name?.substring(0, 1) || "C"}
                    </div>
-                   <p className="text-sm font-bold text-zinc-400 mb-4">{app.email}</p>
-                   
-                   <div className="flex flex-wrap gap-4">
-                      <div className="flex items-center gap-2 px-3 py-1.5 bg-zinc-50 rounded-xl border border-zinc-100">
-                        <Briefcase className="h-3.5 w-3.5 text-zinc-400" />
-                        <span className="text-xs font-bold text-zinc-600">{app.experience_years} Years Experience</span>
+                   <div className="space-y-4">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <h3 className="text-2xl font-black text-zinc-900 tracking-tight">{app.full_name}</h3>
+                        <span className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-center shadow-sm ${
+                           app.status === 'pending' ? 'bg-orange-50 text-orange-600 ring-1 ring-orange-100' :
+                           app.status === 'approved' ? 'bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100' :
+                           'bg-rose-50 text-rose-600 ring-1 ring-rose-100'
+                        }`}>{app.status}</span>
                       </div>
-                      <div className="flex items-center gap-2 px-3 py-1.5 bg-zinc-50 rounded-xl border border-zinc-100">
-                        <UserCheck className="h-3.5 w-3.5 text-zinc-400" />
-                        <span className="text-xs font-bold text-zinc-600 truncate max-w-[200px]">{app.qualification}</span>
+                      <p className="text-sm font-bold text-zinc-400">{app.email}</p>
+                      
+                      <div className="flex flex-wrap gap-3">
+                         <div className="flex items-center gap-2.5 px-4 py-2 bg-zinc-50 rounded-2xl border border-zinc-100/50">
+                           <Briefcase className="h-4 w-4 text-zinc-400 group-hover:text-indigo-500 transition-colors" />
+                           <span className="text-xs font-black text-zinc-600 uppercase tracking-tight">{app.experience_years}y Tenure</span>
+                         </div>
+                         <div className="flex items-center gap-2.5 px-4 py-2 bg-zinc-50 rounded-2xl border border-zinc-100/50">
+                           <MapPin className="h-4 w-4 text-zinc-400 group-hover:text-indigo-500 transition-colors" />
+                           <span className="text-xs font-black text-zinc-600 uppercase tracking-tight truncate max-w-[200px]">{app.qualification}</span>
+                         </div>
                       </div>
                    </div>
                 </div>
+   
+                {app.status === 'pending' && (
+                  <div className="flex flex-col sm:flex-row items-stretch gap-4 shrink-0">
+                     <button 
+                        onClick={() => handleApplication(app.email, "approve")}
+                        className="h-16 px-10 bg-zinc-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-xl shadow-zinc-200 active:scale-95 flex items-center justify-center gap-3 group/btn"
+                     >
+                        <UserCheck className="h-4 w-4 group-hover/btn:scale-110 transition-transform" />
+                        Verify Professional
+                     </button>
+                     <button 
+                        onClick={() => handleApplication(app.email, "reject")}
+                        className="h-16 px-10 border border-zinc-200 bg-white text-zinc-400 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-rose-50 hover:text-rose-600 hover:border-rose-100 transition-all active:scale-95 flex items-center justify-center gap-3"
+                     >
+                        <UserX className="h-4 w-4" />
+                        Decline
+                     </button>
+                  </div>
+                )}
              </div>
-
-             {app.status === 'pending' && (
-               <div className="flex items-center gap-3 shrink-0">
-                  <button onClick={() => handleApplication(app.email, "approve")} className="px-8 py-4 bg-[#6b21a8] text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-[#581c87] transition-all hover:shadow-lg active:scale-95">Verify & Approve</button>
-                  <button onClick={() => handleApplication(app.email, "reject")} className="px-8 py-4 border border-zinc-200 bg-white text-rose-600 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-rose-50 transition-all active:scale-95">Decline</button>
-               </div>
-             )}
           </div>
         ))}
       </div>
