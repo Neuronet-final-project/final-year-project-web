@@ -62,17 +62,30 @@ async function handleProxy(req: Request, { params }: { params: Promise<{ path: s
       return new NextResponse(null, { status: 204 });
     }
 
-    const data = await res.text();
-    let jsonData = {};
-    if (data) {
-      try {
-        jsonData = JSON.parse(data);
-      } catch {
-        jsonData = { detail: data };
-      }
-    }
+    const contentType = res.headers.get("Content-Type") || "";
     
-    return NextResponse.json(jsonData, { status: res.status });
+    if (contentType.includes("application/json")) {
+      const data = await res.text();
+      let jsonData = {};
+      if (data) {
+        try {
+          jsonData = JSON.parse(data);
+        } catch {
+          jsonData = { detail: data };
+        }
+      }
+      return NextResponse.json(jsonData, { status: res.status });
+    } else {
+      // Handle non-JSON responses (e.g., CSV, images, streams)
+      const blob = await res.blob();
+      return new NextResponse(blob, {
+        status: res.status,
+        headers: {
+          "Content-Type": contentType,
+          "Content-Disposition": res.headers.get("Content-Disposition") || "",
+        },
+      });
+    }
   } catch (err) {
     return NextResponse.json(
       { detail: "Backend temporarily unavailable. Please retry in a few seconds." },

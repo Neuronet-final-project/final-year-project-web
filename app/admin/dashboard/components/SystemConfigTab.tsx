@@ -7,10 +7,45 @@ export default function SystemConfigTab() {
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(true);
   const [isMaintenanceMode, setIsMaintenanceMode] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSave = () => {
-    setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 3000);
+  React.useEffect(() => {
+    fetchConfig();
+  }, []);
+
+  async function fetchConfig() {
+    try {
+      const res = await fetch('/api/proxy/backend/admin/settings');
+      if (res.ok) {
+        const data = await res.json();
+        setIsRegistrationOpen(data.public_registration_enabled);
+        setIsMaintenanceMode(data.maintenance_mode_enabled);
+      }
+    } catch (err) {
+      console.error("Failed to load system config");
+    }
+  }
+
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/proxy/backend/admin/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          public_registration_enabled: isRegistrationOpen,
+          maintenance_mode_enabled: isMaintenanceMode
+        })
+      });
+      if (res.ok) {
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 3000);
+      }
+    } catch (err) {
+      console.error("Failed to save system config");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const configs = [

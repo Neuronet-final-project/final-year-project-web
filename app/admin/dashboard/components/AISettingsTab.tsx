@@ -7,6 +7,47 @@ import { motion } from 'framer-motion';
 export default function AISettingsTab() {
   const [riskThreshold, setRiskThreshold] = useState(75);
   const [isAutoAlertEnabled, setIsAutoAlertEnabled] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  React.useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  async function fetchSettings() {
+    try {
+      const res = await fetch('/api/proxy/backend/admin/settings');
+      if (res.ok) {
+        const data = await res.json();
+        setRiskThreshold(data.risk_threshold);
+        setIsAutoAlertEnabled(data.auto_alert_enabled);
+      }
+    } catch (err) {
+      console.error("Failed to load AI settings");
+    }
+  }
+
+  async function handleSave() {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/proxy/backend/admin/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          risk_threshold: riskThreshold,
+          auto_alert_enabled: isAutoAlertEnabled
+        })
+      });
+      if (res.ok) {
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 3000);
+      }
+    } catch (err) {
+      console.error("Failed to save AI settings");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const promptTemplate = `Analyze the following journal entry for clinical risk...
 Context: Adolescent mental health support.
@@ -89,11 +130,20 @@ Output: JSON { risk_level: "high" | "medium" | "low", confidence: float }`;
           </div>
 
           <div className="mt-8 flex gap-3">
-             <button className="flex-1 h-12 bg-white text-zinc-900 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-zinc-200 transition-all flex items-center justify-center gap-2">
-                <Save className="h-4 w-4" />
-                Commit Changes
+             <button 
+               onClick={handleSave}
+               disabled={loading}
+               className={`flex-1 h-12 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${
+                 saveSuccess ? 'bg-emerald-500 text-white' : 'bg-white text-zinc-900 hover:bg-zinc-200'
+               }`}
+             >
+                {loading ? <div className="h-4 w-4 border-2 border-zinc-900/20 border-t-zinc-900 rounded-full animate-spin" /> : <Save className="h-4 w-4" />}
+                {saveSuccess ? "Settings Updated" : "Commit Changes"}
              </button>
-             <button className="h-12 w-12 bg-white/10 rounded-xl flex items-center justify-center hover:bg-white/20 transition-all">
+             <button 
+               onClick={fetchSettings}
+               className="h-12 w-12 bg-white/10 rounded-xl flex items-center justify-center hover:bg-white/20 transition-all"
+             >
                 <RotateCcw className="h-4 w-4" />
              </button>
           </div>

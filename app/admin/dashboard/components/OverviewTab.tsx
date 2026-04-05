@@ -42,8 +42,19 @@ export default function OverviewTab({ data, recentUsers }: OverviewProps) {
               <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest mt-1">Real-time registration feed</p>
             </div>
             <div className="flex gap-2">
-               <button className="flex h-10 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-xs font-bold text-zinc-500 transition-all hover:bg-zinc-50 active:scale-95">Export CSV</button>
-               <button className="flex h-10 items-center justify-center space-x-2 rounded-xl bg-zinc-900 px-4 text-xs font-bold text-white transition-all hover:bg-zinc-800 active:scale-95">
+               <button 
+                 onClick={() => window.open('/api/proxy/backend/admin/users/export', '_blank')}
+                 className="flex h-10 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-xs font-bold text-zinc-500 transition-all hover:bg-zinc-50 active:scale-95"
+               >
+                 Export CSV
+               </button>
+               <button 
+                 onClick={() => {
+                   const sidebar = document.querySelector('[data-tab="users"]') as HTMLElement;
+                   if (sidebar) sidebar.click();
+                 }}
+                 className="flex h-10 items-center justify-center space-x-2 rounded-xl bg-zinc-900 px-4 text-xs font-bold text-white transition-all hover:bg-zinc-800 active:scale-95"
+               >
                  <span>Add Entry</span>
                </button>
             </div>

@@ -77,6 +77,7 @@ export default function DashboardSidebar({ activeTab, setActiveTab, pendingApps,
                 {group.items.map((item) => (
                   <button
                     key={item.id}
+                    data-tab={item.id}
                     onClick={() => setActiveTab(item.id)}
                     className={`w-full flex items-center justify-between px-5 py-3.5 rounded-2xl transition-all duration-300 group ${
                       activeTab === item.id 
