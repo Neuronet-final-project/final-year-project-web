@@ -36,11 +36,15 @@ async function handleProxy(req: Request, { params }: { params: Promise<{ path: s
   const url = new URL(req.url);
   const backendUrl = `${baseUrl}/${pathString}${url.search}`;
 
+  const contentType = req.headers.get("Content-Type") || "";
+  const isMultipart = contentType.includes("multipart/form-data");
+
   const init: RequestInit = {
     method: req.method,
     headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": req.headers.get("Content-Type") || "application/json",
+      // For multipart, do NOT set Content-Type — the browser/fetch will set it with boundary
+      ...(!isMultipart ? { "Content-Type": contentType || "application/json" } : {}),
     },
   };
 
@@ -48,23 +52,29 @@ async function handleProxy(req: Request, { params }: { params: Promise<{ path: s
   (init as any).duplex = "half";
 
   if (req.method !== "GET" && req.method !== "HEAD") {
-    const bodyText = await req.text();
-    if (bodyText) {
-      init.body = bodyText;
+    if (isMultipart) {
+      // Forward the raw body for file uploads — pass through the FormData
+      const formData = await req.formData();
+      init.body = formData;
+    } else {
+      const bodyText = await req.text();
+      if (bodyText) {
+        init.body = bodyText;
+      }
     }
   }
 
   try {
-    const res = await fetchWithRetry(backendUrl, init as any, 20000, 1);
+    const res = await fetchWithRetry(backendUrl, init as any, 30000, 1);
     
     // If response is 204 No Content, we can't parse JSON
     if (res.status === 204) {
       return new NextResponse(null, { status: 204 });
     }
 
-    const contentType = res.headers.get("Content-Type") || "";
+    const resContentType = res.headers.get("Content-Type") || "";
     
-    if (contentType.includes("application/json")) {
+    if (resContentType.includes("application/json")) {
       const data = await res.text();
       let jsonData = {};
       if (data) {
@@ -81,7 +91,7 @@ async function handleProxy(req: Request, { params }: { params: Promise<{ path: s
       return new NextResponse(blob, {
         status: res.status,
         headers: {
-          "Content-Type": contentType,
+          "Content-Type": resContentType,
           "Content-Disposition": res.headers.get("Content-Disposition") || "",
         },
       });
