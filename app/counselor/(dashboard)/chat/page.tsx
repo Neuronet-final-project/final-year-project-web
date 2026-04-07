@@ -172,28 +172,55 @@ export default function CounselorChatPage() {
 
   // ---- Initiate contact ----
   async function handleInitiateContact(adolescentId: string, type: "counselor_adolescent" | "counselor_guardian") {
+    // 1. First Check Alert Status (Clinical workflow requirement)
+    try {
+      const alertRes = await fetch(`/api/proxy/backend/alerts/adolescent/${adolescentId}/summary`);
+      if (alertRes.ok) {
+        const alertData = await alertRes.json();
+        // If stable (no critical risk detected), show guidance message
+        if (!alertData.summary.toLowerCase().includes("critical") && !alertData.summary.toLowerCase().includes("active alert")) {
+          const proceed = confirm(`${alertData.summary}\n\nSince this adolescent is currently stable, initiating a chat thread may not be clinically necessary at this moment per SRS/SDD protocols. \n\nDo you still wish to initiate a check-in?`);
+          if (!proceed) return;
+        }
+      }
+    } catch (e) {
+      console.warn("Could not fetch alert summary for pre-check", e);
+    }
+
+    // 2. Check for existing conversation
     const existing = conversations.find(c => {
       const pList = c.participants || c.participant_emails || [];
-      return c.conversation_type === type && (c.adolescent_id === adolescentId || pList.some(e => e.includes(adolescentId)));
+      const matchesType = c.conversation_type === type;
+      const matchesAdol = c.adolescent_id === adolescentId || pList.some(e => e.includes(adolescentId));
+      return matchesType && matchesAdol;
     });
+
     if (existing) { 
       setActiveConvId(existing.conversation_id || existing._id || existing.id || null); 
       window.dispatchEvent(new CustomEvent('close-counselor-sidebar'));
       return; 
     }
+
+    // 3. Initiate new conversation
     try {
       const res = await fetch("/api/proxy/backend/messaging/conversations", {
-        method: "POST", headers: { "Content-Type": "application/json" },
+        method: "POST", 
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ conversation_type: type, adolescent_id: adolescentId }),
       });
+
       if (res.ok) { 
         const nc = await res.json(); 
         setConversations(prev => [...prev, nc]); 
         setActiveConvId(nc.conversation_id || nc._id || nc.id); 
         window.dispatchEvent(new CustomEvent('close-counselor-sidebar'));
+      } else {
+        const err = await res.json();
+        alert(`Failed to establish communication: ${err.detail || "Route not found"}`);
       }
-      else alert("Failed to initiate thread.");
-    } catch { alert("Network error."); }
+    } catch { 
+      alert("Network error: The clinical thread could not be established."); 
+    }
   }
 
   // ---- Initiate call ----
