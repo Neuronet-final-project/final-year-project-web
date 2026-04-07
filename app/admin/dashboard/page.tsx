@@ -140,7 +140,6 @@ export default function AdminDashboardPage() {
     });
     if (res.ok) {
       setAssignResult({ ok: true, msg: "Case assigned successfully." });
-      setCEmail(""); setAEmail("");
       fetchDashboard();
     } else {
       const d = await res.json().catch(() => ({}));
@@ -218,6 +217,7 @@ export default function AdminDashboardPage() {
             <AssignmentsTab 
               assignLoading={assignLoading}
               assignResult={assignResult}
+              setAssignResult={setAssignResult}
               handleAssign={handleAssign}
             />
           )}

@@ -6,11 +6,12 @@ import { Send, CheckCircle, AlertTriangle, Users, Bot, Sparkles, Activity, Searc
 interface AssignmentsProps {
   assignLoading: boolean;
   assignResult: any;
+  setAssignResult: (val: any) => void;
   handleAssign: (cEmail: string, aEmail: string) => void;
 }
 
 export default function AssignmentsTab({ 
-  assignLoading, assignResult, handleAssign 
+  assignLoading, assignResult, setAssignResult, handleAssign 
 }: AssignmentsProps) {
   const [context, setContext] = useState<any>(null);
   const [ctxLoading, setCtxLoading] = useState(true);
@@ -23,6 +24,17 @@ export default function AssignmentsTab({
     fetchContext();
   }, []);
 
+  useEffect(() => {
+    if (assignResult?.ok) {
+      const timer = setTimeout(() => {
+        setSelectedAdolescent(null);
+        setRecommendations([]);
+        fetchContext();
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [assignResult]);
+
   async function fetchContext() {
     setCtxLoading(true);
     try {
@@ -34,6 +46,7 @@ export default function AssignmentsTab({
 
   async function selectAdolescent(adol: any) {
     setSelectedAdolescent(adol);
+    setAssignResult(null);
     setRecLoading(true);
     setRecommendations([]);
     try {
@@ -182,7 +195,7 @@ export default function AssignmentsTab({
                       className="shrink-0 h-14 bg-indigo-600 text-white rounded-2xl px-8 flex items-center justify-center gap-3 text-xs font-black uppercase tracking-widest shadow-xl shadow-indigo-600/20 hover:bg-indigo-500 transition-all active:scale-95 disabled:opacity-50 w-full md:w-auto"
                     >
                       {assignLoading ? <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Send className="h-4 w-4" />}
-                      Assign Core
+                      Assign Counselor
                     </button>
                   </div>
                 </div>
