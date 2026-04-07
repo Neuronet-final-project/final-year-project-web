@@ -33,7 +33,7 @@ export function Navbar() {
         </Link>
 
         {isHome && (
-          <nav className="hidden items-center gap-8 text-sm font-medium text-zinc-600 md:flex">
+          <nav className="hidden items-center gap-8 text-base font-bold text-zinc-600 md:flex">
             <a
               href="#home"
               className="transition-colors hover:text-[#4F46E5]"
@@ -45,6 +45,12 @@ export function Navbar() {
               className="transition-colors hover:text-[#4F46E5]"
             >
               Features
+            </a>
+            <a
+              href="#research"
+              className="transition-colors hover:text-[#4F46E5]"
+            >
+              Research
             </a>
             <a
               href="#how-it-works"
@@ -88,21 +94,28 @@ export function Navbar() {
                 <a
                   href="#home"
                   onClick={() => setIsOpen(false)}
-                  className="text-sm font-medium text-zinc-600 transition-colors hover:text-[#4F46E5]"
+                  className="text-base font-bold text-zinc-600 transition-colors hover:text-[#4F46E5]"
                 >
                   Home
                 </a>
                 <a
                   href="#features"
                   onClick={() => setIsOpen(false)}
-                  className="text-sm font-medium text-zinc-600 transition-colors hover:text-[#4F46E5]"
+                  className="text-base font-bold text-zinc-600 transition-colors hover:text-[#4F46E5]"
                 >
                   Features
                 </a>
                 <a
+                  href="#research"
+                  onClick={() => setIsOpen(false)}
+                  className="text-base font-bold text-zinc-600 transition-colors hover:text-[#4F46E5]"
+                >
+                  Research
+                </a>
+                <a
                   href="#how-it-works"
                   onClick={() => setIsOpen(false)}
-                  className="text-sm font-medium text-zinc-600 transition-colors hover:text-[#4F46E5]"
+                  className="text-base font-bold text-zinc-600 transition-colors hover:text-[#4F46E5]"
                 >
                   How It Works
                 </a>
