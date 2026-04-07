@@ -132,6 +132,13 @@ export default function AssignmentsTab({
             </div>
           )}
 
+          {selectedAdolescent && !recLoading && recommendations.length === 0 && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-zinc-500">
+               <AlertTriangle className="h-12 w-12 mb-6 opacity-20" />
+               <p className="text-xs font-bold uppercase tracking-[0.2em] text-center w-2/3">No active counselors available to map to this user.<br/>Ensure counselors are registered and active.</p>
+            </div>
+          )}
+
           {selectedAdolescent && !recLoading && recommendations.length > 0 && (
             <div className="space-y-6">
               {assignResult && (
