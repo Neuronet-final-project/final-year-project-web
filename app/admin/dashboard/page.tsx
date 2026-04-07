@@ -14,12 +14,13 @@ import AssignmentsTab from "./components/AssignmentsTab";
 import AuditVaultTab from "./components/AuditVaultTab";
 import AISettingsTab from "./components/AISettingsTab";
 import SystemConfigTab from "./components/SystemConfigTab";
+import ProfileTab from "./components/ProfileTab";
 
 type AuthMeResponse =
   | { authenticated: false }
   | { authenticated: true; email: string; role: string; _id: string };
 
-type TabNode = "overview" | "users" | "applications" | "assign" | "audit" | "config" | "ai";
+type TabNode = "overview" | "users" | "applications" | "assign" | "audit" | "config" | "ai" | "profile";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -175,6 +176,7 @@ export default function AdminDashboardPage() {
     audit: "Audit Vault (Ledger)",
     config: "System Configuration",
     ai: "AI Model Settings",
+    profile: "System Administrator Profile",
   };
 
   return (
@@ -189,7 +191,7 @@ export default function AdminDashboardPage() {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <DashboardHeader 
           title={tabTitles[activeTab] || "Admin"} 
-          adminEmail={me.email} 
+          onProfileClick={() => setActiveTab("profile")}
         />
 
         <main className="flex-1 overflow-y-auto p-10">
@@ -233,9 +235,9 @@ export default function AdminDashboardPage() {
               loadAuditLogs={loadAuditLogs}
             />
           )}
-
           {activeTab === "config" && <SystemConfigTab />}
           {activeTab === "ai" && <AISettingsTab />}
+          {activeTab === "profile" && <ProfileTab />}
         </main>
       </div>
     </div>

@@ -28,7 +28,7 @@ export default function UserManagementTab({
             value={userSearch}
             onChange={e => setUserSearch(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && loadUsers()}
-            className="w-full bg-zinc-100/50 border border-zinc-200/50 rounded-2xl px-12 py-4 text-[13px] font-bold outline-none focus:ring-4 focus:ring-indigo-600/10 focus:bg-white focus:border-indigo-600/20 transition-all" 
+            className="w-full bg-zinc-100/50 border border-zinc-200/50 rounded-2xl px-12 py-4 text-[13px] font-bold text-zinc-900 outline-none focus:ring-4 focus:ring-indigo-600/10 focus:bg-white focus:border-indigo-600/20 transition-all" 
           />
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 group-focus-within:text-indigo-600 transition-colors" />
         </div>
