@@ -14,7 +14,7 @@ import {
   Bell,
   Users
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const navItems = [
   { name: "Overview", icon: LayoutDashboard, href: "/counselor/dashboard" },
@@ -28,6 +28,12 @@ export default function CounselorSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    const handleCloseSidebar = () => setCollapsed(true);
+    window.addEventListener("close-counselor-sidebar", handleCloseSidebar as EventListener);
+    return () => window.removeEventListener("close-counselor-sidebar", handleCloseSidebar as EventListener);
+  }, []);
 
   const handleLogout = async () => {
     try {

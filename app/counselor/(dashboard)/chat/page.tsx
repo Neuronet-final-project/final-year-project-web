@@ -15,7 +15,7 @@ type Conversation = {
   participant_emails?: string[]; participants?: string[]; created_at: string;
 };
 type AssignedAdolescent = { adolescent_id: string; adolescent_email: string; full_name?: string; guardian_email?: string; guardian_id?: string; matched_at: string; status: string };
-type Message = { _id?: string; message_id?: string; conversation_id: string; sender_email: string; sender_role: string; content: string; message_type?: string; attachment_url?: string | null; created_at: string };
+type Message = { _id?: string; message_id?: string; conversation_id: string; sender_email: string; sender_role: string; content: string; message_type?: string; attachment_url?: string | null; created_at: string; is_edited?: boolean; };
 type IncomingCall = { call_id: string; conversation_id: string; call_type: string; caller_email: string; callee_email: string; status: string };
 
 export default function CounselorChatPage() {
@@ -35,8 +35,9 @@ export default function CounselorChatPage() {
   const [previewFile, setPreviewFile] = useState<File | null>(null);
   const [showAttachMenu, setShowAttachMenu] = useState(false);
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
-  const [callState, setCallState] = useState<{ callId: string; callType: "voice" | "video"; peerEmail: string; isIncoming: boolean } | null>(null);
+  const [callState, setCallState] = useState<{ callId: string; callType: "voice" | "video"; peerEmail: string; peerName: string; isIncoming: boolean } | null>(null);
   const [searchFilter, setSearchFilter] = useState("");
+  const [historyLimit, setHistoryLimit] = useState(15);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const callPollRef = useRef<NodeJS.Timeout>(undefined);
@@ -72,7 +73,7 @@ export default function CounselorChatPage() {
           const data = await r.json();
           if (data.call) {
             const c = data.call as IncomingCall;
-            setCallState({ callId: c.call_id, callType: c.call_type as "voice" | "video", peerEmail: c.caller_email, isIncoming: true });
+            setCallState({ callId: c.call_id, callType: c.call_type as "voice" | "video", peerEmail: c.caller_email, peerName: c.caller_email, isIncoming: true });
           }
         }
       } catch {}
@@ -123,6 +124,34 @@ export default function CounselorChatPage() {
     } finally { setSending(false); }
   }
 
+  // ---- Edit message ----
+  async function handleEditMessage(messageId: string, newContent: string) {
+    if (!activeConvId) return;
+    try {
+      const res = await fetch(`/api/proxy/backend/messaging/conversations/${activeConvId}/messages/${messageId}`, {
+        method: "PUT", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: newContent }),
+      });
+      if (res.ok) {
+        setMessages(prev => prev.map(m => m._id === messageId || m.message_id === messageId ? { ...m, content: newContent, is_edited: true } : m));
+      } else alert("Failed to edit message");
+    } catch { alert("Network error"); }
+  }
+
+  // ---- Delete message ----
+  async function handleDeleteMessage(messageId: string) {
+    if (!activeConvId) return;
+    if (!confirm("Delete this message?")) return;
+    try {
+      const res = await fetch(`/api/proxy/backend/messaging/conversations/${activeConvId}/messages/${messageId}`, {
+        method: "DELETE",
+      });
+      if (res.ok || res.status === 204) {
+        setMessages(prev => prev.filter(m => m._id !== messageId && m.message_id !== messageId));
+      } else alert("Failed to delete message");
+    } catch { alert("Network error"); }
+  }
+
   // ---- Upload & send media ----
   async function uploadAndSend(file: File | Blob, msgType: string) {
     if (!activeConvId) return;
@@ -147,13 +176,22 @@ export default function CounselorChatPage() {
       const pList = c.participants || c.participant_emails || [];
       return c.conversation_type === type && (c.adolescent_id === adolescentId || pList.some(e => e.includes(adolescentId)));
     });
-    if (existing) { setActiveConvId(existing.conversation_id || existing._id || existing.id || null); return; }
+    if (existing) { 
+      setActiveConvId(existing.conversation_id || existing._id || existing.id || null); 
+      window.dispatchEvent(new CustomEvent('close-counselor-sidebar'));
+      return; 
+    }
     try {
       const res = await fetch("/api/proxy/backend/messaging/conversations", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ conversation_type: type, adolescent_id: adolescentId }),
       });
-      if (res.ok) { const nc = await res.json(); setConversations(prev => [...prev, nc]); setActiveConvId(nc.conversation_id || nc._id || nc.id); }
+      if (res.ok) { 
+        const nc = await res.json(); 
+        setConversations(prev => [...prev, nc]); 
+        setActiveConvId(nc.conversation_id || nc._id || nc.id); 
+        window.dispatchEvent(new CustomEvent('close-counselor-sidebar'));
+      }
       else alert("Failed to initiate thread.");
     } catch { alert("Network error."); }
   }
@@ -168,7 +206,11 @@ export default function CounselorChatPage() {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ conversation_id: activeConvId, call_type: type }),
       });
-      if (res.ok) { const d = await res.json(); setCallState({ callId: d.call_id, callType: type, peerEmail: peer, isIncoming: false }); }
+      if (res.ok) { 
+        const d = await res.json(); 
+        const peerName = getConvName(activeConv);
+        setCallState({ callId: d.call_id, callType: type, peerEmail: peer, peerName: peerName, isIncoming: false }); 
+      }
       else alert("Failed to start call");
     } catch { alert("Network error"); }
   }
@@ -209,9 +251,9 @@ export default function CounselorChatPage() {
   );
 
   return (
-    <div className="flex h-full flex-col relative overflow-hidden animate-in fade-in duration-700">
+    <div className="absolute inset-0 flex flex-col overflow-hidden animate-in fade-in duration-700">
       {/* CALL MODAL */}
-      {callState && <CallModal callId={callState.callId} callType={callState.callType} peerEmail={callState.peerEmail} isIncoming={callState.isIncoming} onEnd={() => setCallState(null)} />}
+      {callState && <CallModal callId={callState.callId} callType={callState.callType} peerEmail={callState.peerEmail} peerName={callState.peerName} isIncoming={callState.isIncoming} onEnd={() => setCallState(null)} />}
       {/* LIGHTBOX */}
       {lightboxUrl && (
         <div className="fixed inset-0 z-[90] bg-black/80 backdrop-blur-lg flex items-center justify-center p-6 cursor-pointer" onClick={() => setLightboxUrl(null)}>
@@ -220,7 +262,7 @@ export default function CounselorChatPage() {
       )}
       <main className="relative z-10 flex flex-1 overflow-hidden p-4 md:p-6 gap-6">
         {/* SIDEBAR */}
-        <div className={`w-full md:w-80 shrink-0 flex flex-col rounded-[2rem] border border-white bg-white/70 backdrop-blur-xl shadow-lg overflow-hidden transition-all duration-300 ring-1 ring-zinc-200/50 ${activeConvId ? "hidden md:flex" : "flex"}`}>
+        <div className={`w-full shrink-0 flex flex-col rounded-[2rem] border border-white bg-white/70 backdrop-blur-xl shadow-lg overflow-hidden transition-all duration-300 ring-1 ring-zinc-200/50 ${activeConvId ? "hidden md:flex md:w-80" : "flex max-w-2xl mx-auto"}`}>
           <div className="p-5 border-b border-zinc-100/50 bg-white/40">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-black tracking-widest text-zinc-400 uppercase">Contacts</h2>
@@ -288,7 +330,7 @@ export default function CounselorChatPage() {
         </div>
 
         {/* CHAT AREA */}
-        <div className={`flex-1 flex flex-col rounded-[2.5rem] border border-white bg-white/80 backdrop-blur-xl shadow-xl overflow-hidden transition-all duration-500 ring-1 ring-zinc-200/50 ${!activeConvId ? "hidden md:flex" : "flex"}`}>
+        <div className={`flex-1 flex flex-col rounded-[2.5rem] border border-white bg-white/80 backdrop-blur-xl shadow-xl overflow-hidden transition-all duration-500 ring-1 ring-zinc-200/50 ${!activeConvId ? "hidden" : "flex"}`}>
           {!activeConvId ? (
             <div className="flex flex-1 flex-col items-center justify-center text-center p-12">
               <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-[2.5rem] bg-indigo-50 text-indigo-600 shadow-inner">
@@ -350,15 +392,30 @@ export default function CounselorChatPage() {
                     <p className="text-xs font-bold uppercase tracking-widest text-zinc-400">Start the conversation</p>
                   </div>
                 ) : (
-                  messages.map((msg, idx) => {
-                    const showDate = idx === 0 || dateSeparator(msg.created_at) !== dateSeparator(messages[idx - 1].created_at);
-                    return (
-                      <div key={msg._id || msg.message_id || idx}>
-                        {showDate && <div className="flex items-center gap-3 my-4"><div className="flex-1 h-px bg-zinc-200/60" /><span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{dateSeparator(msg.created_at)}</span><div className="flex-1 h-px bg-zinc-200/60" /></div>}
-                        <MessageBubble msg={msg} isMe={me.authenticated && msg.sender_email === me.email} onImageClick={setLightboxUrl} />
+                  <>
+                    {messages.length > historyLimit && (
+                      <div className="flex justify-center mb-6">
+                        <button onClick={() => setHistoryLimit(prev => prev + 20)} className="px-5 py-2 text-xs font-bold text-indigo-600 bg-indigo-50/80 hover:bg-indigo-100 rounded-full transition-colors border border-indigo-100">
+                          Load Older Messages
+                        </button>
                       </div>
-                    );
-                  })
+                    )}
+                    {messages.slice(-historyLimit).map((msg, idx, arr) => {
+                      const showDate = idx === 0 || dateSeparator(msg.created_at) !== dateSeparator(arr[idx - 1].created_at);
+                      return (
+                        <div key={msg._id || msg.message_id || idx}>
+                          {showDate && <div className="flex items-center gap-3 my-4"><div className="flex-1 h-px bg-zinc-200/60" /><span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{dateSeparator(msg.created_at)}</span><div className="flex-1 h-px bg-zinc-200/60" /></div>}
+                          <MessageBubble 
+                            msg={msg} 
+                            isMe={me.authenticated && msg.sender_email === me.email} 
+                            onImageClick={setLightboxUrl} 
+                            onEdit={handleEditMessage}
+                            onDelete={handleDeleteMessage}
+                          />
+                        </div>
+                      );
+                    })}
+                  </>
                 )}
                 <div ref={messagesEndRef} />
               </div>

@@ -2,13 +2,13 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 
 type Props = {
-  callId: string; callType: "voice" | "video"; peerEmail: string;
+  callId: string; callType: "voice" | "video"; peerEmail: string; peerName: string;
   isIncoming: boolean; onEnd: () => void;
 };
 
 const ICE_SERVERS = [{ urls: "stun:stun.l.google.com:19302" }, { urls: "stun:stun1.l.google.com:19302" }];
 
-export default function CallModal({ callId, callType, peerEmail, isIncoming, onEnd }: Props) {
+export default function CallModal({ callId, callType, peerEmail, peerName, isIncoming, onEnd }: Props) {
   const [status, setStatus] = useState<"ringing" | "connecting" | "connected" | "ended">(isIncoming ? "ringing" : "connecting");
   const [elapsed, setElapsed] = useState(0);
   const [muted, setMuted] = useState(false);
@@ -34,7 +34,11 @@ export default function CallModal({ callId, callType, peerEmail, isIncoming, onE
     setStatus("ended");
   }, []);
 
-  const endCall = useCallback(async () => { await api(`/${callId}/end`, "POST"); cleanup(); setTimeout(onEnd, 1500); }, [callId, api, cleanup, onEnd]);
+  const endCall = useCallback(async () => {
+    try { await api(`/${callId}/end`, "POST"); } catch(e) {}
+    cleanup(); 
+    setTimeout(onEnd, 1500); 
+  }, [callId, api, cleanup, onEnd]);
 
   async function setupMedia() {
     const constraints = callType === "video" ? { audio: true, video: true } : { audio: true };
@@ -127,14 +131,14 @@ export default function CallModal({ callId, callType, peerEmail, isIncoming, onE
         {(status === "ringing" || status === "connecting" || callType === "voice") && (
           <>
             <div className="h-24 w-24 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-3xl font-black mb-2">
-              {peerEmail.substring(0, 2).toUpperCase()}
+              {(peerName || peerEmail).substring(0, 2).toUpperCase()}
             </div>
-            <h3 className="text-xl font-bold">{peerEmail}</h3>
+            <h3 className="text-xl font-bold">{peerName || peerEmail}</h3>
           </>
         )}
         <p className="text-sm font-medium text-white/60">
-          {status === "ringing" && (isIncoming ? "Incoming call..." : "Ringing...")}
-          {status === "connecting" && "Connecting..."}
+          {status === "ringing" && (isIncoming ? "Incoming call..." : "Calling...")}
+          {status === "connecting" && "Calling..."}
           {status === "connected" && `${mm}:${ss}`}
           {status === "ended" && "Call ended"}
         </p>
