@@ -42,11 +42,13 @@ export default function MessageBubble({ msg, isMe, onImageClick, onEdit, onDelet
   return (
     <div className={`flex flex-col group ${isMe ? "items-end" : "items-start"}`}>
       <div className="flex items-center gap-2">
-        {isMe && !isEditing && type === "text" && (
+        {isMe && !isEditing && (
           <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-            <button onClick={() => setIsEditing(true)} className="p-1.5 text-zinc-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors" title="Edit">
-              <Edit2 size={12} strokeWidth={2.5} />
-            </button>
+            {type === "text" && (
+              <button onClick={() => setIsEditing(true)} className="p-1.5 text-zinc-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors" title="Edit">
+                <Edit2 size={12} strokeWidth={2.5} />
+              </button>
+            )}
             <button onClick={() => onDelete?.(msg._id || msg.message_id || "")} className="p-1.5 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Delete">
               <Trash2 size={12} strokeWidth={2.5} />
             </button>
