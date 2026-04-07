@@ -2,6 +2,8 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
+import { AlertCircle } from "lucide-react";
 import VoiceRecorder from "../../../../components/chat/VoiceRecorder";
 import MediaPreview from "../../../../components/chat/MediaPreview";
 import MessageBubble from "../../../../components/chat/MessageBubble";
@@ -134,8 +136,9 @@ export default function CounselorChatPage() {
       });
       if (res.ok) {
         setMessages(prev => prev.map(m => m._id === messageId || m.message_id === messageId ? { ...m, content: newContent, is_edited: true } : m));
-      } else alert("Failed to edit message");
-    } catch { alert("Network error"); }
+        toast.success("Message updated");
+      } else toast.error("Failed to edit message");
+    } catch { toast.error("Network error"); }
   }
 
   // ---- Delete message ----
@@ -148,8 +151,9 @@ export default function CounselorChatPage() {
       });
       if (res.ok || res.status === 204) {
         setMessages(prev => prev.filter(m => m._id !== messageId && m.message_id !== messageId));
-      } else alert("Failed to delete message");
-    } catch { alert("Network error"); }
+        toast.success("Message deleted");
+      } else toast.error("Failed to delete message");
+    } catch { toast.error("Network error"); }
   }
 
   // ---- Upload & send media ----
@@ -160,7 +164,7 @@ export default function CounselorChatPage() {
       const fd = new FormData();
       fd.append("file", file);
       const upRes = await fetch("/api/proxy/backend/messaging/upload", { method: "POST", body: fd });
-      if (!upRes.ok) { alert("Upload failed"); return; }
+      if (!upRes.ok) { toast.error("Upload failed"); return; }
       const { url } = await upRes.json();
       const msgRes = await fetch(`/api/proxy/backend/messaging/conversations/${activeConvId}/messages`, {
         method: "POST", headers: { "Content-Type": "application/json" },
@@ -179,14 +183,50 @@ export default function CounselorChatPage() {
         const alertData = await alertRes.json();
         // If stable (no critical risk detected), show guidance message
         if (!alertData.summary.toLowerCase().includes("critical") && !alertData.summary.toLowerCase().includes("active alert")) {
-          const proceed = confirm(`${alertData.summary}\n\nSince this adolescent is currently stable, initiating a chat thread may not be clinically necessary at this moment per SRS/SDD protocols. \n\nDo you still wish to initiate a check-in?`);
-          if (!proceed) return;
+          toast((t) => (
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-2 text-zinc-100">
+                <AlertCircle className="w-5 h-5 text-yellow-500" />
+                <span className="font-semibold text-sm">Clinical Stability Guidance</span>
+              </div>
+              <p className="text-zinc-400 text-xs leading-relaxed">
+                {alertData.summary}
+                <br /><br />
+                Since this adolescent is currently stable, initiating a chat thread may not be clinically necessary at this moment.
+              </p>
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => {
+                    toast.dismiss(t.id);
+                  }}
+                  className="px-3 py-1 text-xs font-medium bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    toast.dismiss(t.id);
+                    proceedWithInitiation(adolescentId, type);
+                  }}
+                  className="px-3 py-1 text-xs font-medium bg-purple-600 hover:bg-purple-700 text-white rounded-md shadow-lg transition-colors"
+                >
+                  Initiate Anyway
+                </button>
+              </div>
+            </div>
+          ), { duration: 6000, position: "top-center" });
+          return;
         }
       }
     } catch (e) {
       console.warn("Could not fetch alert summary for pre-check", e);
     }
 
+    // Default: proceed immediately if alerts found or fetch failed
+    proceedWithInitiation(adolescentId, type);
+  }
+
+  async function proceedWithInitiation(adolescentId: string, type: "counselor_adolescent" | "counselor_guardian") {
     // 2. Check for existing conversation
     const existing = conversations.find(c => {
       const pList = c.participants || c.participant_emails || [];
@@ -201,6 +241,8 @@ export default function CounselorChatPage() {
       return; 
     }
 
+    const toastId = toast.loading("Establishing clinical thread...");
+
     // 3. Initiate new conversation
     try {
       const res = await fetch("/api/proxy/backend/messaging/conversations", {
@@ -214,14 +256,16 @@ export default function CounselorChatPage() {
         setConversations(prev => [...prev, nc]); 
         setActiveConvId(nc.conversation_id || nc._id || nc.id); 
         window.dispatchEvent(new CustomEvent('close-counselor-sidebar'));
+        toast.success("Thread established successfully", { id: toastId });
       } else {
         const err = await res.json();
-        alert(`Failed to establish communication: ${err.detail || "Route not found"}`);
+        toast.error(`Communication Error: ${err.detail || "Account profile not found"}`, { id: toastId });
       }
     } catch { 
-      alert("Network error: The clinical thread could not be established."); 
+      toast.error("Network Error: Could not reach the clinical gateway.", { id: toastId });
     }
   }
+
 
   // ---- Initiate call ----
   async function startCall(type: "voice" | "video") {
@@ -238,8 +282,8 @@ export default function CounselorChatPage() {
         const peerName = getConvName(activeConv);
         setCallState({ callId: d.call_id, callType: type, peerEmail: peer, peerName: peerName, isIncoming: false }); 
       }
-      else alert("Failed to start call");
-    } catch { alert("Network error"); }
+      else toast.error("Failed to start call");
+    } catch { toast.error("Network error"); }
   }
 
   function getConvName(conv: Conversation) {

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 import { Bell, AlertTriangle, ShieldCheck, Search, Filter } from "lucide-react";
 
 type AuthMeResponse =
@@ -61,17 +62,19 @@ export default function CounselorAlertsPage() {
   }, [router]);
 
   const handleDismiss = async (alertId: string) => {
+    const tid = toast.loading("Dismissing behavioral alert...");
     try {
       const res = await fetch(`/api/proxy/backend/alerts/resolve/${alertId}`, {
         method: "PUT"
       });
       if (res.ok) {
         setAlerts(prev => prev.filter(a => a._id !== alertId));
+        toast.success("Alert resolved and archived", { id: tid });
       } else {
-        alert("Failed to resolve alert.");
+        toast.error("Failed to resolve clinical alert.", { id: tid });
       }
     } catch (e) {
-      alert("Network error.");
+      toast.error("Network error.", { id: tid });
     }
   };
 

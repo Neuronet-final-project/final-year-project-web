@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 import { LayoutDashboard } from "lucide-react";
 
 // Modular Components
@@ -114,36 +115,61 @@ export default function AdminDashboardPage() {
   }
 
   async function handleToggleUserStatus(email: string, currentStatus: boolean) {
-    const res = await fetch(`/api/proxy/backend/admin/users/${encodeURIComponent(email)}/status`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ is_active: !currentStatus })
-    });
-    if (res.ok) loadUsers();
+    const tid = toast.loading(`${currentStatus ? "Deactivating" : "Activating"} account...`);
+    try {
+      const res = await fetch(`/api/proxy/backend/admin/users/${encodeURIComponent(email)}/status`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ is_active: !currentStatus })
+      });
+      if (res.ok) {
+        toast.success(`User ${currentStatus ? "deactivated" : "activated"} successfully`, { id: tid });
+        loadUsers();
+      } else {
+        toast.error("Failed to update user status", { id: tid });
+      }
+    } catch {
+      toast.error("Network error updating status", { id: tid });
+    }
   }
 
   async function handleApplication(email: string, action: "approve" | "reject") {
-    const res = await fetch(`/api/proxy/backend/counselor/${action}/${encodeURIComponent(email)}`, { method: "POST" });
-    if (res.ok) {
-      loadApplications();
-      fetchDashboard();
+    const tid = toast.loading(`${action === "approve" ? "Approving" : "Rejecting"} counselor...`);
+    try {
+      const res = await fetch(`/api/proxy/backend/counselor/${action}/${encodeURIComponent(email)}`, { method: "POST" });
+      if (res.ok) {
+        toast.success(`Application ${action}d successfully`, { id: tid });
+        loadApplications();
+        fetchDashboard();
+      } else {
+        toast.error(`Failed to ${action} application`, { id: tid });
+      }
+    } catch {
+      toast.error("Network error processing application", { id: tid });
     }
   }
 
   async function handleAssign(counselorEmail: string, adolescentEmail: string) {
     setAssignLoading(true);
     setAssignResult(null);
-    const res = await fetch("/api/proxy/backend/counselor/assign", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ counselor_email: counselorEmail, adolescent_email: adolescentEmail }),
-    });
-    if (res.ok) {
-      setAssignResult({ ok: true, msg: "Case assigned successfully." });
-      fetchDashboard();
-    } else {
-      const d = await res.json().catch(() => ({}));
-      setAssignResult({ ok: false, msg: d?.detail || "Assignment failed." });
+    const tid = toast.loading("Executing relational mapping...");
+    try {
+      const res = await fetch("/api/proxy/backend/counselor/assign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ counselor_email: counselorEmail, adolescent_email: adolescentEmail }),
+      });
+      if (res.ok) {
+        setAssignResult({ ok: true, msg: "Case assigned successfully." });
+        toast.success("Assignment established successfully", { id: tid });
+        fetchDashboard();
+      } else {
+        const d = await res.json().catch(() => ({}));
+        setAssignResult({ ok: false, msg: d?.detail || "Assignment failed." });
+        toast.error(d?.detail || "Structural assignment failed", { id: tid });
+      }
+    } catch {
+      toast.error("Network error during assignment", { id: tid });
     }
     setAssignLoading(false);
   }

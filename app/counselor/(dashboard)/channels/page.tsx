@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 import Link from "next/link";
 
 type AuthMeResponse =
@@ -79,8 +80,7 @@ export default function CounselorChannelsPage() {
       });
       if (res.ok) {
         const result = await res.json();
-        // Assuming backend returns {"channel_id": "..."} or {"message": "...", "channel": {...}}
-        // Refresh the channels list to be safe
+        toast.success("Topic proposed and initialized successfully!");
         const chRes = await fetch("/api/proxy/backend/channels/me");
         if (chRes.ok) {
           const data = await chRes.json();
@@ -90,10 +90,11 @@ export default function CounselorChannelsPage() {
         setNewName("");
         setNewDesc("");
       } else {
-        alert("Failed to create topic.");
+        const err = await res.json();
+        toast.error(`Protocol Error: ${err.detail || "Unauthorized allocation"}`);
       }
     } catch (err) {
-      alert("Network error.");
+      toast.error("Network Error: Could not reach the coordination hub.");
     } finally {
       setCreating(false);
     }
