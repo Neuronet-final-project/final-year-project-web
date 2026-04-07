@@ -37,8 +37,7 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
   const endCall = useCallback(() => {
     api(`/${callId}/end`, "POST").catch(() => {});
     cleanup(); 
-    setTimeout(onEnd, 1500); 
-  }, [callId, api, cleanup, onEnd]);
+  }, [callId, api, cleanup]);
 
   async function setupMedia() {
     const constraints = callType === "video" ? { audio: true, video: true } : { audio: true };
@@ -47,7 +46,11 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
       localStream.current = stream;
       if (localVideo.current) localVideo.current.srcObject = stream;
       return stream;
-    } catch { cleanup(); onEnd(); return null; }
+    } catch (e) { 
+      console.error("Media access denied:", e);
+      cleanup(); 
+      return null; 
+    }
   }
 
   async function createPC(stream: MediaStream) {
@@ -68,7 +71,7 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
 
   async function startAsOffer() {
     const stream = await setupMedia();
-    if (!stream) return;
+    if (!stream) { setStatus("ended"); return; }
     const p = await createPC(stream);
     const offer = await p.createOffer();
     await p.setLocalDescription(offer);
@@ -80,7 +83,7 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
     setStatus("connecting");
     await api(`/${callId}/answer`, "POST");
     const stream = await setupMedia();
-    if (!stream) return;
+    if (!stream) { setStatus("ended"); return; }
     const p = await createPC(stream);
     const callData = await api(`/${callId}`);
     const offerSig = callData?.signals?.find((s: any) => s.type === "offer");
@@ -97,7 +100,10 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
     pollRef.current = setInterval(async () => {
       const data = await api(`/${callId}`);
       if (!data) return;
-      if (data.status === "ended" || data.status === "rejected" || data.status === "missed") { cleanup(); setTimeout(onEnd, 1500); return; }
+      if (data.status === "ended" || data.status === "rejected" || data.status === "missed") { 
+        cleanup(); 
+        return; 
+      }
       for (const sig of data.signals || []) {
         if (!pc.current) continue;
         if (sig.type === "answer" && sig.data?.sdp && !pc.current.currentRemoteDescription) {
