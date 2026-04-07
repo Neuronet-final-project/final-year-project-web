@@ -41,8 +41,6 @@ export default function AdminDashboardPage() {
   const [appsLoading, setAppsLoading] = useState(false);
 
   // Assignments State
-  const [cEmail, setCEmail] = useState("");
-  const [aEmail, setAEmail] = useState("");
   const [assignLoading, setAssignLoading] = useState(false);
   const [assignResult, setAssignResult] = useState<{ok: boolean, msg: string} | null>(null);
 
@@ -132,14 +130,13 @@ export default function AdminDashboardPage() {
     }
   }
 
-  async function handleAssign(e: React.FormEvent) {
-    e.preventDefault();
+  async function handleAssign(counselorEmail: string, adolescentEmail: string) {
     setAssignLoading(true);
     setAssignResult(null);
     const res = await fetch("/api/proxy/backend/counselor/assign", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ counselor_email: cEmail, adolescent_email: aEmail }),
+      body: JSON.stringify({ counselor_email: counselorEmail, adolescent_email: adolescentEmail }),
     });
     if (res.ok) {
       setAssignResult({ ok: true, msg: "Case assigned successfully." });
@@ -219,10 +216,6 @@ export default function AdminDashboardPage() {
           )}
           {activeTab === "assign" && (
             <AssignmentsTab 
-              cEmail={cEmail}
-              setCEmail={setCEmail}
-              aEmail={aEmail}
-              setAEmail={setAEmail}
               assignLoading={assignLoading}
               assignResult={assignResult}
               handleAssign={handleAssign}
