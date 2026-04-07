@@ -163,72 +163,70 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
           </div>
         )}
         
-        <div className="flex flex-col items-center mt-2 h-12">
+        <div className="flex flex-col items-center mt-2 h-14">
           {status === "ended" ? (
-            <div className="px-4 py-1.5 rounded-full bg-rose-500/20 text-rose-200 border border-rose-500/30 text-sm font-semibold tracking-widest uppercase animate-in fade-in">
+            <button onClick={() => onEnd()} className="px-8 py-2.5 rounded-full bg-rose-500 hover:bg-rose-600 text-white font-bold tracking-widest uppercase shadow-lg shadow-rose-500/40 transition-transform hover:scale-105 active:scale-95 animate-in fade-in">
               Call Ended
-            </div>
+            </button>
           ) : (
             <>
-              <p className="text-base font-medium text-white/70 tracking-widest uppercase">
-                {status === "ringing" && (isIncoming ? "Incoming..." : "Calling...")}
-                {status === "connecting" && "Connecting..."}
+              <p className="text-lg font-bold text-white/90 tracking-widest uppercase drop-shadow-md">
+                {status === "ringing" && (isIncoming ? "Incoming Call..." : "Calling...")}
+                {status === "connecting" && "Calling..."}
                 {status === "connected" && `${mm}:${ss}`}
               </p>
               {status === "ringing" && !isIncoming && (
-                <p className="text-xs text-white/40 mt-1 capitalize">Waiting for answer</p>
+                <p className="text-xs text-white/50 mt-1 font-medium capitalize">Waiting for answer</p>
               )}
             </>
           )}
         </div>
         
         {/* Action Controls Dock */}
-        <div className="absolute top-[200px] sm:top-[250px] w-full flex justify-center pb-12">
-          <div className="flex items-center gap-6 px-10 py-5 rounded-full bg-zinc-900/40 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
-            {status === "ringing" && isIncoming ? (
-              <>
-                <div className="flex flex-col items-center gap-2">
-                  <button onClick={endCall} className="h-16 w-16 rounded-full bg-rose-500 flex items-center justify-center hover:bg-rose-600 shadow-lg shadow-rose-500/30 transition-all hover:scale-110 active:scale-95">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/><line x1="23" y1="1" x2="1" y2="23"/></svg>
-                  </button>
-                  <span className="text-[10px] font-bold tracking-widest text-white/50 uppercase">Decline</span>
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                  <button onClick={answerCall} className="h-16 w-16 rounded-full bg-emerald-500 flex items-center justify-center hover:bg-emerald-600 shadow-lg shadow-emerald-500/40 animate-pulse transition-all hover:scale-110 active:scale-95">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                  </button>
-                  <span className="text-[10px] font-bold tracking-widest text-emerald-400 uppercase">Accept</span>
-                </div>
-              </>
-            ) : status !== "ended" ? (
-              <>
-                <div className="flex flex-col items-center gap-2">
-                  <button onClick={() => { setMuted(!muted); localStream.current?.getAudioTracks().forEach(t => t.enabled = !muted); }} className={`h-14 w-14 rounded-full flex items-center justify-center transition-all duration-300 ${muted ? "bg-white text-zinc-900 shadow-lg shadow-white/20" : "bg-white/10 hover:bg-white/20 text-white"}`}>
-                    {muted ? <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="1" y1="1" x2="23" y2="23"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2c0 .76-.13 1.49-.35 2.17"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-                      : <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>}
-                  </button>
-                </div>
-                {callType === "video" && (
+        {status !== "ended" && (
+          <div className="absolute top-[200px] sm:top-[250px] w-full flex justify-center pb-12">
+            <div className="flex items-center gap-6 px-10 py-5 rounded-full bg-zinc-900/40 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+              {status === "ringing" && isIncoming ? (
+                <>
                   <div className="flex flex-col items-center gap-2">
-                    <button onClick={() => { setCamOff(!camOff); localStream.current?.getVideoTracks().forEach(t => t.enabled = !camOff); }} className={`h-14 w-14 rounded-full flex items-center justify-center transition-all duration-300 ${camOff ? "bg-white text-zinc-900 shadow-lg shadow-white/20" : "bg-white/10 hover:bg-white/20 text-white"}`}>
-                      {camOff ? <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16.16 3.84A2 2 0 0 0 14 2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.84 2"/><path d="m22 8-6 4 6 4V8Z"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-                        : <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m22 8-6 4 6 4V8Z"/><rect x="2" y="4" width="14" height="14" rx="2"/></svg>}
+                    <button onClick={endCall} className="h-16 w-16 rounded-full bg-rose-500 flex items-center justify-center hover:bg-rose-600 shadow-lg shadow-rose-500/30 transition-all hover:scale-110 active:scale-95 text-white">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/><line x1="23" y1="1" x2="1" y2="23"/></svg>
+                    </button>
+                    <span className="text-[10px] font-bold tracking-widest text-white/50 uppercase">Decline</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-2">
+                    <button onClick={answerCall} className="h-16 w-16 rounded-full bg-emerald-500 flex items-center justify-center hover:bg-emerald-600 shadow-lg shadow-emerald-500/40 animate-pulse transition-all hover:scale-110 active:scale-95 text-white">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    </button>
+                    <span className="text-[10px] font-bold tracking-widest text-emerald-400 uppercase">Accept</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex flex-col items-center gap-2">
+                    <button onClick={() => { setMuted(!muted); localStream.current?.getAudioTracks().forEach(t => t.enabled = !muted); }} className={`h-14 w-14 rounded-full flex items-center justify-center transition-all duration-300 ${muted ? "bg-white text-zinc-900 shadow-lg shadow-white/20" : "bg-white/10 hover:bg-white/20 text-white"}`}>
+                      {muted ? <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="1" y1="1" x2="23" y2="23"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2c0 .76-.13 1.49-.35 2.17"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                        : <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>}
                     </button>
                   </div>
-                )}
-                <div className="flex flex-col items-center gap-2 ml-4">
-                  <button onClick={endCall} className="h-14 w-14 rounded-full bg-rose-500 flex items-center justify-center hover:bg-rose-600 shadow-lg shadow-rose-500/40 transition-all hover:scale-110 active:scale-95 text-white">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/><line x1="23" y1="1" x2="1" y2="23"/></svg>
-                  </button>
-                </div>
-              </>
-            ) : (
-                <div className="h-14 flex flex-col justify-center px-4">
-                  <span className="text-zinc-500 text-sm italic font-medium">Closing call...</span>
-                </div>
-            )}
+                  {callType === "video" && (
+                    <div className="flex flex-col items-center gap-2">
+                      <button onClick={() => { setCamOff(!camOff); localStream.current?.getVideoTracks().forEach(t => t.enabled = !camOff); }} className={`h-14 w-14 rounded-full flex items-center justify-center transition-all duration-300 ${camOff ? "bg-white text-zinc-900 shadow-lg shadow-white/20" : "bg-white/10 hover:bg-white/20 text-white"}`}>
+                        {camOff ? <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16.16 3.84A2 2 0 0 0 14 2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 1.84 2"/><path d="m22 8-6 4 6 4V8Z"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                          : <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m22 8-6 4 6 4V8Z"/><rect x="2" y="4" width="14" height="14" rx="2"/></svg>}
+                      </button>
+                    </div>
+                  )}
+                  <div className="flex flex-col items-center gap-2 ml-4">
+                    <button onClick={endCall} className="h-14 w-14 rounded-full bg-rose-500 flex items-center justify-center hover:bg-rose-600 shadow-lg shadow-rose-500/40 transition-all hover:scale-110 active:scale-95 text-white">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/><line x1="23" y1="1" x2="1" y2="23"/></svg>
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
