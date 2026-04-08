@@ -9,7 +9,7 @@ type Props = {
 const ICE_SERVERS = [{ urls: "stun:stun.l.google.com:19302" }, { urls: "stun:stun1.l.google.com:19302" }];
 
 export default function CallModal({ callId, callType, peerEmail, peerName, isIncoming, onEnd }: Props) {
-  const [status, setStatus] = useState<"ringing" | "connecting" | "connected" | "ended">(isIncoming ? "ringing" : "connecting");
+  const [status, setStatus] = useState<"calling" | "ringing" | "connecting" | "connected" | "ended">(isIncoming ? "ringing" : "calling");
   const [elapsed, setElapsed] = useState(0);
   const [muted, setMuted] = useState(false);
   const [camOff, setCamOff] = useState(false);
@@ -74,12 +74,14 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
   }
 
   async function startAsOffer() {
+    setStatus("calling");
     const stream = await setupMedia();
     if (!stream) { setStatus("ended"); return; }
     const p = await createPC(stream);
     const offer = await p.createOffer();
     await p.setLocalDescription(offer);
-    await api(`/${callId}/signal`, "POST", { type: "offer", data: { sdp: offer } });
+    const res = await api(`/${callId}/signal`, "POST", { type: "offer", data: { sdp: offer } });
+    if (res) setStatus("ringing");
     startPolling();
   }
 
@@ -192,10 +194,14 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
           ) : (
             <>
               <p className="text-lg font-bold text-white/90 tracking-widest uppercase drop-shadow-md">
+                {status === "calling" && "Calling..."}
                 {status === "ringing" && (isIncoming ? "Incoming Call..." : "Ringing...")}
                 {status === "connecting" && "Connecting..."}
                 {status === "connected" && `${mm}:${ss}`}
               </p>
+              {status === "calling" && (
+                <p className="text-[10px] text-zinc-500 mt-1 font-bold animate-pulse uppercase tracking-widest">Waking up server...</p>
+              )}
               {status === "ringing" && !isIncoming && (
                 <p className="text-xs text-indigo-400 mt-1 font-bold animate-pulse capitalize">Waiting for answer</p>
               )}
