@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import DashboardHeader from "./components/DashboardHeader";
 import StatCards from "./components/StatCards";
 import AssignedList from "./components/AssignedList";
 import RecentAlerts from "./components/RecentAlerts";
@@ -80,10 +79,10 @@ export default function CounselorDashboardPage() {
 
   return (
     <div className="animate-in fade-in duration-1000">
-      <main className="relative mx-auto w-full max-w-7xl px-8 py-10 md:py-16">
+      <main className="relative mx-auto w-full max-w-7xl px-8 py-8 md:py-10">
         
         {/* PAGE TITLE / WELCOME */}
-        <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <h1 className="text-4xl font-black text-zinc-900 tracking-tight">Dashboard Overview</h1>
             <p className="mt-2 text-sm font-medium text-zinc-500 max-w-md">Welcome back. Here is a clinical snapshot of your current caseload and critical alerts.</p>
