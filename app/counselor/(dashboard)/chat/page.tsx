@@ -18,7 +18,7 @@ type Conversation = {
 };
 type AssignedAdolescent = { adolescent_id: string; adolescent_email: string; full_name?: string; guardian_email?: string; guardian_id?: string; matched_at: string; status: string };
 type Message = { _id?: string; message_id?: string; conversation_id: string; sender_email: string; sender_role: string; content: string; message_type?: string; attachment_url?: string | null; created_at: string; is_edited?: boolean; };
-type IncomingCall = { call_id: string; conversation_id: string; call_type: string; caller_email: string; callee_email: string; status: string };
+type IncomingCall = { call_id: string; conversation_id: string; call_type: string; caller_email: string; caller_name?: string; callee_email: string; callee_name?: string; status: string };
 
 export default function CounselorChatPage() {
   const router = useRouter();
@@ -73,10 +73,16 @@ export default function CounselorChatPage() {
         const r = await fetch("/api/proxy/backend/messaging/calls/incoming");
         if (r.ok) {
           const data = await r.json();
-          if (data.call) {
-            const c = data.call as IncomingCall;
-            setCallState({ callId: c.call_id, callType: c.call_type as "voice" | "video", peerEmail: c.caller_email, peerName: c.caller_email, isIncoming: true });
-          }
+            if (data.call) {
+              const c = data.call as IncomingCall;
+              setCallState({ 
+                callId: c.call_id, 
+                callType: c.call_type as "voice" | "video", 
+                peerEmail: c.caller_email, 
+                peerName: c.caller_name || c.caller_email, 
+                isIncoming: true 
+              });
+            }
         }
       } catch {}
     }, 3000);
@@ -290,8 +296,14 @@ export default function CounselorChatPage() {
     if (!me.authenticated) return "Unknown";
     const pList = conv.participants || conv.participant_emails || [];
     const others = pList.filter(e => e !== me.email);
-    if (conv.conversation_type === "counselor_guardian") return `Guardian: ${others[0] || "Unknown"}`;
-    if (conv.conversation_type === "counselor_adolescent") return `Adolescent: ${others[0] || "Unknown"}`;
+    const otherEmail = others[0] || "";
+    
+    // Try to find full name from assigned contacts
+    const contact = assignedContacts.find(c => c.adolescent_email === otherEmail || c.guardian_email === otherEmail);
+    const displayName = contact?.full_name || otherEmail.split('@')[0] || "Unknown";
+
+    if (conv.conversation_type === "counselor_guardian") return `Guardian: ${displayName}`;
+    if (conv.conversation_type === "counselor_adolescent") return `Adolescent: ${displayName}`;
     return conv.conversation_type || "Conversation";
   }
 

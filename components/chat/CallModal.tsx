@@ -62,7 +62,11 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
     p.onconnectionstatechange = () => {
       if (p.connectionState === "connected") {
         setStatus("connected");
-        timerRef.current = setInterval(() => setElapsed(e => e + 1), 1000);
+        // Signal the backend that we are fully active
+        api(`/${callId}/active`, "POST").catch(() => {});
+        if (!timerRef.current) {
+          timerRef.current = setInterval(() => setElapsed(e => e + 1), 1000);
+        }
       }
       if (["disconnected", "failed", "closed"].includes(p.connectionState)) endCall();
     };
@@ -104,10 +108,21 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
         cleanup(); 
         return; 
       }
+
+      // Sync status from backend
+      if (data.status === "connecting" && status === "ringing") {
+        setStatus("connecting");
+      }
+      if (data.status === "active" && status !== "connected") {
+         // If backend says active but we are still connecting, WebRTC might be slow
+         // or we might have missed the transition
+      }
+
       for (const sig of data.signals || []) {
         if (!pc.current) continue;
         if (sig.type === "answer" && sig.data?.sdp && !pc.current.currentRemoteDescription) {
           await pc.current.setRemoteDescription(new RTCSessionDescription(sig.data.sdp));
+          setStatus("connecting");
         } else if (sig.type === "ice-candidate" && sig.data?.candidate) {
           try { await pc.current.addIceCandidate(new RTCIceCandidate(sig.data.candidate)); } catch {}
         }
@@ -177,12 +192,15 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
           ) : (
             <>
               <p className="text-lg font-bold text-white/90 tracking-widest uppercase drop-shadow-md">
-                {status === "ringing" && (isIncoming ? "Incoming Call..." : "Calling...")}
-                {status === "connecting" && "Calling..."}
+                {status === "ringing" && (isIncoming ? "Incoming Call..." : "Ringing...")}
+                {status === "connecting" && "Connecting..."}
                 {status === "connected" && `${mm}:${ss}`}
               </p>
               {status === "ringing" && !isIncoming && (
-                <p className="text-xs text-white/50 mt-1 font-medium capitalize">Waiting for answer</p>
+                <p className="text-xs text-indigo-400 mt-1 font-bold animate-pulse capitalize">Waiting for answer</p>
+              )}
+              {status === "connecting" && (
+                <p className="text-[10px] text-white/50 mt-1 font-medium capitalize animate-pulse">Establishing Secure Stream</p>
               )}
             </>
           )}
