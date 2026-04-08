@@ -45,11 +45,21 @@ body {
   @apply w-full rounded-xl border border-blue-100 bg-white px-3 py-2 text-sm text-zinc-900 outline-none transition focus:border-blue-300 focus:ring-2 focus:ring-blue-200/60;
 }
 
-@keyframes bounce-subtle {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
+@keyframes shimmer {
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(200%) skewX(-15deg); }
 }
 
-.animate-bounce-subtle {
-  animation: bounce-subtle 2s infinite ease-in-out;
+.animate-shimmer {
+  animation: shimmer 2.5s infinite;
+}
+
+.premium-btn-primary {
+  @apply relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-700 px-8 py-4 text-base font-black text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(79,70,229,0.4)] hover:brightness-110 active:scale-95;
+}
+
+.premium-btn-shimmer::after {
+  content: "";
+  @apply absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent;
+  animation: shimmer 3s infinite ease-in-out;
 }

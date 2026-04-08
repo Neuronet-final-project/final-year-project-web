@@ -64,13 +64,13 @@ export function Navbar() {
         <div className="flex items-center gap-4">
           <Link
             href="/login"
-            className="hidden text-sm font-semibold text-zinc-600 transition-colors hover:text-zinc-900 sm:block"
+            className="hidden px-4 py-2 text-sm font-bold text-zinc-700 transition-all hover:text-[#4F46E5] hover:bg-zinc-100 rounded-xl sm:block bg-white/50 border border-zinc-200"
           >
             Sign in
           </Link>
           <Link
             href="/counselor/apply"
-            className="rounded-xl bg-zinc-900 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-zinc-800 hover:shadow-md"
+            className="rounded-xl bg-gradient-to-r from-zinc-900 to-zinc-800 px-4 py-2 text-sm font-bold text-white transition-all hover:scale-105 hover:shadow-lg hover:shadow-zinc-500/20 active:scale-95 flex items-center gap-2 border border-white/10"
           >
             Join as Counselor
           </Link>

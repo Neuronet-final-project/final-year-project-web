@@ -43,29 +43,17 @@ export default function Home() {
                   Ethical AI meets professional counseling. NEURONET empowers schools, counselors, and guardians to detect risks early and provide secure, confidential support.
                 </p>
 
-                <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row lg:justify-start">
+                <div className="mt-10 flex flex-col items-center gap-5 sm:flex-row lg:justify-start font-black">
                   <Link
                     href="/login"
-                    className="group flex w-full items-center justify-center gap-2 rounded-2xl bg-[#4F46E5] px-8 py-4 text-base font-semibold text-white transition-all hover:bg-indigo-600 hover:shadow-[0_0_20px_rgba(79,70,229,0.3)] sm:w-auto"
+                    className="premium-btn-primary premium-btn-shimmer w-full sm:w-auto"
                   >
-                    Get Started
-                    <svg
-                      className="transition-transform group-hover:translate-x-1"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M5 12h14M12 5l7 7-7 7" />
-                    </svg>
+                    Get Started 
+                    <ArrowRight className="inline-block ml-2 pointer-events-none" size={20} />
                   </Link>
                   <a
                     href="#features"
-                    className="flex w-full items-center justify-center rounded-2xl border border-zinc-200 bg-white px-8 py-4 text-base font-semibold text-zinc-800 transition-all hover:bg-zinc-50 hover:shadow-sm sm:w-auto"
+                    className="flex w-full items-center justify-center rounded-2xl border-2 border-zinc-200 bg-white/80 px-8 py-4 text-base font-bold text-zinc-800 backdrop-blur-md transition-all hover:bg-zinc-50 hover:border-zinc-300 hover:shadow-sm sm:w-auto active:scale-95"
                   >
                     Explore Features
                   </a>
@@ -342,16 +330,17 @@ export default function Home() {
               <p className="mt-6 text-lg text-blue-50">
                 Whether you're a professional counselor ready to make a difference, or an admin setting up your school's safety net.
               </p>
-              <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <div className="mt-10 flex flex-col items-center justify-center gap-6 sm:flex-row">
                 <Link
                   href="/login"
-                  className="w-full rounded-2xl bg-white px-8 py-4 text-base font-bold text-[#4F46E5] transition-all hover:scale-105 hover:bg-zinc-50 hover:shadow-xl sm:w-auto"
+                  className="premium-btn-primary premium-btn-shimmer w-full sm:w-auto !bg-rose-50"
+                  style={{ background: 'white', color: '#4F46E5' }}
                 >
                   Login to Dashboard
                 </Link>
                 <Link
                   href="/counselor/apply"
-                  className="w-full rounded-2xl border border-white/30 bg-white/10 px-8 py-4 text-base font-bold text-white backdrop-blur-md transition-all hover:bg-white/20 sm:w-auto"
+                  className="w-full rounded-2xl border-2 border-white/40 bg-white/10 px-8 py-4 text-base font-black text-white backdrop-blur-xl transition-all hover:bg-white/25 hover:shadow-[0_0_40px_rgba(255,255,255,0.2)] active:scale-95 sm:w-auto"
                 >
                   Apply as Counselor
                 </Link>
