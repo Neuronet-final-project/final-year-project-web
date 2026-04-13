@@ -67,6 +67,12 @@ export default function CounselorChatPage() {
   // ---- Poll for incoming calls ----
   useEffect(() => {
     if (!me.authenticated) return;
+
+    // Request notification permission proactively
+    if (typeof Notification !== "undefined" && Notification.permission === "default") {
+      Notification.requestPermission().catch(() => {});
+    }
+
     callPollRef.current = setInterval(async () => {
       if (callState) return;
       try {
@@ -82,10 +88,25 @@ export default function CounselorChatPage() {
                 peerName: c.caller_name || c.caller_email, 
                 isIncoming: true 
               });
+
+              // In-app toast
+              toast(`📞 Incoming ${c.call_type} call from ${c.caller_name || c.caller_email}`, { duration: 5000, icon: "🔔" });
+
+              // Browser notification for background tabs
+              if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+                try {
+                  new Notification("Incoming Call", {
+                    body: `${c.caller_name || c.caller_email} is calling you (${c.call_type})`,
+                    icon: "/Images/logo.png",
+                    tag: "incoming-call",
+                    requireInteraction: true,
+                  });
+                } catch {}
+              }
             }
         }
       } catch {}
-    }, 3000);
+    }, 2000);
     return () => clearInterval(callPollRef.current);
   }, [me, callState]);
 

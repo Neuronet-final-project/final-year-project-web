@@ -8,7 +8,7 @@ export default function VoiceRecorder({ onRecorded, onCancel }: Props) {
   const [elapsed, setElapsed] = useState(0);
   const mr = useRef<MediaRecorder | null>(null);
   const chunks = useRef<Blob[]>([]);
-  const timer = useRef<NodeJS.Timeout>();
+  const timer = useRef<NodeJS.Timeout | undefined>(undefined);
 
   useEffect(() => { startRec(); return () => { clearInterval(timer.current); mr.current?.stream.getTracks().forEach(t => t.stop()); }; }, []);
 
