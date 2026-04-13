@@ -104,6 +104,7 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
   const ringtoneRef = useRef<ReturnType<typeof createRingtone> | null>(null);
   const mountedRef = useRef(true);
   const iceQueueRef = useRef<RTCIceCandidateInit[]>([]);
+  const pendingOfferRef = useRef<any>(null);
 
   const api = useCallback(async (path: string, method = "GET", body?: any) => {
     const opts: RequestInit = { method, headers: { "Content-Type": "application/json" } };
@@ -196,8 +197,8 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
     const stream = await setupMedia();
     if (!stream) { setStatus("ended"); return; }
     const p = await createPC(stream);
-    const callData = await api(`/${callId}`);
-    const offerSig = callData?.signals?.find((s: any) => s.type === "offer");
+    const callData = await api(`/${callId}`); // get any fresh signals
+    const offerSig = pendingOfferRef.current || callData?.signals?.find((s: any) => s.type === "offer");
     if (offerSig?.data?.sdp) {
       await p.setRemoteDescription(new RTCSessionDescription(offerSig.data.sdp));
       const answer = await p.createAnswer();
@@ -220,7 +221,12 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
       }
 
       for (const sig of data.signals || []) {
-        if (!pc.current) continue;
+        if (!pc.current) {
+          if (sig.type === "offer") {
+            pendingOfferRef.current = sig;
+          }
+          continue;
+        }
         if (sig.type === "answer" && sig.data?.sdp && !pc.current.remoteDescription) {
           try {
             await pc.current.setRemoteDescription(new RTCSessionDescription(sig.data.sdp));
