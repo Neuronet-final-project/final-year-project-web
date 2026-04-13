@@ -103,6 +103,7 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
   const timerRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const ringtoneRef = useRef<ReturnType<typeof createRingtone> | null>(null);
   const mountedRef = useRef(true);
+  const iceQueueRef = useRef<RTCIceCandidateInit[]>([]);
 
   const api = useCallback(async (path: string, method = "GET", body?: any) => {
     const opts: RequestInit = { method, headers: { "Content-Type": "application/json" } };
@@ -220,11 +221,29 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
 
       for (const sig of data.signals || []) {
         if (!pc.current) continue;
-        if (sig.type === "answer" && sig.data?.sdp && !pc.current.currentRemoteDescription) {
-          await pc.current.setRemoteDescription(new RTCSessionDescription(sig.data.sdp));
-          setStatus("connecting");
+        if (sig.type === "answer" && sig.data?.sdp && !pc.current.remoteDescription) {
+          try {
+            await pc.current.setRemoteDescription(new RTCSessionDescription(sig.data.sdp));
+            setStatus("connecting");
+            // Flush queued ICE candidates
+            while (iceQueueRef.current.length > 0) {
+              const cand = iceQueueRef.current.shift();
+              if (cand) await pc.current.addIceCandidate(new RTCIceCandidate(cand)).catch(() => {});
+            }
+          } catch (e) {
+            console.error("Failed to set remote description:", e);
+          }
         } else if (sig.type === "ice-candidate" && sig.data?.candidate) {
-          try { await pc.current.addIceCandidate(new RTCIceCandidate(sig.data.candidate)); } catch {}
+          if (!pc.current.remoteDescription) {
+            // Queue candidates that arrive before remote description is set (race condition fix)
+            iceQueueRef.current.push(sig.data.candidate);
+          } else {
+            try { 
+              await pc.current.addIceCandidate(new RTCIceCandidate(sig.data.candidate)); 
+            } catch (e) {
+              console.warn("Could not add ice candidate", e);
+            }
+          }
         }
       }
     }, 1500);
