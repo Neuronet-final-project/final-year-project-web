@@ -38,6 +38,9 @@ export default function CounselorChatPage() {
   const [showAttachMenu, setShowAttachMenu] = useState(false);
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const [callState, setCallState] = useState<{ callId: string; callType: "voice" | "video"; peerEmail: string; peerName: string; isIncoming: boolean } | null>(null);
+  const callStateRef = useRef(callState);
+  // Keep ref in sync with state so the polling closure always has the latest value
+  useEffect(() => { callStateRef.current = callState; }, [callState]);
   const [searchFilter, setSearchFilter] = useState("");
   const [historyLimit, setHistoryLimit] = useState(15);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -74,20 +77,23 @@ export default function CounselorChatPage() {
     }
 
     callPollRef.current = setInterval(async () => {
-      if (callState) return;
+      // Use the ref to avoid stale closure — always has the latest value
+      if (callStateRef.current) return;
       try {
         const r = await fetch("/api/proxy/backend/messaging/calls/incoming");
         if (r.ok) {
           const data = await r.json();
-            if (data.call) {
+            if (data.call && !callStateRef.current) {
               const c = data.call as IncomingCall;
-              setCallState({ 
+              const newState = { 
                 callId: c.call_id, 
                 callType: c.call_type as "voice" | "video", 
                 peerEmail: c.caller_email, 
                 peerName: c.caller_name || c.caller_email, 
                 isIncoming: true 
-              });
+              };
+              setCallState(newState);
+              callStateRef.current = newState;
 
               // In-app toast
               toast(`📞 Incoming ${c.call_type} call from ${c.caller_name || c.caller_email}`, { duration: 5000, icon: "🔔" });
@@ -108,7 +114,7 @@ export default function CounselorChatPage() {
       } catch {}
     }, 2000);
     return () => clearInterval(callPollRef.current);
-  }, [me, callState]);
+  }, [me]); // Only depend on `me` — use callStateRef to avoid stale closure
 
   const dmsOnly = conversations.filter(c => c.conversation_type !== "channel");
   const getConvId = (c: Conversation) => c.conversation_id || c._id || c.id;
