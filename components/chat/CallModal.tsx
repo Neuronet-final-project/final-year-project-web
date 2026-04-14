@@ -175,6 +175,19 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
       }
       if (["disconnected", "failed", "closed"].includes(p.connectionState)) endCall();
     };
+    
+    p.oniceconnectionstatechange = () => {
+      if (p.iceConnectionState === "connected" || p.iceConnectionState === "completed") {
+        if (status !== "connected") {
+          setStatus("connected");
+          api(`/${callId}/active`, "POST").catch(() => {});
+          if (!timerRef.current) {
+            timerRef.current = setInterval(() => setElapsed(e => e + 1), 1000);
+          }
+        }
+      }
+      if (["disconnected", "failed", "closed"].includes(p.iceConnectionState)) endCall();
+    };
     return p;
   }
 
