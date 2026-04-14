@@ -396,31 +396,40 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
   }
 
   // ── On mount: start offer for outgoing OR start polling for incoming ──
+  // React 18 StrictMode double-mounts components in dev. We must ensure
+  // startAsOffer() is called only ONCE to avoid sending duplicate offers.
   useEffect(() => {
-    // Guard against React StrictMode double-mount creating duplicate PeerConnections
-    if (startedRef.current) return;
+    if (startedRef.current) {
+      // StrictMode remount — the init already ran. Just restore flags
+      // and register proper cleanup for actual unmount.
+      mountedRef.current = true;
+      return () => {
+        mountedRef.current = false;
+        clearInterval(pollRef.current);
+        pollRef.current = undefined;
+        clearInterval(timerRef.current);
+        localStream.current?.getTracks().forEach(t => t.stop());
+        pc.current?.close();
+        pc.current = null;
+        pendingOfferRef.current = null;
+        iceQueueRef.current = [];
+        stopRingtone();
+      };
+    }
+
     startedRef.current = true;
     mountedRef.current = true;
     
     if (!isIncoming) {
       startAsOffer();
     } else {
-      // For incoming calls: immediately start polling so we detect if
-      // the caller cancels/hangs up before we answer
       startPolling();
     }
+
     return () => {
+      // StrictMode cleanup: DON'T destroy the PeerConnection or media.
+      // The second mount will keep using the same PC.
       mountedRef.current = false;
-      startedRef.current = false;
-      clearInterval(pollRef.current);
-      pollRef.current = undefined;
-      clearInterval(timerRef.current);
-      localStream.current?.getTracks().forEach(t => t.stop());
-      pc.current?.close();
-      pc.current = null;
-      pendingOfferRef.current = null;
-      iceQueueRef.current = [];
-      stopRingtone();
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
