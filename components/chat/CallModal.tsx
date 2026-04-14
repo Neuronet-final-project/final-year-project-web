@@ -6,12 +6,9 @@ type Props = {
   isIncoming: boolean; onEnd: () => void;
 };
 
-const ICE_SERVERS: RTCIceServer[] = [
+const DEFAULT_ICE_SERVERS: RTCIceServer[] = [
   { urls: "stun:stun.l.google.com:19302" },
   { urls: "stun:stun1.l.google.com:19302" },
-  { urls: "turn:openrelay.metered.ca:80", username: "openrelayproject", credential: "openrelayproject" },
-  { urls: "turn:openrelay.metered.ca:443", username: "openrelayproject", credential: "openrelayproject" },
-  { urls: "turn:openrelay.metered.ca:443?transport=tcp", username: "openrelayproject", credential: "openrelayproject" },
 ];
 
 /* ── Programmatic Ringtone via Web Audio API ── */
@@ -112,6 +109,7 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
   const iceQueueRef = useRef<RTCIceCandidateInit[]>([]);
   const pendingOfferRef = useRef<any>(null);
   const startedRef = useRef(false);
+  const iceServersRef = useRef<RTCIceServer[]>(DEFAULT_ICE_SERVERS);
 
   const api = useCallback(async (path: string, method = "GET", body?: any) => {
     const opts: RequestInit = { method, headers: { "Content-Type": "application/json" } };
@@ -166,8 +164,24 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
     }
   }
 
+  async function fetchIceConfig() {
+    try {
+      const r = await fetch(`/api/proxy/backend/messaging/calls/ice-config`);
+      if (r.ok) {
+        const data = await r.json();
+        if (data.ice_servers && data.ice_servers.length > 0) {
+          iceServersRef.current = data.ice_servers;
+          console.log("[WebRTC] Fetched ICE config:", data.ice_servers.length, "servers",
+            data.ice_servers.some((s: any) => String(s.urls).includes("turn")) ? "(includes TURN)" : "(STUN only)");
+        }
+      }
+    } catch (e) {
+      console.warn("[WebRTC] Could not fetch ICE config, using defaults", e);
+    }
+  }
+
   async function createPC(stream: MediaStream) {
-    const p = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+    const p = new RTCPeerConnection({ iceServers: iceServersRef.current });
     pc.current = p;
     stream.getTracks().forEach(t => p.addTrack(t, stream));
     console.log("[WebRTC] PeerConnection created, tracks added:", stream.getTracks().map(t => t.kind));
@@ -231,6 +245,7 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
 
   async function startAsOffer() {
     setStatus("calling");
+    await fetchIceConfig();
     const stream = await setupMedia();
     if (!stream) { setStatus("ended"); return; }
     const p = await createPC(stream);
@@ -250,6 +265,7 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
     stopRingtone();
     setStatus("connecting");
     await api(`/${callId}/answer`, "POST");
+    await fetchIceConfig();
     const stream = await setupMedia();
     if (!stream) { setStatus("ended"); return; }
     const p = await createPC(stream);
