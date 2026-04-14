@@ -111,6 +111,7 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
   const mountedRef = useRef(true);
   const iceQueueRef = useRef<RTCIceCandidateInit[]>([]);
   const pendingOfferRef = useRef<any>(null);
+  const startedRef = useRef(false);
 
   const api = useCallback(async (path: string, method = "GET", body?: any) => {
     const opts: RequestInit = { method, headers: { "Content-Type": "application/json" } };
@@ -380,7 +381,11 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
 
   // ── On mount: start offer for outgoing OR start polling for incoming ──
   useEffect(() => {
+    // Guard against React StrictMode double-mount creating duplicate PeerConnections
+    if (startedRef.current) return;
+    startedRef.current = true;
     mountedRef.current = true;
+    
     if (!isIncoming) {
       startAsOffer();
     } else {
@@ -390,11 +395,15 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
     }
     return () => {
       mountedRef.current = false;
+      startedRef.current = false;
       clearInterval(pollRef.current);
+      pollRef.current = undefined;
       clearInterval(timerRef.current);
       localStream.current?.getTracks().forEach(t => t.stop());
       pc.current?.close();
       pc.current = null;
+      pendingOfferRef.current = null;
+      iceQueueRef.current = [];
       stopRingtone();
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
