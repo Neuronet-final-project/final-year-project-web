@@ -6,7 +6,13 @@ type Props = {
   isIncoming: boolean; onEnd: () => void;
 };
 
-const ICE_SERVERS = [{ urls: "stun:stun.l.google.com:19302" }, { urls: "stun:stun1.l.google.com:19302" }];
+const ICE_SERVERS: RTCIceServer[] = [
+  { urls: "stun:stun.l.google.com:19302" },
+  { urls: "stun:stun1.l.google.com:19302" },
+  { urls: "turn:openrelay.metered.ca:80", username: "openrelayproject", credential: "openrelayproject" },
+  { urls: "turn:openrelay.metered.ca:443", username: "openrelayproject", credential: "openrelayproject" },
+  { urls: "turn:openrelay.metered.ca:443?transport=tcp", username: "openrelayproject", credential: "openrelayproject" },
+];
 
 /* ── Programmatic Ringtone via Web Audio API ── */
 function createRingtone(): { start: () => void; stop: () => void } {
@@ -163,9 +169,44 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
     const p = new RTCPeerConnection({ iceServers: ICE_SERVERS });
     pc.current = p;
     stream.getTracks().forEach(t => p.addTrack(t, stream));
-    p.ontrack = e => { if (remoteVideo.current && e.streams[0]) remoteVideo.current.srcObject = e.streams[0]; };
-    p.onicecandidate = e => { if (e.candidate) api(`/${callId}/signal`, "POST", { type: "ice-candidate", data: { candidate: e.candidate.toJSON() } }); };
+    console.log("[WebRTC] PeerConnection created, tracks added:", stream.getTracks().map(t => t.kind));
+    
+    p.ontrack = e => { 
+      console.log("[WebRTC] ontrack fired, streams:", e.streams.length);
+      if (remoteVideo.current && e.streams[0]) remoteVideo.current.srcObject = e.streams[0]; 
+    };
+    
+    p.onicecandidate = e => { 
+      if (e.candidate) {
+        console.log("[WebRTC] Sending ICE candidate:", e.candidate.candidate.substring(0, 50));
+        api(`/${callId}/signal`, "POST", { 
+          type: "ice-candidate", 
+          data: { 
+            candidate: e.candidate.candidate,
+            sdpMid: e.candidate.sdpMid,
+            sdpMLineIndex: e.candidate.sdpMLineIndex
+          } 
+        }); 
+      }
+    };
+    
+    p.oniceconnectionstatechange = () => {
+      console.log("[WebRTC] ICE connection state:", p.iceConnectionState);
+      if (p.iceConnectionState === "connected" || p.iceConnectionState === "completed") {
+        setStatus("connected");
+        api(`/${callId}/active`, "POST").catch(() => {});
+        if (!timerRef.current) {
+          timerRef.current = setInterval(() => setElapsed(e => e + 1), 1000);
+        }
+      }
+      if (["disconnected", "failed", "closed"].includes(p.iceConnectionState)) {
+        console.warn("[WebRTC] ICE connection failed/closed:", p.iceConnectionState);
+        endCall();
+      }
+    };
+    
     p.onconnectionstatechange = () => {
+      console.log("[WebRTC] Connection state:", p.connectionState);
       if (p.connectionState === "connected") {
         setStatus("connected");
         api(`/${callId}/active`, "POST").catch(() => {});
@@ -176,18 +217,14 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
       if (["disconnected", "failed", "closed"].includes(p.connectionState)) endCall();
     };
     
-    p.oniceconnectionstatechange = () => {
-      if (p.iceConnectionState === "connected" || p.iceConnectionState === "completed") {
-        if (status !== "connected") {
-          setStatus("connected");
-          api(`/${callId}/active`, "POST").catch(() => {});
-          if (!timerRef.current) {
-            timerRef.current = setInterval(() => setElapsed(e => e + 1), 1000);
-          }
-        }
-      }
-      if (["disconnected", "failed", "closed"].includes(p.iceConnectionState)) endCall();
+    p.onicegatheringstatechange = () => {
+      console.log("[WebRTC] ICE gathering state:", p.iceGatheringState);
     };
+    
+    p.onsignalingstatechange = () => {
+      console.log("[WebRTC] Signaling state:", p.signalingState);
+    };
+    
     return p;
   }
 
@@ -198,7 +235,12 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
     const p = await createPC(stream);
     const offer = await p.createOffer();
     await p.setLocalDescription(offer);
-    const res = await api(`/${callId}/signal`, "POST", { type: "offer", data: { sdp: offer } });
+    console.log("[WebRTC] Created and set local offer");
+    const res = await api(`/${callId}/signal`, "POST", { 
+      type: "offer", 
+      data: { sdp: offer.sdp, type: offer.type } 
+    });
+    console.log("[WebRTC] Offer signal posted, result:", !!res);
     if (res) setStatus("ringing");
     startPolling();
   }
@@ -213,24 +255,39 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
     
     // Use the offer we already caught in polling if available
     const offerSig = pendingOfferRef.current;
+    console.log("[WebRTC] answerCall — pendingOffer:", !!offerSig, "sdp exists:", !!offerSig?.data?.sdp);
     if (offerSig?.data?.sdp) {
       try {
-        const sdpInit = typeof offerSig.data.sdp === 'string' ? offerSig.data : offerSig.data.sdp;
-        await p.setRemoteDescription(new RTCSessionDescription(sdpInit));
+        // Handle both string SDP (from mobile) and object SDP (from web)
+        const sdpVal = offerSig.data.sdp;
+        const sdpInit = typeof sdpVal === 'string' 
+          ? { type: offerSig.data.type || 'offer', sdp: sdpVal } 
+          : sdpVal;
+        console.log("[WebRTC] Setting remote description (offer)", sdpInit.type);
+        await p.setRemoteDescription(sdpInit);
+        
         const answer = await p.createAnswer();
         await p.setLocalDescription(answer);
-        await api(`/${callId}/signal`, "POST", { type: "answer", data: { sdp: answer } });
+        console.log("[WebRTC] Created and set local answer");
+        await api(`/${callId}/signal`, "POST", { 
+          type: "answer", 
+          data: { sdp: answer.sdp, type: answer.type } 
+        });
+        console.log("[WebRTC] Answer signal posted");
 
         // Flush queued ICE candidates
+        console.log("[WebRTC] Flushing", iceQueueRef.current.length, "queued ICE candidates");
         while (iceQueueRef.current.length > 0) {
           const cand = iceQueueRef.current.shift();
           if (cand) {
-            await p.addIceCandidate(new RTCIceCandidate(cand as any)).catch(() => {});
+            await p.addIceCandidate(cand).catch((e) => console.warn("[WebRTC] Failed to add queued ICE:", e));
           }
         }
       } catch (e) {
-        console.error("Failed handling existing offer in answerCall:", e);
+        console.error("[WebRTC] Failed handling offer in answerCall:", e);
       }
+    } else {
+      console.warn("[WebRTC] No offer available when answering! Will wait for polling to deliver it.");
     }
     // Polling is already running from mount, no need to start again
   }
@@ -247,58 +304,78 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
         return; 
       }
 
-      for (const sig of data.signals || []) {
+      const signals = data.signals || [];
+      if (signals.length > 0) {
+        console.log("[WebRTC] Poll received", signals.length, "signals:", signals.map((s: any) => s.type));
+      }
+
+      for (const sig of signals) {
         if (sig.type === "offer") {
           pendingOfferRef.current = sig;
+          console.log("[WebRTC] Stored pending offer from poll");
           if (pc.current && !pc.current.remoteDescription && sig.data?.sdp) {
             try {
-              const sdpInit = typeof sig.data.sdp === 'string' ? sig.data : sig.data.sdp;
-              await pc.current.setRemoteDescription(new RTCSessionDescription(sdpInit));
+              const sdpVal = sig.data.sdp;
+              const sdpInit = typeof sdpVal === 'string' 
+                ? { type: sig.data.type || 'offer', sdp: sdpVal } 
+                : sdpVal;
+              console.log("[WebRTC] Setting remote description (offer) from poll");
+              await pc.current.setRemoteDescription(sdpInit);
               const answer = await pc.current.createAnswer();
               await pc.current.setLocalDescription(answer);
-              await api(`/${callId}/signal`, "POST", { type: "answer", data: { sdp: answer } });
+              await api(`/${callId}/signal`, "POST", { 
+                type: "answer", 
+                data: { sdp: answer.sdp, type: answer.type } 
+              });
+              console.log("[WebRTC] Answer sent from poll handler");
               
               // Flush queued ICE candidates
+              console.log("[WebRTC] Flushing", iceQueueRef.current.length, "queued ICE candidates");
               while (iceQueueRef.current.length > 0) {
                 const cand = iceQueueRef.current.shift();
                 if (cand) {
-                  await pc.current.addIceCandidate(new RTCIceCandidate(cand as any)).catch(() => {});
+                  await pc.current.addIceCandidate(cand).catch((e) => console.warn("[WebRTC] queued ICE fail:", e));
                 }
               }
             } catch (e) {
-              console.error("Failed to process delayed offer:", e);
+              console.error("[WebRTC] Failed to process offer from poll:", e);
             }
           }
         } else if (sig.type === "answer" && sig.data?.sdp && pc.current && !pc.current.remoteDescription) {
           try {
-            const sdpInit = typeof sig.data.sdp === 'string' ? sig.data : sig.data.sdp;
-            await pc.current.setRemoteDescription(new RTCSessionDescription(sdpInit));
+            const sdpVal = sig.data.sdp;
+            const sdpInit = typeof sdpVal === 'string' 
+              ? { type: sig.data.type || 'answer', sdp: sdpVal } 
+              : sdpVal;
+            console.log("[WebRTC] Setting remote description (answer) from poll");
+            await pc.current.setRemoteDescription(sdpInit);
             setStatus("connecting");
             // Flush queued ICE candidates
+            console.log("[WebRTC] Flushing", iceQueueRef.current.length, "queued ICE candidates");
             while (iceQueueRef.current.length > 0) {
               const cand = iceQueueRef.current.shift();
               if (cand) {
-                await pc.current.addIceCandidate(new RTCIceCandidate(cand as any)).catch(() => {});
+                await pc.current.addIceCandidate(cand).catch((e) => console.warn("[WebRTC] queued ICE fail:", e));
               }
             }
           } catch (e) {
-            console.error("Failed to set remote description:", e);
+            console.error("[WebRTC] Failed to set remote description (answer):", e);
           }
         } else if (sig.type === "ice-candidate" && sig.data?.candidate) {
           const candInit = typeof sig.data.candidate === 'string' ? sig.data : sig.data.candidate;
           if (!pc.current || !pc.current.remoteDescription) {
-            // Queue candidates that arrive before remote description is set or pc is created
+            // Queue candidates that arrive before remote description is set
             iceQueueRef.current.push(candInit);
           } else {
             try { 
-              await pc.current.addIceCandidate(new RTCIceCandidate(candInit as any)); 
+              await pc.current.addIceCandidate(candInit); 
             } catch (e) {
-              console.warn("Could not add ice candidate", e);
+              console.warn("[WebRTC] Could not add ICE candidate:", e);
             }
           }
         }
       }
-    }, 1500);
+    }, 1000);
   }
 
   // ── On mount: start offer for outgoing OR start polling for incoming ──
