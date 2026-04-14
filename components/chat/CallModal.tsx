@@ -202,9 +202,7 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
     const offerSig = pendingOfferRef.current;
     if (offerSig?.data?.sdp) {
       try {
-        const sdpInit = typeof offerSig.data.sdp === 'string' 
-          ? { type: offerSig.type as any, sdp: offerSig.data.sdp } 
-          : offerSig.data.sdp;
+        const sdpInit = typeof offerSig.data.sdp === 'string' ? offerSig.data : offerSig.data.sdp;
         await p.setRemoteDescription(new RTCSessionDescription(sdpInit));
         const answer = await p.createAnswer();
         await p.setLocalDescription(answer);
@@ -214,8 +212,7 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
         while (iceQueueRef.current.length > 0) {
           const cand = iceQueueRef.current.shift();
           if (cand) {
-            const candInit = typeof cand === 'string' ? { candidate: cand, sdpMid: '', sdpMLineIndex: 0 } : cand;
-            await p.addIceCandidate(new RTCIceCandidate(candInit as any)).catch(() => {});
+            await p.addIceCandidate(new RTCIceCandidate(cand as any)).catch(() => {});
           }
         }
       } catch (e) {
@@ -242,9 +239,7 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
           pendingOfferRef.current = sig;
           if (pc.current && !pc.current.remoteDescription && sig.data?.sdp) {
             try {
-              const sdpInit = typeof sig.data.sdp === 'string' 
-                ? { type: sig.type as any, sdp: sig.data.sdp } 
-                : sig.data.sdp;
+              const sdpInit = typeof sig.data.sdp === 'string' ? sig.data : sig.data.sdp;
               await pc.current.setRemoteDescription(new RTCSessionDescription(sdpInit));
               const answer = await pc.current.createAnswer();
               await pc.current.setLocalDescription(answer);
@@ -254,8 +249,7 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
               while (iceQueueRef.current.length > 0) {
                 const cand = iceQueueRef.current.shift();
                 if (cand) {
-                  const candInit = typeof cand === 'string' ? { candidate: cand, sdpMid: '', sdpMLineIndex: 0 } : cand;
-                  await pc.current.addIceCandidate(new RTCIceCandidate(candInit as any)).catch(() => {});
+                  await pc.current.addIceCandidate(new RTCIceCandidate(cand as any)).catch(() => {});
                 }
               }
             } catch (e) {
@@ -264,31 +258,26 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
           }
         } else if (sig.type === "answer" && sig.data?.sdp && pc.current && !pc.current.remoteDescription) {
           try {
-            const sdpInit = typeof sig.data.sdp === 'string' 
-              ? { type: sig.type as any, sdp: sig.data.sdp } 
-              : sig.data.sdp;
+            const sdpInit = typeof sig.data.sdp === 'string' ? sig.data : sig.data.sdp;
             await pc.current.setRemoteDescription(new RTCSessionDescription(sdpInit));
             setStatus("connecting");
             // Flush queued ICE candidates
             while (iceQueueRef.current.length > 0) {
               const cand = iceQueueRef.current.shift();
               if (cand) {
-                const candInit = typeof cand === 'string' ? { candidate: cand, sdpMid: '', sdpMLineIndex: 0 } : cand;
-                await pc.current.addIceCandidate(new RTCIceCandidate(candInit as any)).catch(() => {});
+                await pc.current.addIceCandidate(new RTCIceCandidate(cand as any)).catch(() => {});
               }
             }
           } catch (e) {
             console.error("Failed to set remote description:", e);
           }
         } else if (sig.type === "ice-candidate" && sig.data?.candidate) {
+          const candInit = typeof sig.data.candidate === 'string' ? sig.data : sig.data.candidate;
           if (!pc.current || !pc.current.remoteDescription) {
             // Queue candidates that arrive before remote description is set or pc is created
-            iceQueueRef.current.push(sig.data.candidate);
+            iceQueueRef.current.push(candInit);
           } else {
             try { 
-              const candInit = typeof sig.data.candidate === 'string' 
-                ? { candidate: sig.data.candidate, sdpMid: '', sdpMLineIndex: 0 } 
-                : sig.data.candidate;
               await pc.current.addIceCandidate(new RTCIceCandidate(candInit as any)); 
             } catch (e) {
               console.warn("Could not add ice candidate", e);
