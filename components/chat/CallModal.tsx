@@ -197,13 +197,24 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
     const stream = await setupMedia();
     if (!stream) { setStatus("ended"); return; }
     const p = await createPC(stream);
-    const callData = await api(`/${callId}`); // get any fresh signals
-    const offerSig = pendingOfferRef.current || callData?.signals?.find((s: any) => s.type === "offer");
+    
+    // Use the offer we already caught in polling if available
+    const offerSig = pendingOfferRef.current;
     if (offerSig?.data?.sdp) {
-      await p.setRemoteDescription(new RTCSessionDescription(offerSig.data.sdp));
-      const answer = await p.createAnswer();
-      await p.setLocalDescription(answer);
-      await api(`/${callId}/signal`, "POST", { type: "answer", data: { sdp: answer } });
+      try {
+        await p.setRemoteDescription(new RTCSessionDescription(offerSig.data.sdp));
+        const answer = await p.createAnswer();
+        await p.setLocalDescription(answer);
+        await api(`/${callId}/signal`, "POST", { type: "answer", data: { sdp: answer } });
+
+        // Flush queued ICE candidates
+        while (iceQueueRef.current.length > 0) {
+          const cand = iceQueueRef.current.shift();
+          if (cand) await p.addIceCandidate(new RTCIceCandidate(cand)).catch(() => {});
+        }
+      } catch (e) {
+        console.error("Failed handling existing offer in answerCall:", e);
+      }
     }
     // Polling is already running from mount, no need to start again
   }
@@ -221,13 +232,25 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
       }
 
       for (const sig of data.signals || []) {
-        if (!pc.current) {
-          if (sig.type === "offer") {
-            pendingOfferRef.current = sig;
+        if (sig.type === "offer") {
+          pendingOfferRef.current = sig;
+          if (pc.current && !pc.current.remoteDescription && sig.data?.sdp) {
+            try {
+              await pc.current.setRemoteDescription(new RTCSessionDescription(sig.data.sdp));
+              const answer = await pc.current.createAnswer();
+              await pc.current.setLocalDescription(answer);
+              await api(`/${callId}/signal`, "POST", { type: "answer", data: { sdp: answer } });
+              
+              // Flush queued ICE candidates
+              while (iceQueueRef.current.length > 0) {
+                const cand = iceQueueRef.current.shift();
+                if (cand) await pc.current.addIceCandidate(new RTCIceCandidate(cand)).catch(() => {});
+              }
+            } catch (e) {
+              console.error("Failed to process delayed offer:", e);
+            }
           }
-          continue;
-        }
-        if (sig.type === "answer" && sig.data?.sdp && !pc.current.remoteDescription) {
+        } else if (sig.type === "answer" && sig.data?.sdp && pc.current && !pc.current.remoteDescription) {
           try {
             await pc.current.setRemoteDescription(new RTCSessionDescription(sig.data.sdp));
             setStatus("connecting");
@@ -240,8 +263,8 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
             console.error("Failed to set remote description:", e);
           }
         } else if (sig.type === "ice-candidate" && sig.data?.candidate) {
-          if (!pc.current.remoteDescription) {
-            // Queue candidates that arrive before remote description is set (race condition fix)
+          if (!pc.current || !pc.current.remoteDescription) {
+            // Queue candidates that arrive before remote description is set or pc is created
             iceQueueRef.current.push(sig.data.candidate);
           } else {
             try { 
