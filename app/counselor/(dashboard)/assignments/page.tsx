@@ -37,7 +37,7 @@ export default function CounselorAssignmentsPage() {
           return;
         }
 
-        const dashRes = await fetch("/api/proxy/dashboard/counselor");
+        const dashRes = await fetch("/api/proxy/backend/dashboard/counselor");
         if (dashRes.ok) {
           const data = await dashRes.json();
           setAdolescents(data.assigned_adolescents || []);

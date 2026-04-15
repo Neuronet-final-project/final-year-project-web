@@ -363,11 +363,28 @@ export default function CounselorChatPage() {
   return (
     <div className="absolute inset-0 flex flex-col overflow-hidden animate-in fade-in duration-700">
       {/* CALL MODAL */}
-      {callState && <CallModal callId={callState.callId} callType={callState.callType} peerEmail={callState.peerEmail} peerName={callState.peerName} isIncoming={callState.isIncoming} onEnd={() => setCallState(null)} />}
+      {callState && <CallModal callId={callState.callId} callType={callState.callType} peerEmail={callState.peerEmail} peerName={callState.peerName} isIncoming={callState.isIncoming} onEnd={(duration) => {
+        setCallState(null);
+        if (duration > 0 && activeConvId) {
+          const typeStr = callState.callType === "video" ? "Video call" : "Voice call";
+          const mm = String(Math.floor(duration / 60)).padStart(2, "0");
+          const ss = String(duration % 60).padStart(2, "0");
+          fetch(`/api/proxy/backend/messaging/conversations/${activeConvId}/messages`, {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ content: `📞 ${typeStr} ended (${mm}:${ss})`, message_type: "call_log" }),
+          }).then(r => r.json()).then(newMsg => setMessages(prev => [...prev, newMsg])).catch(()=>{});
+        }
+      }} />}
       {/* LIGHTBOX */}
       {lightboxUrl && (
-        <div className="fixed inset-0 z-[90] bg-black/80 backdrop-blur-lg flex items-center justify-center p-6 cursor-pointer" onClick={() => setLightboxUrl(null)}>
-          <img src={lightboxUrl} alt="full" className="max-h-[85vh] max-w-[90vw] rounded-2xl shadow-2xl object-contain" />
+        <div className="fixed inset-0 z-[90] bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-6 cursor-pointer" onClick={() => setLightboxUrl(null)}>
+          <div className="absolute top-6 right-8 text-white/70 hover:text-white transition-colors bg-white/10 hover:bg-white/20 p-3 rounded-full flex items-center justify-center backdrop-blur-md shadow-lg">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          </div>
+          <div className="relative" onClick={(e) => e.stopPropagation()}>
+            <img src={lightboxUrl} alt="full" className="max-h-[85vh] max-w-[90vw] rounded-[2rem] shadow-2xl object-contain ring-1 ring-white/10" />
+            <p className="absolute -bottom-10 left-1/2 -translate-x-1/2 text-white/50 text-xs tracking-widest uppercase font-bold text-center w-full">Click anywhere outside to close</p>
+          </div>
         </div>
       )}
       <main className="relative z-10 flex flex-1 overflow-hidden p-4 md:p-6 gap-6">
@@ -440,14 +457,15 @@ export default function CounselorChatPage() {
         </div>
 
         {/* CHAT AREA */}
-        <div className={`flex-1 flex flex-col rounded-[2.5rem] border border-white bg-white/80 backdrop-blur-xl shadow-xl overflow-hidden transition-all duration-500 ring-1 ring-zinc-200/50 ${!activeConvId ? "hidden" : "flex"}`}>
+        <div className={`flex-1 flex flex-col rounded-[2.5rem] border border-white bg-white/90 backdrop-blur-2xl shadow-2xl overflow-hidden transition-all duration-500 ring-1 ring-slate-200/60 ${!activeConvId ? "hidden" : "flex"}`}>
           {!activeConvId ? (
-            <div className="flex flex-1 flex-col items-center justify-center text-center p-12">
-              <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-[2.5rem] bg-indigo-50 text-indigo-600 shadow-inner">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
+            <div className="flex flex-1 flex-col items-center justify-center text-center p-12 bg-gradient-to-br from-slate-50 via-white to-indigo-50/30">
+              <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
+              <div className="relative mb-8 flex h-28 w-28 items-center justify-center rounded-[2.5rem] bg-white text-indigo-600 shadow-xl shadow-indigo-100 ring-1 ring-indigo-50 animate-in zoom-in duration-700">
+                <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
               </div>
-              <h3 className="text-3xl font-black tracking-tight text-zinc-300">Quiet Zone</h3>
-              <p className="mt-4 text-sm font-medium text-zinc-400 max-w-sm mx-auto">Select a verified contact from the directory to establish a private, audited communication link.</p>
+              <h3 className="relative text-3xl font-black tracking-tight text-slate-800">Quiet Zone</h3>
+              <p className="relative mt-5 text-sm font-medium text-slate-500 max-w-md mx-auto leading-relaxed">Select a verified contact from the directory to establish a private, end-to-end encrypted communication link.</p>
             </div>
           ) : (
             <>
@@ -491,7 +509,10 @@ export default function CounselorChatPage() {
               )}
 
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/20">
+              <div className="relative flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/40">
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] pointer-events-none" />
+                <div className="relative z-10 space-y-4">
+
                 {msgsLoading && messages.length === 0 ? (
                   <div className="flex items-center justify-center py-20 text-xs font-black text-zinc-400 uppercase tracking-[0.3em] animate-pulse">Decrypting thread...</div>
                 ) : messages.length === 0 ? (
@@ -527,7 +548,8 @@ export default function CounselorChatPage() {
                     })}
                   </>
                 )}
-                <div ref={messagesEndRef} />
+                </div>
+                <div ref={messagesEndRef} className="relative z-10" />
               </div>
 
               {/* Media Preview overlay */}

@@ -1,24 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-async function fetchWithRetry(url: string, init: RequestInit, timeoutMs = 20000, retries = 1): Promise<Response> {
-  let lastErr: unknown;
-  for (let i = 0; i <= retries; i++) {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
-    try {
-      return await fetch(url, { ...init, signal: controller.signal });
-    } catch (err) {
-      lastErr = err;
-      if (i < retries) {
-        await new Promise((r) => setTimeout(r, 1000));
-      }
-    } finally {
-      clearTimeout(timer);
-    }
-  }
-  throw lastErr;
-}
+import { fetchWithRetry } from "@/lib/fetchWithRetry";
 
 async function handleProxy(req: Request, { params }: { params: Promise<{ path: string[] }> }) {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "");
@@ -27,9 +10,7 @@ async function handleProxy(req: Request, { params }: { params: Promise<{ path: s
   }
 
   const token = (await cookies()).get("access_token")?.value;
-  if (!token) {
-    return NextResponse.json({ detail: "Not authenticated" }, { status: 401 });
-  }
+
 
   const resolvedParams = await params;
   const pathString = resolvedParams.path.join("/");
@@ -42,7 +23,7 @@ async function handleProxy(req: Request, { params }: { params: Promise<{ path: s
   const init: RequestInit = {
     method: req.method,
     headers: {
-      Authorization: `Bearer ${token}`,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       // For multipart, do NOT set Content-Type — the browser/fetch will set it with boundary
       ...(!isMultipart ? { "Content-Type": contentType || "application/json" } : {}),
     },

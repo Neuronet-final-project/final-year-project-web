@@ -6,16 +6,16 @@ import { toast } from "react-hot-toast";
 import { LayoutDashboard } from "lucide-react";
 
 // Modular Components
-import DashboardSidebar from "./components/DashboardSidebar";
-import DashboardHeader from "./components/DashboardHeader";
-import OverviewTab from "./components/OverviewTab";
-import UserManagementTab from "./components/UserManagementTab";
-import CounselorApplicationsTab from "./components/CounselorApplicationsTab";
-import AssignmentsTab from "./components/AssignmentsTab";
-import AuditVaultTab from "./components/AuditVaultTab";
-import AISettingsTab from "./components/AISettingsTab";
-import SystemConfigTab from "./components/SystemConfigTab";
-import ProfileTab from "./components/ProfileTab";
+import DashboardSidebar from "@/components/admin/dashboard/DashboardSidebar";
+import DashboardHeader from "@/components/admin/dashboard/DashboardHeader";
+import OverviewTab from "@/components/admin/dashboard/OverviewTab";
+import UserManagementTab from "@/components/admin/dashboard/UserManagementTab";
+import CounselorApplicationsTab from "@/components/admin/dashboard/CounselorApplicationsTab";
+import AssignmentsTab from "@/components/admin/dashboard/AssignmentsTab";
+import AuditVaultTab from "@/components/admin/dashboard/AuditVaultTab";
+import AISettingsTab from "@/components/admin/dashboard/AISettingsTab";
+import SystemConfigTab from "@/components/admin/dashboard/SystemConfigTab";
+import ProfileTab from "@/components/admin/dashboard/ProfileTab";
 
 type AuthMeResponse =
   | { authenticated: false }
@@ -73,7 +73,7 @@ export default function AdminDashboardPage() {
   }, [router]);
 
   async function fetchDashboard() {
-    const res = await fetch("/api/proxy/dashboard/admin");
+    const res = await fetch("/api/proxy/backend/dashboard/admin");
     if (res.ok) {
       const d = await res.json();
       setData(d);

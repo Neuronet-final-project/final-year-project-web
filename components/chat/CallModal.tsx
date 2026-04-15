@@ -3,7 +3,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 
 type Props = {
   callId: string; callType: "voice" | "video"; peerEmail: string; peerName: string;
-  isIncoming: boolean; onEnd: () => void;
+  isIncoming: boolean; onEnd: (duration: number) => void;
 };
 
 const DEFAULT_ICE_SERVERS: RTCIceServer[] = [
@@ -137,6 +137,16 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
     api(`/${callId}/end`, "POST").catch(() => {});
     cleanup(); 
   }, [callId, api, cleanup]);
+
+  // ── Auto-close on end ──
+  useEffect(() => {
+    if (status === "ended") {
+      const timer = setTimeout(() => {
+        onEnd(elapsed);
+      }, 1500); // Wait 1.5s to show 'Call Ended' screen then close
+      return () => clearTimeout(timer);
+    }
+  }, [status, elapsed, onEnd]);
 
   // ── Ringtone management ──
   useEffect(() => {
@@ -499,7 +509,7 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
         {/* Status Text */}
         <div className="flex flex-col items-center mt-4 min-h-[56px]">
           {status === "ended" ? (
-            <button onClick={() => onEnd()} className="px-8 py-2.5 rounded-full bg-rose-500 hover:bg-rose-600 text-white font-bold tracking-widest uppercase shadow-lg shadow-rose-500/40 transition-transform hover:scale-105 active:scale-95 animate-in fade-in">
+            <button onClick={() => onEnd(elapsed)} className="px-8 py-2.5 rounded-full bg-rose-500 hover:bg-rose-600 text-white font-bold tracking-widest uppercase shadow-lg shadow-rose-500/40 transition-transform hover:scale-105 active:scale-95 animate-in fade-in">
               Call Ended
             </button>
           ) : (
@@ -528,9 +538,9 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
           )}
         </div>
 
-        {/* ── Action Buttons (inline, NOT absolute/fixed) ── */}
+        {/* ── Action Buttons ── */}
         {status !== "ended" && (
-          <div className="mt-10 w-full flex justify-center">
+          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-full flex justify-center pb-8">
             {isRingingIncoming ? (
               /* ── INCOMING CALL: Large Accept / Decline ── */
               <div className="flex items-center gap-10 px-12 py-6 rounded-full bg-zinc-900/60 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">

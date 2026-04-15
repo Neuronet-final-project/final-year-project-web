@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import StatCards from "./components/StatCards";
-import AssignedList from "./components/AssignedList";
-import RecentAlerts from "./components/RecentAlerts";
+import StatCards from "@/components/counselor/dashboard/StatCards";
+import AssignedList from "@/components/counselor/dashboard/AssignedList";
+import RecentAlerts from "@/components/counselor/dashboard/RecentAlerts";
 
 type AuthMeResponse =
   | { authenticated: false }
@@ -40,7 +40,7 @@ export default function CounselorDashboardPage() {
 
         // Fetch all required data concurrently
         const [dashRes, alertsRes, convsRes, chansRes] = await Promise.all([
-          fetch("/api/proxy/dashboard/counselor", { cache: "no-store" }),
+          fetch("/api/proxy/backend/dashboard/counselor", { cache: "no-store" }),
           fetch("/api/proxy/backend/alerts/counselor/me", { cache: "no-store" }),
           fetch("/api/proxy/backend/messaging/conversations", { cache: "no-store" }),
           fetch("/api/proxy/backend/channels/me", { cache: "no-store" })

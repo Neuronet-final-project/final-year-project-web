@@ -22,7 +22,7 @@ export default function CounselorApplyPage() {
     setResult(null);
 
     try {
-      const res = await fetch("/api/proxy/counselor/apply", {
+      const res = await fetch("/api/proxy/backend/counselor/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

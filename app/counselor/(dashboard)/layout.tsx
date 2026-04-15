@@ -1,6 +1,6 @@
 "use client";
 
-import CounselorSidebar from "./components/CounselorSidebar";
+import CounselorSidebar from "@/components/counselor/CounselorSidebar";
 
 export default function CounselorLayout({
   children,

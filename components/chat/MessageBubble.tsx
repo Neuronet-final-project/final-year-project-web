@@ -40,8 +40,8 @@ export default function MessageBubble({ msg, isMe, onImageClick, onEdit, onDelet
   };
 
   return (
-    <div className={`flex flex-col group ${isMe ? "items-end" : "items-start"}`}>
-      <div className="flex items-center gap-2">
+    <div className={`flex flex-col group ${isMe ? "items-end" : "items-start"} w-full`}>
+      <div className="flex items-center gap-2 max-w-full">
         {isMe && !isEditing && (
           <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
             {type === "text" && (
@@ -54,8 +54,10 @@ export default function MessageBubble({ msg, isMe, onImageClick, onEdit, onDelet
             </button>
           </div>
         )}
-        <div className={`relative max-w-[85%] sm:max-w-[70%] rounded-[1.5rem] px-5 py-3.5 text-sm shadow-sm transition-all hover:shadow-md ${
-          isMe ? "bg-gradient-to-br from-[#4f46e5] to-[#0891b2] text-white rounded-tr-sm" : "bg-white border border-zinc-100 text-zinc-700 rounded-tl-sm shadow-indigo-100/50"
+        <div className={`relative w-fit min-w-[60px] max-w-[85%] sm:max-w-[70%] break-words rounded-[1.5rem] px-5 py-3.5 text-sm shadow-sm transition-all duration-300 hover:shadow-md ${
+          isMe 
+            ? "bg-gradient-to-br from-indigo-600 via-indigo-500 to-purple-600 text-white rounded-br-sm shadow-indigo-200/50 ring-1 ring-white/10" 
+            : "bg-white/90 backdrop-blur-sm border border-slate-100 text-slate-800 rounded-bl-sm shadow-slate-200/50"
         }`}>
           {type === "image" && url && (
             <div className="mb-2 cursor-pointer" onClick={() => onImageClick?.(url)}>
@@ -81,7 +83,7 @@ export default function MessageBubble({ msg, isMe, onImageClick, onEdit, onDelet
               <button onClick={() => { setIsEditing(false); setEditContent(msg.content); }} className="p-1 hover:bg-white/20 rounded-lg transition-colors"><X size={14} /></button>
             </div>
           ) : (
-            msg.content && <p className={type !== "text" ? "mt-1" : ""}>
+            msg.content && <p className={`whitespace-pre-wrap break-words ${type !== "text" ? "mt-1" : ""}`}>
               {msg.content}
               {msg.is_edited && <span className="text-[9px] opacity-70 italic ml-2">(edited)</span>}
             </p>
