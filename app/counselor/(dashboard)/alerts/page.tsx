@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
-import { Bell, AlertTriangle, ShieldCheck, Search, Filter } from "lucide-react";
+import { Bell, AlertTriangle, ShieldCheck, Search, Filter, Brain, Eye } from "lucide-react";
 
 type AuthMeResponse =
   | { authenticated: false }
@@ -17,7 +17,37 @@ type Alert = {
   message: string;
   created_at: string;
   is_resolved: boolean;
+  // Stage 2 enriched fields
+  detected_emotions?: string[];
+  main_concern?: string;
+  ai_summary?: string;
+  concern_category?: string;
+  adolescent_name?: string;
 };
+
+const EMOTION_COLORS: Record<string, string> = {
+  sadness: "bg-blue-100 text-blue-700 border-blue-200",
+  loneliness: "bg-violet-100 text-violet-700 border-violet-200",
+  hopelessness: "bg-slate-100 text-slate-700 border-slate-200",
+  fear: "bg-amber-100 text-amber-700 border-amber-200",
+  anger: "bg-red-100 text-red-700 border-red-200",
+  annoyance: "bg-orange-100 text-orange-700 border-orange-200",
+  nervousness: "bg-yellow-100 text-yellow-700 border-yellow-200",
+  anxiety: "bg-yellow-100 text-yellow-700 border-yellow-200",
+  disappointment: "bg-teal-100 text-teal-700 border-teal-200",
+  grief: "bg-indigo-100 text-indigo-700 border-indigo-200",
+  disgust: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  remorse: "bg-purple-100 text-purple-700 border-purple-200",
+  confusion: "bg-cyan-100 text-cyan-700 border-cyan-200",
+  disapproval: "bg-rose-100 text-rose-700 border-rose-200",
+  joy: "bg-green-100 text-green-700 border-green-200",
+  love: "bg-pink-100 text-pink-700 border-pink-200",
+  neutral: "bg-zinc-100 text-zinc-600 border-zinc-200",
+};
+
+function getEmotionClass(emotion: string): string {
+  return EMOTION_COLORS[emotion.toLowerCase()] || "bg-zinc-100 text-zinc-600 border-zinc-200";
+}
 
 export default function CounselorAlertsPage() {
   const router = useRouter();
@@ -44,7 +74,6 @@ export default function CounselorAlertsPage() {
           const data = await alertsRes.json();
           setAlerts(Array.isArray(data) ? data : []);
         } else {
-          // Fallback to unresolved endpoint (for admin users)
           const fallbackRes = await fetch("/api/proxy/backend/alerts/unresolved", { cache: "no-store" });
           if (fallbackRes.ok) {
             const data = await fallbackRes.json();
@@ -82,10 +111,16 @@ export default function CounselorAlertsPage() {
     router.push(`/counselor/chat?adolescent_id=${adolescentId}`);
   };
 
+  const handleViewCase = (adolescentId: string) => {
+    router.push(`/counselor/adolescent/${adolescentId}`);
+  };
+
   const filteredAlerts = alerts.filter(a => {
     const matchesSearch = (a.message || "").toLowerCase().includes(search.toLowerCase()) || 
                           a.adolescent_id.toLowerCase().includes(search.toLowerCase()) ||
-                          (a as any).adolescent_name?.toLowerCase().includes(search.toLowerCase());
+                          (a.adolescent_name || "").toLowerCase().includes(search.toLowerCase()) ||
+                          (a.main_concern || "").toLowerCase().includes(search.toLowerCase()) ||
+                          (a.detected_emotions || []).some(e => e.toLowerCase().includes(search.toLowerCase()));
     const matchesFilter = filter === "all" || a.risk_level === filter;
     return matchesSearch && matchesFilter;
   });
@@ -109,7 +144,7 @@ export default function CounselorAlertsPage() {
         <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <h1 className="text-4xl font-black text-zinc-900 tracking-tight">System Alerts</h1>
-            <p className="mt-2 text-sm font-medium text-zinc-500 max-w-md">Critical behavioral notifications requiring immediate clinical review.</p>
+            <p className="mt-2 text-sm font-medium text-zinc-500 max-w-md">AI-powered behavioral analysis with emotion detection and concern categorization.</p>
           </div>
           <div className="flex items-center gap-3">
              <div className="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-600 rounded-2xl border border-indigo-100 shadow-sm">
@@ -125,7 +160,7 @@ export default function CounselorAlertsPage() {
              <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
              <input 
                type="text"
-               placeholder="Search by case ID or message..."
+               placeholder="Search by name, concern, emotion, or message..."
                value={search}
                onChange={(e) => setSearch(e.target.value)}
                className="w-full rounded-2xl border border-zinc-100 bg-white px-12 py-4 text-sm font-bold text-zinc-900 placeholder:text-zinc-300 focus:border-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-100 transition-all shadow-sm"
@@ -157,55 +192,102 @@ export default function CounselorAlertsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6">
-            {filteredAlerts.map((alert) => (
-              <div 
-                key={alert._id}
-                className="group flex items-start gap-6 rounded-[2.5rem] border border-white bg-white/70 backdrop-blur-md p-8 shadow-sm transition-all duration-500 hover:shadow-xl hover:shadow-indigo-100 hover:-translate-y-1 ring-1 ring-zinc-200/50"
-              >
-                <div className={`mt-1 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl shadow-inner ${
-                  alert.risk_level === 'high' ? 'bg-rose-50 text-rose-600 border border-rose-100' :
-                  alert.risk_level === 'medium' ? 'bg-amber-50 text-amber-600 border border-amber-100' :
-                  'bg-indigo-50 text-indigo-600 border border-indigo-100'
-                }`}>
-                  <AlertTriangle size={24} />
-                </div>
-                
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className={`text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full border ${
-                      alert.risk_level === 'high' ? 'bg-rose-600 text-white border-rose-600' :
-                      alert.risk_level === 'medium' ? 'bg-amber-600 text-white border-amber-600' :
-                      'bg-indigo-600 text-white border-indigo-600'
-                    }`}>
-                      {alert.risk_level} Risk
-                    </span>
+            {filteredAlerts.map((alert) => {
+              const emotions = alert.detected_emotions || [];
+              const mainConcern = alert.main_concern || "";
+              const aiSummary = alert.ai_summary || alert.message || "";
+              const hasEnrichedData = emotions.length > 0 || mainConcern;
+
+              return (
+                <div 
+                  key={alert._id}
+                  className="group rounded-[2.5rem] border border-white bg-white/70 backdrop-blur-md p-8 shadow-sm transition-all duration-500 hover:shadow-xl hover:shadow-indigo-100 hover:-translate-y-1 ring-1 ring-zinc-200/50"
+                >
+                  {/* Top Row: Risk Badge + Date */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl shadow-inner ${
+                        alert.risk_level === 'high' ? 'bg-rose-50 text-rose-600 border border-rose-100' :
+                        alert.risk_level === 'medium' ? 'bg-amber-50 text-amber-600 border border-amber-100' :
+                        'bg-indigo-50 text-indigo-600 border border-indigo-100'
+                      }`}>
+                        <AlertTriangle size={24} />
+                      </div>
+                      <span className={`text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-full border ${
+                        alert.risk_level === 'high' ? 'bg-rose-600 text-white border-rose-600' :
+                        alert.risk_level === 'medium' ? 'bg-amber-600 text-white border-amber-600' :
+                        'bg-indigo-600 text-white border-indigo-600'
+                      }`}>
+                        {alert.risk_level} Risk
+                      </span>
+                      {mainConcern && (
+                        <span className="text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full bg-zinc-900 text-white border border-zinc-700">
+                          {mainConcern}
+                        </span>
+                      )}
+                    </div>
                     <span className="text-[10px] font-bold text-zinc-400">
                       {new Date(alert.created_at).toLocaleString()}
                     </span>
                   </div>
-                  <h4 className="text-base font-bold text-zinc-900 mb-2 leading-snug">{alert.message}</h4>
-                  <div className="flex items-center gap-4">
-                     <p className="text-xs font-medium text-zinc-500">Adolescent: <span className="text-indigo-600 font-bold">{(alert as any).adolescent_name || "Unknown Case"}</span></p>
-                     <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest border-l border-zinc-100 pl-4">Case ID: {alert.adolescent_id.substring(0, 8)}</p>
+
+                  {/* AI Summary */}
+                  <div className="mb-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Brain size={14} className="text-indigo-500" />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500">AI Analysis</span>
+                    </div>
+                    <p className="text-sm font-semibold text-zinc-800 leading-relaxed">
+                      {aiSummary}
+                    </p>
+                  </div>
+
+                  {/* Emotion Chips */}
+                  {hasEnrichedData && emotions.length > 0 && (
+                    <div className="mb-4 flex flex-wrap gap-2">
+                      {emotions.slice(0, 5).map((emotion, i) => (
+                        <span
+                          key={i}
+                          className={`text-[10px] font-bold px-3 py-1 rounded-full border ${getEmotionClass(emotion)}`}
+                        >
+                          {emotion}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Bottom Row: Adolescent Info + Actions */}
+                  <div className="flex items-center justify-between pt-4 border-t border-zinc-100">
+                    <div className="flex items-center gap-4">
+                       <p className="text-xs font-medium text-zinc-500">Adolescent: <span className="text-indigo-600 font-bold">{alert.adolescent_name || "Unknown Case"}</span></p>
+                       <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest border-l border-zinc-100 pl-4">Case ID: {alert.adolescent_id.substring(0, 8)}</p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button 
+                        onClick={() => handleViewCase(alert.adolescent_id)}
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-zinc-800 shadow-lg shadow-zinc-200 transition-all hover:scale-105 active:scale-95"
+                      >
+                        <Eye size={12} />
+                        View Journal
+                      </button>
+                      <button 
+                        onClick={() => handleReview(alert.adolescent_id)}
+                        className="px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all hover:scale-105 active:scale-95"
+                      >
+                        Open Chat
+                      </button>
+                      <button 
+                        onClick={() => handleDismiss(alert._id)}
+                        className="px-5 py-2.5 rounded-xl bg-white border border-zinc-100 text-zinc-400 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-all"
+                      >
+                        Resolve
+                      </button>
+                    </div>
                   </div>
                 </div>
-
-                <div className="flex flex-col gap-2">
-                  <button 
-                    onClick={() => handleReview(alert.adolescent_id)}
-                    className="px-6 py-3 rounded-xl bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all hover:scale-105 active:scale-95"
-                  >
-                    Open Chat
-                  </button>
-                  <button 
-                    onClick={() => handleDismiss(alert._id)}
-                    className="px-6 py-3 rounded-xl bg-white border border-zinc-100 text-zinc-400 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-all"
-                  >
-                    Dismiss Alert
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

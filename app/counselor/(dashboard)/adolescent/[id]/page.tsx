@@ -22,6 +22,10 @@ type Alert = {
   triggered_by_journal_id?: string;
   status: "unresolved" | "resolved";
   created_at: string;
+  detected_emotions?: string[];
+  main_concern?: string;
+  ai_summary?: string;
+  message?: string;
 };
 
 export default function AdolescentCasePage() {
@@ -195,21 +199,52 @@ export default function AdolescentCasePage() {
               </div>
             ) : (
               <div className="flex flex-col gap-4">
-                {alerts.filter(a => a.status === 'unresolved').map((alert) => (
-                  <div key={alert._id} className="rounded-2xl border border-red-200 bg-red-50 p-5 shadow-sm">
-                    <div className="flex justify-between items-start mb-2">
-                       <span className="text-xs font-bold text-white bg-red-600 px-2 py-1 rounded-md uppercase">
-                         {alert.risk_level} Risk
-                       </span>
-                       <span className="text-xs font-medium text-red-500">
-                         Score: {(alert.risk_score * 100).toFixed(0)}%
-                       </span>
+                {alerts.filter(a => a.status === 'unresolved').map((alert) => {
+                  const emotions = alert.detected_emotions || [];
+                  const mainConcern = alert.main_concern || "";
+                  const aiSummary = alert.ai_summary || alert.message || "";
+                  
+                  return (
+                    <div key={alert._id} className="rounded-2xl border border-red-200 bg-red-50 p-5 shadow-sm">
+                      <div className="flex justify-between items-start mb-2">
+                         <span className="text-xs font-bold text-white bg-red-600 px-2 py-1 rounded-md uppercase">
+                           {alert.risk_level} Risk
+                         </span>
+                         <span className="text-xs font-medium text-red-500">
+                           Score: {(alert.risk_score * 100).toFixed(0)}%
+                         </span>
+                      </div>
+                      
+                      {mainConcern && (
+                        <div className="mb-2">
+                          <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-zinc-800 text-white">
+                            {mainConcern}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {aiSummary && (
+                        <p className="text-xs text-red-800 font-medium leading-relaxed mb-2">
+                          {aiSummary}
+                        </p>
+                      )}
+                      
+                      {emotions.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mb-2">
+                          {emotions.slice(0, 4).map((emotion, i) => (
+                            <span key={i} className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-white/70 text-red-600 border border-red-200">
+                              {emotion}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      
+                      <p className="text-xs text-red-700 mt-1 font-medium">
+                        Triggered {new Date(alert.created_at).toLocaleDateString()}
+                      </p>
                     </div>
-                    <p className="text-xs text-red-700 mt-3 font-medium">
-                      Triggered {new Date(alert.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 

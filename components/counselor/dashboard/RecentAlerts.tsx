@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { AlertCircle, Zap, ShieldAlert, Info, ArrowRight } from "lucide-react";
+import { AlertCircle, Zap, ShieldAlert, Info, ArrowRight, Brain } from "lucide-react";
 
 type Alert = {
   _id: string;
@@ -8,6 +8,10 @@ type Alert = {
   risk_score: number;
   created_at: string;
   adolescent_email?: string;
+  adolescent_name?: string;
+  detected_emotions?: string[];
+  main_concern?: string;
+  ai_summary?: string;
 };
 
 export default function RecentAlerts({ alerts }: { alerts: Alert[] }) {
@@ -22,7 +26,7 @@ export default function RecentAlerts({ alerts }: { alerts: Alert[] }) {
            </div>
            <h3 className="text-xl font-bold tracking-tight text-zinc-900">Critical Alerts</h3>
         </div>
-        <Link href="#alerts" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#6366f1] hover:text-[#06b6d4] transition-colors">
+        <Link href="/counselor/alerts" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#6366f1] hover:text-[#06b6d4] transition-colors">
           View All <ArrowRight className="h-3 w-3" />
         </Link>
       </div>
@@ -41,39 +45,56 @@ export default function RecentAlerts({ alerts }: { alerts: Alert[] }) {
               low: { color: "text-indigo-600", bg: "bg-indigo-50", border: "border-indigo-100", accent: "bg-indigo-500", icon: Info },
             };
             const cfg = riskConfig[alert.risk_level as keyof typeof riskConfig] || riskConfig.low;
+            const emotions = alert.detected_emotions || [];
+            const mainConcern = alert.main_concern || "";
  
             return (
               <div
                 key={alert._id}
-                className="group relative flex items-center justify-between p-4 rounded-3xl border border-zinc-100 bg-white transition-all duration-300 hover:shadow-lg hover:shadow-rose-50 hover:bg-slate-50/50 ring-1 ring-transparent hover:ring-rose-100"
+                className="group relative flex flex-col p-4 rounded-3xl border border-zinc-100 bg-white transition-all duration-300 hover:shadow-lg hover:shadow-rose-50 hover:bg-slate-50/50 ring-1 ring-transparent hover:ring-rose-100"
               >
                 <div className={`absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1 rounded-r-full transition-all duration-300 group-hover:h-12 ${cfg.accent}`} />
                 
-                <div className="flex items-center gap-4">
-                  <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl shadow-inner transition-transform group-hover:scale-105 ${cfg.bg} ${cfg.color} border ${cfg.border}`}>
-                    <cfg.icon className="h-5 w-5" />
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl shadow-inner transition-transform group-hover:scale-105 ${cfg.bg} ${cfg.color} border ${cfg.border}`}>
+                      <cfg.icon className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h4 className={`text-[10px] font-black uppercase tracking-[0.1em] ${cfg.color}`}>
+                        {alert.risk_level} Priority
+                      </h4>
+                      <p className="text-sm font-bold text-zinc-900 mt-0.5">
+                        {alert.adolescent_name || alert.adolescent_email?.split('@')[0] || "Unknown"}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className={`text-[10px] font-black uppercase tracking-[0.1em] ${cfg.color}`}>
-                      {alert.risk_level} Priority
-                    </h4>
-                    <p className="text-sm font-bold text-zinc-900 mt-0.5">
-                      {alert.adolescent_email?.split('@')[0]}
-                    </p>
-                    <p className="text-[10px] font-bold text-zinc-400 mt-0.5">
-                      Risk Score: <span className="text-zinc-600">{Math.round(alert.risk_score * 100)}%</span>
-                    </p>
+                  
+                  <div className="text-right flex flex-col items-end gap-1">
+                    <div className="text-[10px] font-bold text-zinc-400">
+                      {new Date(alert.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                    <div className="h-1.5 w-14 rounded-full bg-zinc-100 overflow-hidden shadow-inner">
+                       <div className={`h-full ${cfg.accent}`} style={{ width: `${alert.risk_score * 100}%` }} />
+                    </div>
                   </div>
                 </div>
-                
-                <div className="text-right flex flex-col items-end gap-2">
-                  <div className="text-[10px] font-bold text-zinc-400">
-                    {new Date(alert.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+
+                {/* Main Concern + Emotions */}
+                {(mainConcern || emotions.length > 0) && (
+                  <div className="mt-3 pt-2 border-t border-zinc-50 flex flex-wrap items-center gap-1.5">
+                    {mainConcern && (
+                      <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-zinc-800 text-white">
+                        {mainConcern}
+                      </span>
+                    )}
+                    {emotions.slice(0, 3).map((emotion, i) => (
+                      <span key={i} className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-500 border border-zinc-200">
+                        {emotion}
+                      </span>
+                    ))}
                   </div>
-                  <div className="h-1.5 w-14 rounded-full bg-zinc-100 overflow-hidden shadow-inner">
-                     <div className={`h-full ${cfg.accent}`} style={{ width: `${alert.risk_score * 100}%` }} />
-                  </div>
-                </div>
+                )}
               </div>
             );
           })
@@ -82,4 +103,3 @@ export default function RecentAlerts({ alerts }: { alerts: Alert[] }) {
     </div>
   );
 }
-
