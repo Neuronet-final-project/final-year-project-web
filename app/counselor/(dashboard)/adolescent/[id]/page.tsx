@@ -26,6 +26,22 @@ type Alert = {
   main_concern?: string;
   ai_summary?: string;
   message?: string;
+  concern_category?: string;
+  behavioral_analysis?: {
+    emotions?: string[];
+    concern_category?: string;
+    behavioral_summary?: string;
+    suggested_follow_up?: string;
+  };
+  channel_recommendations?: {
+    recommended_channels: {
+      category: string;
+      channel_name: string;
+      channel_slug: string;
+      confidence: number;
+    }[];
+    recommendation_message: string;
+  };
 };
 
 export default function AdolescentCasePage() {
@@ -92,6 +108,8 @@ export default function AdolescentCasePage() {
       </div>
     );
   }
+
+  const channelRecommendations = alerts.find(a => a.channel_recommendations)?.channel_recommendations;
 
   return (
     <div className="flex min-h-screen flex-col bg-[#f4f7fb]">
@@ -188,6 +206,37 @@ export default function AdolescentCasePage() {
               </div>
             )}
 
+            {channelRecommendations && (
+              <div className="rounded-[2rem] border border-white bg-white/70 backdrop-blur-md p-8 shadow-sm ring-1 ring-zinc-200/50 mb-6">
+                <div className="flex flex-col mb-6">
+                  <h3 className="font-black text-zinc-900 border-b border-zinc-100 pb-3 mb-3 text-lg">Recommended Support Channels</h3>
+                  <p className="text-xs font-bold text-zinc-500">{channelRecommendations.recommendation_message}</p>
+                </div>
+                {channelRecommendations.recommended_channels?.length > 0 && (
+                  <div className="flex flex-col gap-4">
+                    {channelRecommendations.recommended_channels.map((ch, idx) => (
+                      <div key={idx} className="flex flex-col p-4 rounded-3xl border border-zinc-100 bg-zinc-50/50 hover:bg-slate-50 transition-all group shadow-sm hover:shadow-md hover:ring-2 hover:ring-indigo-100">
+                        <div className="flex items-start justify-between">
+                          <div>
+                             <h4 className="font-bold text-zinc-900">{ch.channel_name}</h4>
+                             <p className="text-[10px] uppercase tracking-[0.1em] font-black text-indigo-500 mt-1">{ch.category}</p>
+                          </div>
+                          <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200/70 shadow-inner">
+                             {(ch.confidence * 100).toFixed(0)}% Match
+                          </span>
+                        </div>
+                        <div className="mt-4 pt-3 border-t border-zinc-100">
+                           <button className="w-full text-[10px] uppercase font-black tracking-[0.1em] bg-indigo-600 text-white rounded-xl py-3 hover:bg-indigo-700 transition shadow-sm hover:-translate-y-0.5 active:translate-y-0">
+                             Join Channel
+                           </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             <h2 className="text-lg font-bold text-zinc-900 border-b border-zinc-200 pb-2">Active Alerts</h2>
             {alerts.filter(a => a.status === 'unresolved').length === 0 ? (
               <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-6 text-center shadow-sm">
@@ -200,9 +249,9 @@ export default function AdolescentCasePage() {
             ) : (
               <div className="flex flex-col gap-4">
                 {alerts.filter(a => a.status === 'unresolved').map((alert) => {
-                  const emotions = alert.detected_emotions || [];
-                  const mainConcern = alert.main_concern || "";
-                  const aiSummary = alert.ai_summary || alert.message || "";
+                  const emotions = alert.behavioral_analysis?.emotions || alert.detected_emotions || [];
+                  const mainConcern = alert.behavioral_analysis?.concern_category || alert.concern_category || alert.main_concern || "";
+                  const aiSummary = alert.behavioral_analysis?.behavioral_summary || alert.ai_summary || alert.message || "";
                   
                   return (
                     <div key={alert._id} className="rounded-2xl border border-red-200 bg-red-50 p-5 shadow-sm">
