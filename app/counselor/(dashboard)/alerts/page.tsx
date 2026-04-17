@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
-import { Bell, AlertTriangle, ShieldCheck, Search, Filter, Brain, Eye } from "lucide-react";
+import { Bell, AlertTriangle, ShieldCheck, Search, Filter, Brain, Eye, Info } from "lucide-react";
 
 type AuthMeResponse =
   | { authenticated: false }
@@ -23,6 +23,12 @@ type Alert = {
   ai_summary?: string;
   concern_category?: string;
   adolescent_name?: string;
+  behavioral_analysis?: {
+    emotions?: string[];
+    concern_category?: string;
+    behavioral_summary?: string;
+    suggested_follow_up?: string;
+  };
 };
 
 const EMOTION_COLORS: Record<string, string> = {
@@ -193,8 +199,11 @@ export default function CounselorAlertsPage() {
         ) : (
           <div className="grid grid-cols-1 gap-6">
             {filteredAlerts.map((alert) => {
-              const emotions = alert.detected_emotions || [];
+              const emotions = alert.behavioral_analysis?.emotions || alert.detected_emotions || [];
               const mainConcern = alert.main_concern || "";
+              const concernCategory = alert.behavioral_analysis?.concern_category || alert.concern_category || "";
+              const behavioralSummary = alert.behavioral_analysis?.behavioral_summary || "";
+              const suggestedFollowUp = alert.behavioral_analysis?.suggested_follow_up || "";
               const aiSummary = alert.ai_summary || alert.message || "";
               const hasEnrichedData = emotions.length > 0 || mainConcern;
 
@@ -236,10 +245,23 @@ export default function CounselorAlertsPage() {
                     <div className="flex items-center gap-2 mb-2">
                       <Brain size={14} className="text-indigo-500" />
                       <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500">AI Analysis</span>
+                      {concernCategory && (
+                        <span className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-700">
+                          {concernCategory}
+                        </span>
+                      )}
                     </div>
                     <p className="text-sm font-semibold text-zinc-800 leading-relaxed">
-                      {aiSummary}
+                      {behavioralSummary || aiSummary}
                     </p>
+                    {suggestedFollowUp && (
+                      <div className="mt-3 p-3 rounded-xl bg-slate-50 border border-slate-200 flex gap-2">
+                        <Info size={16} className="text-slate-500 shrink-0 mt-0.5" />
+                        <p className="text-xs font-semibold text-slate-700 leading-relaxed">
+                          <span className="font-bold text-slate-900">Suggested Action: </span>{suggestedFollowUp}
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   {/* Emotion Chips */}

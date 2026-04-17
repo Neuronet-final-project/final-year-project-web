@@ -72,7 +72,9 @@ export default function CounselorDashboardPage() {
 
   // Calculate stats
   // Prioritize counts from dashData (which uses the centralized counselor_dashboard_service aggregate)
-  const activeAlertsCount = dashData?.unresolved_alerts?.length ?? alerts.length;
+  const activeAlertsCount = (dashData?.unresolved_alerts?.length > 0) 
+    ? dashData.unresolved_alerts.length 
+    : alerts.length;
   const assignedCount = dashData?.assigned_adolescents?.length || 0;
   const unreadMessagesCount = conversations.length; 
   const activeChannelsCount = channels.length;
