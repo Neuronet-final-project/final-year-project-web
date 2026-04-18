@@ -234,13 +234,22 @@ export default function ChannelThreadPage() {
       <main className="flex flex-1 flex-col overflow-hidden">
         {/* Header */}
         <div className="shrink-0 px-6 py-4 bg-white border-b border-zinc-100 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-br from-[#4f46e5] to-[#0891b2]">
-              {channel.name}
-            </h1>
-            {channel.description && (
-              <p className="text-xs text-zinc-400 mt-1">{channel.description}</p>
-            )}
+          <div className="flex items-start gap-4">
+            <button
+              onClick={() => router.push('/counselor/channels')}
+              className="mt-1 shrink-0 flex h-8 w-8 items-center justify-center rounded-full bg-zinc-50 border border-zinc-200 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition-colors"
+              title="Back to channels"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <div>
+              <h1 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-br from-[#4f46e5] to-[#0891b2]">
+                {channel.name}
+              </h1>
+              {channel.description && (
+                <p className="text-xs text-zinc-400 mt-1">{channel.description}</p>
+              )}
+            </div>
           </div>
           {me.authenticated && ((me as any).role === "counselor" || (me as any).role === "admin") && (
             <button
@@ -260,7 +269,7 @@ export default function ChannelThreadPage() {
                 <select
                   value={postType}
                   onChange={e => setPostType(e.target.value)}
-                  className="px-3 py-2 rounded-xl border border-zinc-200 text-sm font-bold bg-white focus:ring-2 focus:ring-indigo-200 outline-none"
+                  className="px-3 py-2 rounded-xl border border-zinc-200 text-sm font-bold text-zinc-900 bg-white focus:ring-2 focus:ring-indigo-200 outline-none"
                 >
                   {postTypeOptions.map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -270,7 +279,7 @@ export default function ChannelThreadPage() {
                   value={newTitle}
                   onChange={e => setNewTitle(e.target.value)}
                   placeholder="Post title..."
-                  className="flex-1 px-4 py-2 rounded-xl border border-zinc-200 text-sm font-bold bg-white focus:ring-2 focus:ring-indigo-200 outline-none"
+                  className="flex-1 px-4 py-2 rounded-xl border border-zinc-200 text-sm font-bold text-zinc-900 placeholder:text-zinc-400 bg-white focus:ring-2 focus:ring-indigo-200 outline-none"
                 />
               </div>
               <textarea
@@ -278,7 +287,7 @@ export default function ChannelThreadPage() {
                 onChange={e => setNewContent(e.target.value)}
                 placeholder="Write your post content..."
                 rows={4}
-                className="w-full px-4 py-3 rounded-xl border border-zinc-200 text-sm bg-white resize-none focus:ring-2 focus:ring-indigo-200 outline-none"
+                className="w-full px-4 py-3 rounded-xl border border-zinc-200 text-sm text-zinc-900 placeholder:text-zinc-400 bg-white resize-none focus:ring-2 focus:ring-indigo-200 outline-none"
               />
               <button
                 type="submit"
