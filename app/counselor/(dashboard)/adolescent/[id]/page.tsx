@@ -44,6 +44,13 @@ type Alert = {
   };
 };
 
+type Consent = {
+  participation: boolean;
+  share_ai_summaries: boolean;
+  share_alerts: boolean;
+  counselor_chat: boolean;
+};
+
 export default function AdolescentCasePage() {
   const router = useRouter();
   const params = useParams();
@@ -56,6 +63,7 @@ export default function AdolescentCasePage() {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [aiSummary, setAiSummary] = useState<string | null>(null);
   const [patientName, setPatientName] = useState<string>("Adolescent Info");
+  const [consent, setConsent] = useState<Consent | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -91,6 +99,13 @@ export default function AdolescentCasePage() {
         if (sumRes.ok) {
           const sData = await sumRes.json();
           setAiSummary(sData?.summary || null);
+        }
+
+        // 5. Fetch Consents
+        const consentRes = await fetch(`/api/proxy/backend/consents/adolescent/${adolescentId}`);
+        if (consentRes.ok) {
+          const cData = await consentRes.json();
+          setConsent(cData);
         }
 
       } catch (err) {
@@ -129,6 +144,18 @@ export default function AdolescentCasePage() {
         {error && (
           <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 shadow-sm animate-in fade-in">
             {error}
+          </div>
+        )}
+
+        {consent && !consent.participation && (
+          <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 shadow-sm animate-in fade-in flex items-center gap-3">
+             <div className="shrink-0 w-8 h-8 rounded-full bg-amber-200 flex items-center justify-center text-amber-700">
+               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01"/></svg>
+             </div>
+             <div>
+               <p className="font-bold">AI Analysis Paused</p>
+               <p className="text-xs opacity-80">Guardian has revoked AI participation consent. Journal analysis and risk detection are currently inactive.</p>
+             </div>
           </div>
         )}
 
@@ -192,6 +219,30 @@ export default function AdolescentCasePage() {
 
           {/* RIGHT: Alerts & Vitals */}
           <div className="space-y-6">
+            {consent && (
+              <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+                <h3 className="text-sm font-bold text-zinc-900 mb-4 flex items-center gap-2">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  Consent Status
+                </h3>
+                <div className="space-y-3">
+                  {[
+                    { label: "Participation", val: consent.participation },
+                    { label: "AI Summaries", val: consent.share_ai_summaries },
+                    { label: "Alerts", val: consent.share_alerts },
+                    { label: "Counselor Chat", val: consent.counselor_chat },
+                  ].map((c, i) => (
+                    <div key={i} className="flex items-center justify-between text-xs">
+                      <span className="text-zinc-500 font-medium">{c.label}</span>
+                      <span className={`font-bold px-2 py-0.5 rounded-full ${c.val ? "bg-emerald-100 text-emerald-700" : "bg-zinc-100 text-zinc-500"}`}>
+                        {c.val ? "Granted" : "Revoked"}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {aiSummary && (
               <div className="rounded-2xl border border-indigo-200 bg-indigo-50 p-6 shadow-sm mb-6">
                 <div className="flex items-center gap-2 mb-3">
