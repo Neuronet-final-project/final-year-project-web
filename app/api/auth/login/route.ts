@@ -49,6 +49,8 @@ export async function POST(req: Request) {
   }
 
   const token = data?.access_token;
+  const refreshToken = data?.refresh_token;
+
   if (!token) {
     return NextResponse.json(
       { detail: "Login succeeded but token missing" },
@@ -68,6 +70,16 @@ export async function POST(req: Request) {
     path: "/",
     maxAge: 60 * 60, // 1h
   });
+
+  if (refreshToken) {
+    response.cookies.set("refresh_token", refreshToken, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+    });
+  }
 
   return response;
 }
