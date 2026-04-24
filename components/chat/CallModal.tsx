@@ -160,15 +160,27 @@ export default function CallModal({ callId, callType, peerEmail, peerName, isInc
     }
   }, [isIncoming, status, stopRingtone]);
 
-  async function setupMedia() {
-    const constraints = callType === "video" ? { audio: true, video: true } : { audio: true };
+  async function setupMedia(retryWithoutVideo = false) {
+    const constraints = callType === "video" && !retryWithoutVideo ? { audio: true, video: true } : { audio: true };
     try {
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       localStream.current = stream;
-      if (localVideo.current) localVideo.current.srcObject = stream;
+      if (localVideo.current && !retryWithoutVideo) {
+        localVideo.current.srcObject = stream;
+      }
       return stream;
-    } catch (e) { 
-      console.error("Media access denied:", e);
+    } catch (e: any) { 
+      // If the camera is exclusively locked by another application (like another chrome tab during local testing)
+      // fallback to audio-only so the call can still connect instead of instantly dying.
+      if (!retryWithoutVideo && callType === "video" && (e.name === "NotReadableError" || e.message?.includes("Device in use") || e.name === "OverconstrainedError")) {
+        console.warn("[WebRTC] Camera locked by another tab (Device in use). Falling back to Audio-only.", e);
+        toast.error("Camera is in use by another tab. Continuing with audio only.");
+        setCamOff(true);
+        return await setupMedia(true);
+      }
+      
+      console.warn("Media access denied or missing hardware:", e);
+      toast.error("Could not access microphone/camera. Check permissions.");
       cleanup(); 
       return null; 
     }
