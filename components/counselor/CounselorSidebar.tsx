@@ -12,7 +12,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Bell,
-  Users
+  Users,
+  BookOpen
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -22,6 +23,7 @@ const navItems = [
   { name: "Assignments", icon: Users, href: "/counselor/assignments" },
   { name: "SafeChat", icon: MessageSquare, href: "/counselor/chat" },
   { name: "Channels", icon: Hash, href: "/counselor/channels" },
+  { name: "Learner's Nook", icon: BookOpen, href: "/counselor/educational" },
 ];
 
 export default function CounselorSidebar() {
