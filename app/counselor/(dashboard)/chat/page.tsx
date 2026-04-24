@@ -83,33 +83,37 @@ export default function CounselorChatPage() {
         const r = await fetch("/api/proxy/backend/messaging/calls/incoming");
         if (r.ok) {
           const data = await r.json();
-            if (data.call && !callStateRef.current) {
-              const c = data.call as IncomingCall;
-              const newState = { 
-                callId: c.call_id, 
-                callType: c.call_type as "voice" | "video", 
-                peerEmail: c.caller_email, 
-                peerName: c.caller_name || c.caller_email, 
-                isIncoming: true 
-              };
-              setCallState(newState);
-              callStateRef.current = newState;
+          if (data.call && !callStateRef.current) {
+            const c = data.call as IncomingCall;
+            const newState = { 
+              callId: c.call_id, 
+              callType: c.call_type as "voice" | "video", 
+              peerEmail: c.caller_email, 
+              peerName: c.caller_name || c.caller_email, 
+              isIncoming: true 
+            };
+            setCallState(newState);
+            callStateRef.current = newState;
 
-              // In-app toast
-              toast(`📞 Incoming ${c.call_type} call from ${c.caller_name || c.caller_email}`, { duration: 5000, icon: "🔔" });
+            // In-app toast
+            toast(`📞 Incoming ${c.call_type} call from ${c.caller_name || c.caller_email}`, { duration: 5000, icon: "🔔" });
 
-              // Browser notification for background tabs
-              if (typeof Notification !== "undefined" && Notification.permission === "granted") {
-                try {
-                  new Notification("Incoming Call", {
-                    body: `${c.caller_name || c.caller_email} is calling you (${c.call_type})`,
-                    icon: "/Images/logo.png",
-                    tag: "incoming-call",
-                    requireInteraction: true,
-                  });
-                } catch {}
-              }
+            // Browser notification for background tabs
+            if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+              try {
+                new Notification("Incoming Call", {
+                  body: `${c.caller_name || c.caller_email} is calling you (${c.call_type})`,
+                  icon: "/Images/logo.png",
+                  tag: "incoming-call",
+                  requireInteraction: true,
+                });
+              } catch {}
             }
+          } else if (!data.call && callStateRef.current?.isIncoming) {
+             // BUG FIX: Clear ghost call state if backend reports no ringing call
+             setCallState(null);
+             callStateRef.current = null;
+          }
         }
       } catch {}
     }, 2000);

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import { useRouter, usePathname } from "next/navigation";
 
 type Alert = {
   _id: string;
@@ -12,7 +13,10 @@ type Alert = {
 };
 
 export default function NotificationProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const pathname = usePathname();
   const lastCheckedDate = useRef<string>(new Date().toISOString());
+  const lastCallIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     const checkAlerts = async () => {
@@ -50,9 +54,38 @@ export default function NotificationProvider({ children }: { children: React.Rea
       }
     };
 
-    const interval = setInterval(checkAlerts, 10000); // 10 seconds for real-time feel
-    return () => clearInterval(interval);
-  }, []);
+    const checkCalls = async () => {
+      try {
+        const r = await fetch("/api/proxy/backend/messaging/calls/incoming", { cache: "no-store" });
+        if (r.ok) {
+          const data = await r.json();
+          if (data.call && data.call.call_id !== lastCallIdRef.current) {
+            // New incoming call detected globally
+            lastCallIdRef.current = data.call.call_id;
+            
+            // If the user isn't already on the chat page, redirect them automatically
+            if (!pathname?.includes('/chat')) {
+               toast.loading('Incoming call detected. Redirecting to Secure Chat...', { duration: 3000 });
+               router.push('/counselor/chat');
+            }
+          } else if (!data.call && lastCallIdRef.current) {
+            // Caller hung up or was handled
+            lastCallIdRef.current = null;
+          }
+        }
+      } catch (err) {
+        // Silent
+      }
+    };
+
+    const interval = setInterval(checkAlerts, 10000); // 10 seconds for real-time alerts
+    const callInterval = setInterval(checkCalls, 4000); // 4 seconds for fast call ring response
+
+    return () => {
+      clearInterval(interval);
+      clearInterval(callInterval);
+    };
+  }, [pathname, router]);
 
   return (
     <>
