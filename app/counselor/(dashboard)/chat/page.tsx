@@ -537,8 +537,10 @@ export default function CounselorChatPage() {
                     )}
                     {messages.slice(-historyLimit).map((msg, idx, arr) => {
                       const showDate = idx === 0 || dateSeparator(msg.created_at) !== dateSeparator(arr[idx - 1].created_at);
+                      // Use idx in the key to guarantee uniqueness globally, even if a race condition duplicates an ID momentarily
+                      const uniqueKey = `${msg._id || msg.message_id || 'msg'}_${idx}`;
                       return (
-                        <div key={msg._id || msg.message_id || idx}>
+                        <div key={uniqueKey}>
                           {showDate && <div className="flex items-center gap-3 my-4"><div className="flex-1 h-px bg-zinc-200/60" /><span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{dateSeparator(msg.created_at)}</span><div className="flex-1 h-px bg-zinc-200/60" /></div>}
                           <MessageBubble 
                             msg={msg} 
