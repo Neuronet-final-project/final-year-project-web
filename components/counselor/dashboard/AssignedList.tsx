@@ -52,7 +52,7 @@ export default function AssignedList({
  
             return (
               <div
-                key={a.adolescent_id || Math.random()}
+                key={a.adolescent_id ? `adolescent-${a.adolescent_id}` : `adolescent-${i}`}
                 className="group relative flex items-center justify-between rounded-[1.5rem] border border-zinc-100 bg-white p-4 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-50 hover:bg-slate-50/50 ring-1 ring-transparent hover:ring-indigo-100"
               >
                 <div className="flex items-center gap-4">
