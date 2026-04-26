@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { TrendingUp, Users, Shield, Brain, Heart, Activity, ArrowRight, Sparkles, Zap, CheckCircle2 } from "lucide-react";
+import { TrendingUp, Users, Shield, Brain, Heart, Activity, ArrowRight, Sparkles, Zap, CheckCircle2, Award } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 
@@ -224,110 +224,115 @@ export default function Home() {
         </section>
 
         {/* ── RESEARCH & SOCIAL IMPACT SECTION ── */}
-        <section id="research" className="py-24 bg-white relative overflow-hidden">
-          {/* Decorative Background Elements */}
-          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-[100px] -mr-64 -mt-64" />
-          <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-cyan-500/5 rounded-full blur-[100px] -ml-64 -mb-64" />
+        <section id="research" className="py-32 bg-gradient-to-b from-white via-zinc-50 to-white relative overflow-hidden">
+          {/* Enhanced Decorative Background Elements */}
+          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-indigo-500/10 to-cyan-500/10 rounded-full blur-[120px] -mr-96 -mt-96" />
+          <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-gradient-to-tr from-cyan-500/10 to-indigo-500/10 rounded-full blur-[120px] -ml-96 -mb-96" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
 
           <div className="mx-auto max-w-7xl px-5 md:px-8 relative z-10">
-            <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
+            {/* Section Header */}
+            <div className="text-center mb-20">
+              <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-rose-50 to-orange-50 px-6 py-2.5 text-sm font-black text-rose-600 uppercase tracking-widest mb-8 border-2 border-rose-100 shadow-lg shadow-rose-100/50">
+                <TrendingUp size={16} className="animate-pulse" /> The Silent Crisis
+              </div>
               
-              {/* Left Column: The "Why" - Data & Crisis */}
-              <div className="flex-1">
-                <div className="inline-flex items-center gap-2 rounded-full bg-rose-50 px-4 py-1.5 text-xs font-black text-rose-600 uppercase tracking-widest mb-6 border border-rose-100">
-                  <TrendingUp size={14} className="animate-pulse" /> The Silent Crisis
-                </div>
-                
-                <h2 className="text-4xl font-black tracking-tight text-zinc-900 md:text-5xl lg:text-6xl leading-[1.1]">
-                  Why NeuroNet <br/>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-cyan-500">Defines the Future</span>
-                </h2>
-                
-                <p className="mt-8 text-lg text-zinc-600 leading-relaxed max-w-xl">
-                  Adolescence is a critical window. Globally, mental health challenges are rising, yet most remain undetected until a crisis occurs. NeuroNet was built to solve the <b>Intervention Gap</b>.
-                </p>
+              <h2 className="text-5xl font-black tracking-tight text-zinc-900 md:text-6xl lg:text-7xl leading-[1.05] mb-8">
+                Why NeuroNet{" "}
+                <span className="relative inline-block">
+                  <span className="absolute -inset-1 bg-gradient-to-r from-indigo-500 via-cyan-500 to-indigo-500 blur-xl opacity-30 animate-pulse"></span>
+                  <span className="relative text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-cyan-500 to-indigo-600">
+                    Defines the Future
+                  </span>
+                </span>
+              </h2>
+              
+              <p className="text-2xl text-zinc-600 leading-relaxed max-w-4xl mx-auto font-medium">
+                Adolescence is a critical window. Globally, mental health challenges are rising, yet most remain undetected until a crisis occurs. NeuroNet was built to solve the <span className="font-black text-zinc-900">Intervention Gap</span>.
+              </p>
+            </div>
 
-                {/* Pulse Stats Grid */}
-                <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-8 border-l-2 border-indigo-100 pl-8">
-                  <div>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-4xl font-black text-indigo-600">1 in 7</span>
+            {/* Stats Grid - Redesigned */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
+              {[
+                { value: "1 in 7", label: "Adolescents Worldwide", desc: "Experience clinical mental health disorders", gradient: "from-indigo-500 to-indigo-600", icon: "👥" },
+                { value: "50%", label: "Early Onset", desc: "Begin by age 14", gradient: "from-cyan-500 to-cyan-600", icon: "⏰" },
+                { value: "75%", label: "Go Untreated", desc: "Never receive professional help", gradient: "from-rose-500 to-rose-600", icon: "⚠️" },
+                { value: "100+", label: "Schools Trust Us", desc: "Across multiple countries", gradient: "from-emerald-500 to-emerald-600", icon: "🏫" }
+              ].map((stat, i) => (
+                <div key={i} className="group relative overflow-hidden rounded-3xl bg-white border-2 border-zinc-100 p-8 hover:shadow-2xl hover:shadow-indigo-500/10 hover:-translate-y-2 transition-all duration-500">
+                  <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
+                  <div className="relative z-10">
+                    <div className="text-4xl mb-4">{stat.icon}</div>
+                    <div className={`text-5xl font-black bg-gradient-to-br ${stat.gradient} bg-clip-text text-transparent mb-3`}>
+                      {stat.value}
                     </div>
-                    <p className="mt-2 text-sm font-bold text-zinc-500 uppercase tracking-tight">Adolescents Worldwide</p>
-                    <p className="mt-1 text-xs text-zinc-400">Experience clinical mental health disorders, often in silence.</p>
-                  </div>
-                  <div>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-4xl font-black text-cyan-500">50%</span>
-                    </div>
-                    <p className="mt-2 text-sm font-bold text-zinc-500 uppercase tracking-tight">Early Onset</p>
-                    <p className="mt-1 text-xs text-zinc-400">Of all mental health conditions begin by age 14.</p>
-                  </div>
-                </div>
-
-                <div className="mt-12 flex flex-wrap gap-4">
-                  <div className="flex items-center gap-2 group cursor-help">
-                    <Users size={18} className="text-indigo-400" />
-                    <span className="text-sm font-bold text-zinc-700 underline decoration-indigo-200 underline-offset-4 decoration-2">Research-Backed Efficacy</span>
-                  </div>
-                  <div className="flex items-center gap-2 group cursor-help">
-                    <Shield size={18} className="text-cyan-400" />
-                    <span className="text-sm font-bold text-zinc-700 underline decoration-cyan-200 underline-offset-4 decoration-2">Clinical Protocol Verified</span>
+                    <p className="text-sm font-black text-zinc-900 uppercase tracking-widest mb-2">{stat.label}</p>
+                    <p className="text-xs text-zinc-500 leading-relaxed">{stat.desc}</p>
                   </div>
                 </div>
-              </div>
+              ))}
+            </div>
 
-              {/* Right Column: The "How" - Impact Pillars */}
-              <div className="flex-1 w-full max-w-xl">
-                <div className="grid grid-cols-1 gap-6">
-                  {/* Pillar 1 */}
-                  <div className="group relative overflow-hidden rounded-[2.5rem] bg-zinc-50 p-8 border border-zinc-100 hover:bg-white hover:shadow-[0_20px_50px_rgba(79,70,229,0.1)] transition-all duration-500">
-                    <div className="flex items-start gap-6">
-                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                        <Brain size={28} />
-                      </div>
-                      <div>
-                        <h4 className="text-xl font-black text-zinc-900">Cognitive Pattern Detection</h4>
-                        <p className="mt-2 text-sm text-zinc-500 leading-relaxed font-medium">
-                          Our proprietary NLP models analyze journal sentiment to identify subtle shifts in behavioral trends before they escalate into emergencies.
-                        </p>
-                      </div>
-                    </div>
+            {/* Impact Pillars - Redesigned */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Pillar 1 */}
+              <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-50 to-indigo-100 p-10 border-2 border-indigo-200 hover:shadow-2xl hover:shadow-indigo-500/20 hover:-translate-y-2 transition-all duration-500">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/20 rounded-full blur-3xl"></div>
+                <div className="relative z-10">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-600 to-indigo-700 text-white shadow-2xl shadow-indigo-600/30 mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+                    <Brain size={32} />
                   </div>
-
-                  {/* Pillar 2 */}
-                  <div className="group relative overflow-hidden rounded-[2.5rem] bg-zinc-50 p-8 border border-zinc-100 hover:bg-white hover:shadow-[0_20px_50px_rgba(6,182,212,0.1)] transition-all duration-500 sm:translate-x-6">
-                    <div className="flex items-start gap-6">
-                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-cyan-500 text-white shadow-lg shadow-cyan-500/20 group-hover:scale-110 group-hover:-rotate-3 transition-all duration-500">
-                        <Heart size={28} />
-                      </div>
-                      <div>
-                        <h4 className="text-xl font-black text-zinc-900">Safe-Space Communication</h4>
-                        <p className="mt-2 text-sm text-zinc-500 leading-relaxed font-medium">
-                          Encrypted channels provide a confidential sanctuary for adolescents to connect with verified counselors, reducing social isolation barriers.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Pillar 3 */}
-                  <div className="group relative overflow-hidden rounded-[2.5rem] bg-zinc-900 p-8 border border-zinc-800 hover:shadow-[0_20px_50px_rgba(79,70,229,0.2)] transition-all duration-500">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl" />
-                    <div className="flex items-start gap-6 relative z-10">
-                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-white group-hover:scale-110 transition-all duration-500">
-                        <Activity size={28} />
-                      </div>
-                      <div>
-                        <h4 className="text-xl font-black text-white">Ethical AI Framework</h4>
-                        <p className="mt-2 text-sm text-zinc-400 leading-relaxed font-medium">
-                          Built on strict privacy-first protocols (HIPAA & COPPA), ensuring that technology serves humanity without compromising user dignity or data safety.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                  <h4 className="text-2xl font-black text-indigo-900 mb-4">Cognitive Pattern Detection</h4>
+                  <p className="text-indigo-700 leading-relaxed font-medium">
+                    Our proprietary NLP models analyze journal sentiment to identify subtle shifts in behavioral trends before they escalate into emergencies.
+                  </p>
                 </div>
               </div>
 
+              {/* Pillar 2 */}
+              <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-cyan-50 to-cyan-100 p-10 border-2 border-cyan-200 hover:shadow-2xl hover:shadow-cyan-500/20 hover:-translate-y-2 transition-all duration-500">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/20 rounded-full blur-3xl"></div>
+                <div className="relative z-10">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-600 to-cyan-700 text-white shadow-2xl shadow-cyan-600/30 mb-6 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-500">
+                    <Heart size={32} />
+                  </div>
+                  <h4 className="text-2xl font-black text-cyan-900 mb-4">Safe-Space Communication</h4>
+                  <p className="text-cyan-700 leading-relaxed font-medium">
+                    Encrypted channels provide a confidential sanctuary for adolescents to connect with verified counselors, reducing social isolation barriers.
+                  </p>
+                </div>
+              </div>
+
+              {/* Pillar 3 */}
+              <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-zinc-800 to-zinc-900 p-10 border-2 border-zinc-700 hover:shadow-2xl hover:shadow-indigo-500/30 hover:-translate-y-2 transition-all duration-500">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/20 rounded-full blur-3xl"></div>
+                <div className="relative z-10">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-500 text-white shadow-2xl shadow-indigo-500/30 mb-6 group-hover:scale-110 transition-all duration-500">
+                    <Activity size={32} />
+                  </div>
+                  <h4 className="text-2xl font-black text-white mb-4">Ethical AI Framework</h4>
+                  <p className="text-zinc-300 leading-relaxed font-medium">
+                    Built on strict privacy-first protocols (HIPAA & COPPA), ensuring that technology serves humanity without compromising user dignity or data safety.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Trust Badges */}
+            <div className="mt-16 flex flex-wrap items-center justify-center gap-8">
+              <div className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-white border-2 border-indigo-100 shadow-lg hover:shadow-xl transition-all">
+                <Users size={24} className="text-indigo-600" />
+                <span className="text-sm font-black text-zinc-900">Research-Backed Efficacy</span>
+              </div>
+              <div className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-white border-2 border-cyan-100 shadow-lg hover:shadow-xl transition-all">
+                <Shield size={24} className="text-cyan-600" />
+                <span className="text-sm font-black text-zinc-900">Clinical Protocol Verified</span>
+              </div>
+              <div className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-white border-2 border-emerald-100 shadow-lg hover:shadow-xl transition-all">
+                <Award size={24} className="text-emerald-600" />
+                <span className="text-sm font-black text-zinc-900">HIPAA & COPPA Compliant</span>
+              </div>
             </div>
           </div>
         </section>
