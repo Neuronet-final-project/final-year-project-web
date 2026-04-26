@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
+import { AlertTriangle, TrendingUp, Clock, Zap, RefreshCw } from 'lucide-react';
 
 interface AlertConfig {
   high_risk_threshold: number;
@@ -30,12 +31,19 @@ export default function AlertConfigPage() {
 
   const fetchConfig = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/configurable-alerts/current-config`, {
-        credentials: 'include',
-      });
+      const response = await fetch('/api/proxy/backend/configurable-alerts/current-config');
       if (response.ok) {
         const data = await response.json();
-        setConfig(data);
+        setConfig({
+          high_risk_threshold: data.alert_thresholds?.high_risk_threshold || 85,
+          medium_risk_threshold: data.alert_thresholds?.medium_risk_threshold || 60,
+          low_risk_threshold: data.alert_thresholds?.low_risk_threshold || 30,
+          alert_cooldown_hours: data.alert_settings?.alert_cooldown_hours || 24,
+          consecutive_alerts_limit: data.alert_settings?.consecutive_alerts_limit || 3,
+          auto_escalation_enabled: data.alert_settings?.auto_escalation_enabled ?? true,
+        });
+      } else {
+        toast.error('Failed to load configuration');
       }
     } catch (error) {
       toast.error('Failed to load configuration');
@@ -47,15 +55,15 @@ export default function AlertConfigPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/configurable-alerts/thresholds`, {
+      const response = await fetch('/api/proxy/backend/configurable-alerts/thresholds', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify(config),
       });
 
       if (response.ok) {
         toast.success('Alert configuration updated successfully');
+        fetchConfig();
       } else {
         toast.error('Failed to update configuration');
       }
@@ -68,77 +76,133 @@ export default function AlertConfigPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="flex items-center justify-center min-h-screen bg-[#f8fafc]">
+        <div className="h-12 w-12 border-4 border-rose-600/20 border-t-rose-600 rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Alert Threshold Configuration</h1>
-        <p className="text-gray-600 mt-2">Configure risk thresholds and alert behavior</p>
-      </div>
+    <div className="min-h-screen bg-[#f8fafc] p-10">
+      <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        {/* Header */}
+        <div className="flex items-center justify-between bg-white/40 border border-white/60 p-6 rounded-3xl backdrop-blur-md">
+          <div className="flex items-center gap-4">
+            <div className="h-10 w-10 flex items-center justify-center bg-rose-600 text-white rounded-xl">
+              <AlertTriangle className="h-5 w-5" />
+            </div>
+            <div>
+              <h1 className="text-lg font-black text-zinc-900 tracking-tight">Alert Threshold Configuration</h1>
+              <p className="text-[11px] font-bold text-zinc-400 capitalize">Configure risk detection and alert behavior</p>
+            </div>
+          </div>
+          <button 
+            onClick={fetchConfig}
+            className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest bg-zinc-100 text-zinc-700 hover:bg-zinc-200 active:scale-95 transition-all"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Refresh
+          </button>
+        </div>
 
-      <div className="bg-white rounded-lg shadow-md p-6 space-y-6">
         {/* Risk Thresholds */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Risk Thresholds</h2>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                High Risk Threshold (0-100)
+        <div className="overflow-hidden rounded-[2.5rem] border border-white/40 bg-white/60 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md">
+          <div className="flex items-center gap-3 mb-6">
+            <TrendingUp className="h-5 w-5 text-rose-600" />
+            <h2 className="text-sm font-black text-zinc-900 uppercase tracking-widest">Risk Thresholds</h2>
+          </div>
+          
+          <div className="space-y-6">
+            {/* High Risk */}
+            <div className="p-6 rounded-2xl border border-rose-100 bg-rose-50/50">
+              <label className="block text-xs font-black uppercase tracking-widest text-rose-700 mb-3">
+                High Risk Threshold
               </label>
-              <input
-                type="number"
-                min="0"
-                max="100"
-                value={config.high_risk_threshold}
-                onChange={(e) => setConfig({ ...config, high_risk_threshold: parseInt(e.target.value) })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              />
-              <p className="text-sm text-gray-500 mt-1">Scores above this trigger high-risk alerts</p>
+              <div className="flex items-center gap-4">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={config.high_risk_threshold}
+                  onChange={(e) => setConfig({ ...config, high_risk_threshold: parseInt(e.target.value) })}
+                  className="flex-1 h-2 bg-rose-200 rounded-lg appearance-none cursor-pointer accent-rose-600"
+                />
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={config.high_risk_threshold}
+                  onChange={(e) => setConfig({ ...config, high_risk_threshold: parseInt(e.target.value) })}
+                  className="w-20 px-3 py-2 border border-rose-200 rounded-xl text-center font-black text-rose-900 focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                />
+              </div>
+              <p className="text-xs text-rose-600 mt-2">Scores above this trigger high-risk alerts</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Medium Risk Threshold (0-100)
+            {/* Medium Risk */}
+            <div className="p-6 rounded-2xl border border-amber-100 bg-amber-50/50">
+              <label className="block text-xs font-black uppercase tracking-widest text-amber-700 mb-3">
+                Medium Risk Threshold
               </label>
-              <input
-                type="number"
-                min="0"
-                max="100"
-                value={config.medium_risk_threshold}
-                onChange={(e) => setConfig({ ...config, medium_risk_threshold: parseInt(e.target.value) })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-              />
-              <p className="text-sm text-gray-500 mt-1">Scores above this trigger medium-risk alerts</p>
+              <div className="flex items-center gap-4">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={config.medium_risk_threshold}
+                  onChange={(e) => setConfig({ ...config, medium_risk_threshold: parseInt(e.target.value) })}
+                  className="flex-1 h-2 bg-amber-200 rounded-lg appearance-none cursor-pointer accent-amber-600"
+                />
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={config.medium_risk_threshold}
+                  onChange={(e) => setConfig({ ...config, medium_risk_threshold: parseInt(e.target.value) })}
+                  className="w-20 px-3 py-2 border border-amber-200 rounded-xl text-center font-black text-amber-900 focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                />
+              </div>
+              <p className="text-xs text-amber-600 mt-2">Scores above this trigger medium-risk alerts</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Low Risk Threshold (0-100)
+            {/* Low Risk */}
+            <div className="p-6 rounded-2xl border border-blue-100 bg-blue-50/50">
+              <label className="block text-xs font-black uppercase tracking-widest text-blue-700 mb-3">
+                Low Risk Threshold
               </label>
-              <input
-                type="number"
-                min="0"
-                max="100"
-                value={config.low_risk_threshold}
-                onChange={(e) => setConfig({ ...config, low_risk_threshold: parseInt(e.target.value) })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <p className="text-sm text-gray-500 mt-1">Scores above this trigger low-risk alerts</p>
+              <div className="flex items-center gap-4">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={config.low_risk_threshold}
+                  onChange={(e) => setConfig({ ...config, low_risk_threshold: parseInt(e.target.value) })}
+                  className="flex-1 h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                />
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={config.low_risk_threshold}
+                  onChange={(e) => setConfig({ ...config, low_risk_threshold: parseInt(e.target.value) })}
+                  className="w-20 px-3 py-2 border border-blue-200 rounded-xl text-center font-black text-blue-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <p className="text-xs text-blue-600 mt-2">Scores above this trigger low-risk alerts</p>
             </div>
           </div>
         </div>
 
         {/* Alert Behavior */}
-        <div className="border-t pt-6">
-          <h2 className="text-xl font-semibold mb-4">Alert Behavior</h2>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+        <div className="overflow-hidden rounded-[2.5rem] border border-white/40 bg-white/60 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md">
+          <div className="flex items-center gap-3 mb-6">
+            <Clock className="h-5 w-5 text-indigo-600" />
+            <h2 className="text-sm font-black text-zinc-900 uppercase tracking-widest">Alert Behavior</h2>
+          </div>
+          
+          <div className="space-y-6">
+            <div className="p-6 rounded-2xl border border-zinc-100 bg-white">
+              <label className="block text-xs font-black uppercase tracking-widest text-zinc-700 mb-3">
                 Alert Cooldown (hours)
               </label>
               <input
@@ -147,13 +211,13 @@ export default function AlertConfigPage() {
                 max="168"
                 value={config.alert_cooldown_hours}
                 onChange={(e) => setConfig({ ...config, alert_cooldown_hours: parseInt(e.target.value) })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-zinc-200 rounded-xl font-bold text-zinc-900 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
-              <p className="text-sm text-gray-500 mt-1">Minimum time between alerts for the same adolescent</p>
+              <p className="text-xs text-zinc-500 mt-2">Minimum time between alerts for the same adolescent</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="p-6 rounded-2xl border border-zinc-100 bg-white">
+              <label className="block text-xs font-black uppercase tracking-widest text-zinc-700 mb-3">
                 Consecutive Alerts Limit
               </label>
               <input
@@ -162,40 +226,42 @@ export default function AlertConfigPage() {
                 max="10"
                 value={config.consecutive_alerts_limit}
                 onChange={(e) => setConfig({ ...config, consecutive_alerts_limit: parseInt(e.target.value) })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-zinc-200 rounded-xl font-bold text-zinc-900 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
-              <p className="text-sm text-gray-500 mt-1">Number of consecutive alerts before auto-escalation</p>
+              <p className="text-xs text-zinc-500 mt-2">Number of consecutive alerts before auto-escalation</p>
             </div>
 
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="auto_escalation"
-                checked={config.auto_escalation_enabled}
-                onChange={(e) => setConfig({ ...config, auto_escalation_enabled: e.target.checked })}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label htmlFor="auto_escalation" className="ml-2 block text-sm text-gray-700">
-                Enable Auto-Escalation
+            <div className="p-6 rounded-2xl border border-zinc-100 bg-white">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={config.auto_escalation_enabled}
+                  onChange={(e) => setConfig({ ...config, auto_escalation_enabled: e.target.checked })}
+                  className="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-zinc-300 rounded"
+                />
+                <div>
+                  <span className="text-xs font-black uppercase tracking-widest text-zinc-700">Enable Auto-Escalation</span>
+                  <p className="text-xs text-zinc-500 mt-1">Automatically escalate after consecutive alerts limit is reached</p>
+                </div>
               </label>
             </div>
-            <p className="text-sm text-gray-500">Automatically escalate after consecutive alerts limit is reached</p>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="border-t pt-6 flex justify-end space-x-4">
+        <div className="flex justify-end gap-4">
           <button
             onClick={fetchConfig}
-            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+            className="px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest bg-zinc-100 text-zinc-700 hover:bg-zinc-200 active:scale-95 transition-all"
           >
-            Reset
+            Reset Changes
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest bg-rose-600 text-white hover:bg-rose-700 shadow-lg shadow-rose-100 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
+            <Zap className="h-4 w-4" />
             {saving ? 'Saving...' : 'Save Configuration'}
           </button>
         </div>

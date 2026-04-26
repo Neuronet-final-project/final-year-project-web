@@ -15,86 +15,78 @@ type Alert = {
 };
 
 export default function RecentAlerts({ alerts }: { alerts: Alert[] }) {
-  const displayAlerts = alerts.slice(0, 4);
+  // Show only 2 most recent high-priority alerts
+  const displayAlerts = alerts
+    .filter(a => a.risk_level === 'high')
+    .slice(0, 2);
  
   return (
-    <div className="flex flex-col h-full rounded-[2rem] border border-white bg-white/70 backdrop-blur-md p-8 shadow-sm ring-1 ring-zinc-200/50">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-4">
-           <div className="bg-rose-50 p-2.5 rounded-xl border border-rose-100 text-rose-600 shadow-sm">
-              <ShieldAlert className="h-6 w-6" />
+    <div className="flex flex-col h-full rounded-2xl border border-slate-200 bg-white p-6 shadow-lg">
+      <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center gap-3">
+           <div className="bg-red-50 p-2.5 rounded-xl border border-red-100 text-red-600">
+              <ShieldAlert className="h-5 w-5" />
            </div>
-           <h3 className="text-xl font-bold tracking-tight text-zinc-900">Critical Alerts</h3>
+           <div>
+             <h3 className="text-lg font-black tracking-tight text-slate-900">Critical Alerts</h3>
+             <p className="text-xs text-slate-500 font-medium">High priority cases</p>
+           </div>
         </div>
-        <Link href="/counselor/alerts" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#6366f1] hover:text-[#06b6d4] transition-colors">
-          View All <ArrowRight className="h-3 w-3" />
+        <Link 
+          href="/counselor/alerts" 
+          className="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors px-3 py-1.5 rounded-lg hover:bg-blue-50"
+        >
+          View All <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>
  
-      <div className="flex flex-col gap-3 flex-1 overflow-y-auto max-h-[400px] custom-scrollbar pr-1">
+      <div className="flex flex-col gap-3 flex-1">
         {displayAlerts.length === 0 ? (
-          <div className="flex h-48 flex-col items-center justify-center rounded-3xl border border-dashed border-zinc-200 bg-zinc-50/50 text-sm font-bold text-zinc-400">
-            <Zap className="h-10 w-10 opacity-20 mb-3" />
-            No risks detected.
+          <div className="flex h-32 flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 text-sm font-semibold text-slate-400">
+            <ShieldAlert className="h-8 w-8 opacity-30 mb-2" />
+            No critical alerts
           </div>
         ) : (
           displayAlerts.map((alert) => {
-            const riskConfig = {
-              high: { color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-100", accent: "bg-rose-500", icon: ShieldAlert },
-              medium: { color: "text-orange-600", bg: "bg-orange-50", border: "border-orange-100", accent: "bg-orange-500", icon: AlertCircle },
-              low: { color: "text-indigo-600", bg: "bg-indigo-50", border: "border-indigo-100", accent: "bg-indigo-500", icon: Info },
-            };
-            const cfg = riskConfig[alert.risk_level as keyof typeof riskConfig] || riskConfig.low;
             const emotions = alert.detected_emotions || [];
             const mainConcern = alert.main_concern || "";
+            // Fix: risk_score is 0-1, convert to percentage
+            const riskPercentage = Math.round(alert.risk_score * 100);
  
             return (
               <div
                 key={alert._id}
-                className="group relative flex flex-col p-4 rounded-3xl border border-zinc-100 bg-white transition-all duration-300 hover:shadow-lg hover:shadow-rose-50 hover:bg-slate-50/50 ring-1 ring-transparent hover:ring-rose-100"
+                className="group relative flex items-center gap-3 p-3.5 rounded-xl border border-red-100 bg-red-50/50 transition-all duration-300 hover:shadow-md hover:bg-red-50"
               >
-                <div className={`absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1 rounded-r-full transition-all duration-300 group-hover:h-12 ${cfg.accent}`} />
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1 rounded-r-full bg-red-500 transition-all duration-300 group-hover:h-10" />
                 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl shadow-inner transition-transform group-hover:scale-105 ${cfg.bg} ${cfg.color} border ${cfg.border}`}>
-                      <cfg.icon className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h4 className={`text-[10px] font-black uppercase tracking-[0.1em] ${cfg.color}`}>
-                        {alert.risk_level} Priority
-                      </h4>
-                      <p className="text-sm font-bold text-zinc-900 mt-0.5">
-                        {alert.adolescent_name || alert.adolescent_email?.split('@')[0] || "Unknown"}
-                      </p>
-                    </div>
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-600 border border-red-200">
+                  <ShieldAlert className="h-5 w-5" />
+                </div>
+                
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-sm font-bold text-slate-900 truncate">
+                      {alert.adolescent_name || alert.adolescent_email?.split('@')[0] || "Unknown"}
+                    </p>
+                    <span className="text-xs font-semibold text-slate-500 ml-2">
+                      {new Date(alert.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
                   </div>
                   
-                  <div className="text-right flex flex-col items-end gap-1">
-                    <div className="text-[10px] font-bold text-zinc-400">
-                      {new Date(alert.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </div>
-                    <div className="h-1.5 w-14 rounded-full bg-zinc-100 overflow-hidden shadow-inner">
-                       <div className={`h-full ${cfg.accent}`} style={{ width: `${alert.risk_score * 100}%` }} />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Main Concern + Emotions */}
-                {(mainConcern || emotions.length > 0) && (
-                  <div className="mt-3 pt-2 border-t border-zinc-50 flex flex-wrap items-center gap-1.5">
+                  <div className="flex items-center gap-2">
                     {mainConcern && (
-                      <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-zinc-800 text-white">
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-900 text-white">
                         {mainConcern}
                       </span>
                     )}
-                    {emotions.slice(0, 3).map((emotion, i) => (
-                      <span key={i} className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-500 border border-zinc-200">
+                    {emotions.slice(0, 2).map((emotion, i) => (
+                      <span key={i} className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">
                         {emotion}
                       </span>
                     ))}
                   </div>
-                )}
+                </div>
               </div>
             );
           })

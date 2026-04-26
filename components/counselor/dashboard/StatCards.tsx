@@ -20,29 +20,29 @@ export default function StatCards({
       label: "Active Alerts", 
       value: activeAlerts, 
       icon: AlertCircle, 
-      color: "text-rose-600", 
-      bg: "bg-rose-50", 
-      border: "border-rose-100", 
-      href: "/counselor/dashboard#alerts",
+      color: "text-red-600", 
+      bg: "bg-red-50", 
+      border: "border-red-200", 
+      href: "/counselor/alerts",
       desc: "Emergency pings"
     },
     { 
       label: "Assignments", 
       value: assignedAdolescents, 
       icon: Users, 
-      color: "text-indigo-600", 
-      bg: "bg-indigo-50", 
-      border: "border-indigo-100", 
-      href: "/counselor/dashboard",
+      color: "text-blue-600", 
+      bg: "bg-blue-50", 
+      border: "border-blue-200", 
+      href: "/counselor/assignments",
       desc: "Managed cases"
     },
     { 
       label: "Direct Chat", 
       value: unreadMessages, 
       icon: MessageSquare, 
-      color: "text-cyan-600", 
-      bg: "bg-cyan-50", 
-      border: "border-cyan-100", 
+      color: "text-slate-600", 
+      bg: "bg-slate-50", 
+      border: "border-slate-200", 
       href: "/counselor/chat",
       desc: "Secure messages"
     },
@@ -50,36 +50,36 @@ export default function StatCards({
       label: "Live Topics", 
       value: activeChannels, 
       icon: Radio, 
-      color: "text-emerald-600", 
-      bg: "bg-emerald-50", 
-      border: "border-emerald-100", 
+      color: "text-blue-600", 
+      bg: "bg-blue-50", 
+      border: "border-blue-200", 
       href: "/counselor/channels",
       desc: "Group broadcasts"
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mt-8">
+    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mt-8">
       {stats.map((stat, i) => (
         <Link 
           key={i} 
           href={stat.href}
-          className="group relative flex flex-col items-start overflow-hidden rounded-[2rem] border border-white bg-white/70 backdrop-blur-md p-6 shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-indigo-100 hover:-translate-y-1 ring-1 ring-zinc-200/50 hover:ring-indigo-200"
+          className="group relative flex flex-col items-start overflow-hidden rounded-2xl border bg-white p-6 shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border-slate-200 hover:border-blue-300"
         >
           <div className="flex w-full items-start justify-between mb-4">
-            <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${stat.bg} ${stat.color} border ${stat.border} shadow-sm group-hover:scale-110 transition-transform`}>
-              <stat.icon className="h-6 w-6" />
+            <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${stat.bg} ${stat.color} border ${stat.border} shadow-sm group-hover:scale-110 transition-transform`}>
+              <stat.icon className="h-6 w-6" strokeWidth={2.5} />
             </div>
             <div className={`text-4xl font-black ${stat.color} tracking-tighter`}>{stat.value}</div>
           </div>
 
           <div>
-            <h3 className="text-sm font-bold text-zinc-900 group-hover:text-indigo-600 transition-colors">{stat.label}</h3>
-            <p className="text-[10px] font-medium text-zinc-400 uppercase tracking-widest mt-1">{stat.desc}</p>
+            <h3 className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{stat.label}</h3>
+            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mt-1">{stat.desc}</p>
           </div>
 
-          <div className="absolute -bottom-2 -right-2 opacity-10 group-hover:opacity-20 transition-opacity">
-            <stat.icon className={`h-16 w-16 ${stat.color}`} />
+          <div className="absolute -bottom-2 -right-2 opacity-5 group-hover:opacity-10 transition-opacity">
+            <stat.icon className={`h-20 w-20 ${stat.color}`} />
           </div>
         </Link>
       ))}

@@ -347,7 +347,12 @@ export default function CounselorChatPage() {
     return dt.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
   }
 
-  if (loading || !me.authenticated) return <div className="flex min-h-screen items-center justify-center bg-[#f4f7fb] text-zinc-500">Loading secure chat...</div>;
+  if (loading || !me.authenticated) return <div className="flex min-h-screen items-center justify-center bg-slate-50 text-slate-500">
+    <div className="flex flex-col items-center gap-4">
+      <div className="h-12 w-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+      <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Loading Secure Chat...</p>
+    </div>
+  </div>;
 
   const uniqueContacts = Array.from(new Map(assignedContacts.map(c => [c.adolescent_id, c])).values());
   const guardianGroups: Record<string, AssignedAdolescent[]> = {};

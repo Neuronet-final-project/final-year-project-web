@@ -16,12 +16,16 @@ import AuditVaultTab from "@/components/admin/dashboard/AuditVaultTab";
 import AISettingsTab from "@/components/admin/dashboard/AISettingsTab";
 import SystemConfigTab from "@/components/admin/dashboard/SystemConfigTab";
 import ProfileTab from "@/components/admin/dashboard/ProfileTab";
+import GuardianApprovalsTab from "@/components/admin/dashboard/GuardianApprovalsTab";
+import AIRecommendationsTab from "@/components/admin/dashboard/AIRecommendationsTab";
+import EducationalAnalyticsTab from "@/components/admin/dashboard/EducationalAnalyticsTab";
+import BackgroundTasksTab from "@/components/admin/dashboard/BackgroundTasksTab";
 
 type AuthMeResponse =
   | { authenticated: false }
   | { authenticated: true; email: string; role: string; _id: string };
 
-type TabNode = "overview" | "users" | "applications" | "assign" | "audit" | "config" | "ai" | "profile";
+type TabNode = "overview" | "users" | "applications" | "assign" | "approvals" | "recommendations" | "educational" | "tasks" | "alerts" | "limits" | "config" | "audit" | "profile";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -195,9 +199,14 @@ export default function AdminDashboardPage() {
     users: "User Management Directory",
     applications: "Counselor Applications",
     assign: "Relational Mapping",
+    approvals: "Guardian Approval System",
+    recommendations: "AI Recommendation Analytics",
+    educational: "Educational Content Analytics",
+    tasks: "Background Task Monitor",
+    alerts: "Alert Threshold Configuration",
+    limits: "Counselor Assignment Limits",
     audit: "Audit Vault (Ledger)",
     config: "System Configuration",
-    ai: "AI Model Settings",
     profile: "System Administrator Profile",
   };
 
@@ -217,45 +226,18 @@ export default function AdminDashboardPage() {
         />
 
         <main className="flex-1 overflow-y-auto p-10">
-          {activeTab === "overview" && (
-            <OverviewTab data={data} recentUsers={users.slice(0, 4)} />
-          )}
-          {activeTab === "users" && (
-            <UserManagementTab 
-              users={users}
-              userSearch={userSearch}
-              setUserSearch={setUserSearch}
-              userRoleFilter={userRoleFilter}
-              setUserRoleFilter={setUserRoleFilter}
-              usersLoading={usersLoading}
-              loadUsers={loadUsers}
-              handleToggleUserStatus={handleToggleUserStatus}
-            />
-          )}
-          {activeTab === "applications" && (
-            <CounselorApplicationsTab 
-              applications={applications}
-              appsLoading={appsLoading}
-              handleApplication={handleApplication}
-            />
-          )}
-          {activeTab === "assign" && (
-            <AssignmentsTab 
-              assignLoading={assignLoading}
-              assignResult={assignResult}
-              setAssignResult={setAssignResult}
-              handleAssign={handleAssign}
-            />
-          )}
-          {activeTab === "audit" && (
-            <AuditVaultTab 
-              auditLogs={auditLogs}
-              auditLoading={auditLoading}
-              loadAuditLogs={loadAuditLogs}
-            />
-          )}
+          {activeTab === "overview" && <OverviewTab data={data} recentUsers={users.slice(0, 4)} />}
+          {activeTab === "users" && <UserManagementTab users={users} userSearch={userSearch} setUserSearch={setUserSearch} userRoleFilter={userRoleFilter} setUserRoleFilter={setUserRoleFilter} usersLoading={usersLoading} loadUsers={loadUsers} handleToggleUserStatus={handleToggleUserStatus} />}
+          {activeTab === "applications" && <CounselorApplicationsTab applications={applications} appsLoading={appsLoading} handleApplication={handleApplication} />}
+          {activeTab === "assign" && <AssignmentsTab assignLoading={assignLoading} assignResult={assignResult} setAssignResult={setAssignResult} handleAssign={handleAssign} />}
+          {activeTab === "approvals" && <GuardianApprovalsTab />}
+          {activeTab === "recommendations" && <AIRecommendationsTab />}
+          {activeTab === "educational" && <EducationalAnalyticsTab />}
+          {activeTab === "tasks" && <BackgroundTasksTab />}
+          {activeTab === "alerts" && <div className="animate-in fade-in slide-in-from-bottom-4 duration-700"><iframe src="/admin/dashboard/alert-config" className="w-full h-[calc(100vh-120px)] border-0 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)]" /></div>}
+          {activeTab === "limits" && <div className="animate-in fade-in slide-in-from-bottom-4 duration-700"><iframe src="/admin/dashboard/counselor-limits" className="w-full h-[calc(100vh-120px)] border-0 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)]" /></div>}
+          {activeTab === "audit" && <AuditVaultTab auditLogs={auditLogs} auditLoading={auditLoading} loadAuditLogs={loadAuditLogs} />}
           {activeTab === "config" && <SystemConfigTab />}
-          {activeTab === "ai" && <AISettingsTab />}
           {activeTab === "profile" && <ProfileTab />}
         </main>
       </div>

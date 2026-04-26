@@ -33,16 +33,26 @@ export default function DashboardSidebar({ activeTab, setActiveTab, pendingApps,
       items: [
         { id: 'overview', label: 'Dashboard', icon: LayoutDashboard },
         { id: 'users', label: 'User Management', icon: Users },
-        { id: 'applications', label: 'Counselor Management', icon: UserRoundCheck, badge: pendingApps },
-        { id: 'assign', label: 'Consent Oversight', icon: Handshake },
+        { id: 'applications', label: 'Counselor Applications', icon: UserRoundCheck, badge: pendingApps },
+        { id: 'assign', label: 'Case Assignments', icon: Handshake },
       ]
     },
     {
-      group: 'SYSTEM',
+      group: 'MONITORING',
       items: [
-        { id: 'config', label: 'System Configuration', icon: Settings },
-        { id: 'ai', label: 'AI Model Settings', icon: Bot },
-        { id: 'audit', label: 'Audit Logs', icon: History },
+        { id: 'approvals', label: 'Guardian Approvals', icon: ShieldCheck },
+        { id: 'recommendations', label: 'AI Recommendations', icon: Bot },
+        { id: 'educational', label: 'Educational Analytics', icon: BookOpen },
+        { id: 'tasks', label: 'Background Tasks', icon: BarChart3 },
+      ]
+    },
+    {
+      group: 'CONFIGURATION',
+      items: [
+        { id: 'alerts', label: 'Alert Thresholds', icon: FileText },
+        { id: 'limits', label: 'Counselor Limits', icon: KeyRound },
+        { id: 'config', label: 'System Settings', icon: Settings },
+        { id: 'audit', label: 'Audit Vault', icon: History },
       ]
     },
   ];

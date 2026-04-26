@@ -10,16 +10,12 @@ export default function CounselorLayout({
 }) {
   return (
     <NotificationProvider>
-      <div className="flex h-screen overflow-hidden bg-[#f8fafc]">
+      <div className="flex h-screen overflow-hidden bg-slate-50">
         {/* PERSISTENT SIDEBAR */}
         <CounselorSidebar />
 
         {/* MAIN CONTENT CANVAS */}
-        <main className="flex-1 relative overflow-y-auto custom-scrollbar">
-          {/* Dynamic Background Mesh (Consistent across subpages) */}
-          <div className="absolute inset-0 z-0 opacity-20 pointer-events-none bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-indigo-100 via-transparent to-transparent"></div>
-          <div className="absolute inset-0 z-0 opacity-20 pointer-events-none bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-cyan-100 via-transparent to-transparent"></div>
-          
+        <main className="flex-1 relative overflow-y-auto custom-scrollbar bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100">
           <div className="relative z-10 w-full min-h-full">
             {children}
           </div>
