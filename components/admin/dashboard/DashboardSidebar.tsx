@@ -43,7 +43,6 @@ export default function DashboardSidebar({ activeTab, setActiveTab, pendingApps,
         { id: 'approvals', label: 'Guardian Approvals', icon: ShieldCheck },
         { id: 'recommendations', label: 'AI Recommendations', icon: Bot },
         { id: 'educational', label: 'Educational Analytics', icon: BookOpen },
-        { id: 'tasks', label: 'Background Tasks', icon: BarChart3 },
       ]
     },
     {

@@ -19,13 +19,12 @@ import ProfileTab from "@/components/admin/dashboard/ProfileTab";
 import GuardianApprovalsTab from "@/components/admin/dashboard/GuardianApprovalsTab";
 import AIRecommendationsTab from "@/components/admin/dashboard/AIRecommendationsTab";
 import EducationalAnalyticsTab from "@/components/admin/dashboard/EducationalAnalyticsTab";
-import BackgroundTasksTab from "@/components/admin/dashboard/BackgroundTasksTab";
 
 type AuthMeResponse =
   | { authenticated: false }
   | { authenticated: true; email: string; role: string; _id: string };
 
-type TabNode = "overview" | "users" | "applications" | "assign" | "approvals" | "recommendations" | "educational" | "tasks" | "alerts" | "limits" | "config" | "audit" | "profile";
+type TabNode = "overview" | "users" | "applications" | "assign" | "approvals" | "recommendations" | "educational" | "alerts" | "limits" | "config" | "audit" | "profile";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -202,7 +201,6 @@ export default function AdminDashboardPage() {
     approvals: "Guardian Approval System",
     recommendations: "AI Recommendation Analytics",
     educational: "Educational Content Analytics",
-    tasks: "Background Task Monitor",
     alerts: "Alert Threshold Configuration",
     limits: "Counselor Assignment Limits",
     audit: "Audit Vault (Ledger)",
@@ -233,7 +231,6 @@ export default function AdminDashboardPage() {
           {activeTab === "approvals" && <GuardianApprovalsTab />}
           {activeTab === "recommendations" && <AIRecommendationsTab />}
           {activeTab === "educational" && <EducationalAnalyticsTab />}
-          {activeTab === "tasks" && <BackgroundTasksTab />}
           {activeTab === "alerts" && <div className="animate-in fade-in slide-in-from-bottom-4 duration-700"><iframe src="/admin/dashboard/alert-config" className="w-full h-[calc(100vh-120px)] border-0 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)]" /></div>}
           {activeTab === "limits" && <div className="animate-in fade-in slide-in-from-bottom-4 duration-700"><iframe src="/admin/dashboard/counselor-limits" className="w-full h-[calc(100vh-120px)] border-0 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)]" /></div>}
           {activeTab === "audit" && <AuditVaultTab auditLogs={auditLogs} auditLoading={auditLoading} loadAuditLogs={loadAuditLogs} />}
