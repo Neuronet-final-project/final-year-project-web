@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
 
@@ -12,65 +12,68 @@ export function Navbar() {
   const isHome = pathname === "/";
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/20 bg-white/70 backdrop-blur-md transition-all">
-      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-5 md:px-8">
+    <header className="sticky top-0 z-50 w-full border-b border-white/20 bg-white/80 backdrop-blur-xl transition-all shadow-sm">
+      <div className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-5 md:px-8">
         <Link
           href="/"
-          className="group flex items-center gap-2 transition-transform hover:scale-105"
+          className="group flex items-center gap-3 transition-transform hover:scale-105"
         >
-          <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-zinc-200">
+          <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 to-cyan-500 shadow-lg shadow-indigo-200 ring-2 ring-white">
             <Image
               src="/Images/icons/neuroneticon.png"
               alt="NEURONET Logo"
-              width={32}
-              height={32}
-              className="object-cover"
+              width={40}
+              height={40}
+              className="object-cover p-1"
             />
           </div>
-          <span className="text-lg font-bold tracking-tight text-zinc-900">
-            NEURO<span className="text-[#4F46E5]">NET</span>
-          </span>
+          <div className="flex flex-col">
+            <span className="text-xl font-black tracking-tight text-zinc-900 leading-none">
+              NEURO<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-cyan-500">NET</span>
+            </span>
+            <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Mental Health AI</span>
+          </div>
         </Link>
 
         {isHome && (
-          <nav className="hidden items-center gap-8 text-base font-bold text-zinc-600 md:flex">
+          <nav className="hidden items-center gap-1 text-sm font-bold text-zinc-600 md:flex">
             <a
               href="#home"
-              className="transition-colors hover:text-[#4F46E5]"
+              className="px-4 py-2 rounded-xl transition-all hover:text-indigo-600 hover:bg-indigo-50"
             >
               Home
             </a>
             <a
               href="#features"
-              className="transition-colors hover:text-[#4F46E5]"
+              className="px-4 py-2 rounded-xl transition-all hover:text-indigo-600 hover:bg-indigo-50"
             >
               Features
             </a>
             <a
               href="#research"
-              className="transition-colors hover:text-[#4F46E5]"
+              className="px-4 py-2 rounded-xl transition-all hover:text-indigo-600 hover:bg-indigo-50"
             >
               Research
             </a>
             <a
               href="#how-it-works"
-              className="transition-colors hover:text-[#4F46E5]"
+              className="px-4 py-2 rounded-xl transition-all hover:text-indigo-600 hover:bg-indigo-50"
             >
               How It Works
             </a>
           </nav>
         )}
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <Link
             href="/login"
-            className="hidden px-4 py-2 text-sm font-bold text-zinc-700 transition-all hover:text-[#4F46E5] hover:bg-zinc-100 rounded-xl sm:block bg-white/50 border border-zinc-200"
+            className="hidden px-6 py-2.5 text-sm font-black text-zinc-700 transition-all hover:text-indigo-600 hover:bg-indigo-50 rounded-xl sm:block border-2 border-transparent hover:border-indigo-100"
           >
-            Sign in
+            Sign In
           </Link>
           <Link
             href="/counselor/apply"
-            className="rounded-xl bg-gradient-to-r from-zinc-900 to-zinc-800 px-4 py-2 text-sm font-bold text-white transition-all hover:scale-105 hover:shadow-lg hover:shadow-zinc-500/20 active:scale-95 flex items-center gap-2 border border-white/10"
+            className="rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 px-6 py-2.5 text-sm font-black text-white transition-all hover:shadow-xl hover:shadow-indigo-500/30 hover:scale-105 active:scale-95 flex items-center gap-2"
           >
             Join as Counselor
           </Link>
@@ -78,7 +81,7 @@ export function Navbar() {
           {/* MOBILE TOGGLE BUTTON */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white/50 text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 md:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border-2 border-zinc-200 bg-white text-zinc-600 transition-all hover:bg-zinc-50 hover:border-indigo-200 hover:text-indigo-600 md:hidden"
           >
             {isOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -87,35 +90,35 @@ export function Navbar() {
 
       {/* MOBILE MENU DROPDOWN */}
       {isOpen && (
-        <div className="animate-in fade-in slide-in-from-top-4 duration-300 border-t border-zinc-100 bg-white p-5 md:hidden">
-          <nav className="flex flex-col gap-4">
+        <div className="animate-in fade-in slide-in-from-top-4 duration-300 border-t border-zinc-100 bg-white/95 backdrop-blur-xl p-6 md:hidden shadow-lg">
+          <nav className="flex flex-col gap-3">
             {isHome && (
               <>
                 <a
                   href="#home"
                   onClick={() => setIsOpen(false)}
-                  className="text-base font-bold text-zinc-600 transition-colors hover:text-[#4F46E5]"
+                  className="px-4 py-3 text-base font-bold text-zinc-600 transition-all hover:text-indigo-600 hover:bg-indigo-50 rounded-xl"
                 >
                   Home
                 </a>
                 <a
                   href="#features"
                   onClick={() => setIsOpen(false)}
-                  className="text-base font-bold text-zinc-600 transition-colors hover:text-[#4F46E5]"
+                  className="px-4 py-3 text-base font-bold text-zinc-600 transition-all hover:text-indigo-600 hover:bg-indigo-50 rounded-xl"
                 >
                   Features
                 </a>
                 <a
                   href="#research"
                   onClick={() => setIsOpen(false)}
-                  className="text-base font-bold text-zinc-600 transition-colors hover:text-[#4F46E5]"
+                  className="px-4 py-3 text-base font-bold text-zinc-600 transition-all hover:text-indigo-600 hover:bg-indigo-50 rounded-xl"
                 >
                   Research
                 </a>
                 <a
                   href="#how-it-works"
                   onClick={() => setIsOpen(false)}
-                  className="text-base font-bold text-zinc-600 transition-colors hover:text-[#4F46E5]"
+                  className="px-4 py-3 text-base font-bold text-zinc-600 transition-all hover:text-indigo-600 hover:bg-indigo-50 rounded-xl"
                 >
                   How It Works
                 </a>
@@ -124,9 +127,9 @@ export function Navbar() {
             <Link
               href="/login"
               onClick={() => setIsOpen(false)}
-              className="text-sm font-medium text-zinc-600 transition-colors hover:text-[#4F46E5] sm:hidden"
+              className="px-4 py-3 text-base font-bold text-zinc-600 transition-all hover:text-indigo-600 hover:bg-indigo-50 rounded-xl sm:hidden"
             >
-              Sign in
+              Sign In
             </Link>
           </nav>
         </div>
