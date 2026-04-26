@@ -15,7 +15,7 @@ export default function Home() {
         {/* ── HERO SECTION ── */}
         <section
           id="home"
-          className="relative overflow-hidden pt-24 pb-20 md:pt-32 md:pb-32"
+          className="relative overflow-hidden pt-10 pb-20 md:pt-16 md:pb-32 scroll-mt-20"
         >
           {/* Enhanced background effects */}
           <div className="pointer-events-none absolute left-1/2 top-0 -z-10 h-[800px] w-[1000px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-b from-indigo-500/20 via-cyan-500/10 to-transparent blur-[120px] animate-pulse" />
