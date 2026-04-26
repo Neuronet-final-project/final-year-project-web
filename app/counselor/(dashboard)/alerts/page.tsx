@@ -32,6 +32,7 @@ type Alert = {
   // Alert-triggered approval fields
   approval_id?: string;
   triggered_by_alert?: boolean;
+  approval_status?: "pending" | "approved" | "denied" | "revoked" | "expired";
   alert_context?: {
     risk_score: number;
     detected_keywords: string[];
@@ -245,6 +246,22 @@ export default function CounselorAlertsPage() {
                       {alert.triggered_by_alert && (
                         <span className="text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200 flex items-center gap-1">
                           <span>⚡</span> Auto-Approval
+                        </span>
+                      )}
+                      {alert.approval_status && (
+                        <span className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border flex items-center gap-1 ${
+                          alert.approval_status === 'approved' ? 'bg-green-100 text-green-700 border-green-200' :
+                          alert.approval_status === 'pending' ? 'bg-yellow-100 text-yellow-700 border-yellow-200' :
+                          alert.approval_status === 'denied' ? 'bg-red-100 text-red-700 border-red-200' :
+                          alert.approval_status === 'revoked' ? 'bg-orange-100 text-orange-700 border-orange-200' :
+                          'bg-gray-100 text-gray-700 border-gray-200'
+                        }`}>
+                          {alert.approval_status === 'approved' && '✓'}
+                          {alert.approval_status === 'pending' && '⏳'}
+                          {alert.approval_status === 'denied' && '✗'}
+                          {alert.approval_status === 'revoked' && '↩'}
+                          {alert.approval_status === 'expired' && '⏱'}
+                          {' '}{alert.approval_status}
                         </span>
                       )}
                     </div>
