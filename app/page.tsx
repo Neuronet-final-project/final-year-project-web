@@ -2,13 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { TrendingUp, Users, Shield, Brain, Heart, Activity, ArrowRight } from "lucide-react";
+import { TrendingUp, Users, Shield, Brain, Heart, Activity, ArrowRight, Sparkles, Zap, CheckCircle2 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col bg-[#fafcff]">
+    <div className="flex min-h-screen flex-col bg-gradient-to-b from-white via-indigo-50/30 to-white">
       <Navbar />
 
       <main className="flex-1">
@@ -17,104 +17,141 @@ export default function Home() {
           id="home"
           className="relative overflow-hidden pt-10 pb-20 md:pt-16 md:pb-32"
         >
-          {/* Subtle background glow */}
-          <div className="pointer-events-none absolute left-1/2 top-0 -z-10 h-[600px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-b from-indigo-500/20 to-transparent blur-[80px]" />
+          {/* Enhanced background effects */}
+          <div className="pointer-events-none absolute left-1/2 top-0 -z-10 h-[800px] w-[1000px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-b from-indigo-500/20 via-cyan-500/10 to-transparent blur-[120px] animate-pulse" />
+          <div className="pointer-events-none absolute right-0 top-1/4 -z-10 h-[600px] w-[600px] rounded-full bg-gradient-to-l from-cyan-400/15 to-transparent blur-[100px]" />
+          <div className="pointer-events-none absolute left-0 bottom-0 -z-10 h-[400px] w-[400px] rounded-full bg-gradient-to-r from-indigo-400/15 to-transparent blur-[80px]" />
           
           <div className="mx-auto max-w-7xl px-5 md:px-8">
-            <div className="flex flex-col items-center gap-12 lg:flex-row lg:gap-16">
+            <div className="flex flex-col items-center gap-12 lg:flex-row lg:gap-20">
               {/* Text Column */}
-              <div className="flex-1 text-center lg:text-left">
-                <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-200/50 bg-indigo-50/50 px-4 py-1.5 text-sm font-semibold text-[#4F46E5] backdrop-blur-md">
-                  <span className="relative flex h-2.5 w-2.5">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#4F46E5] opacity-75"></span>
-                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#4F46E5]"></span>
-                  </span>
+              <div className="flex-1 text-center lg:text-left animate-in fade-in slide-in-from-bottom-8 duration-1000">
+                <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-200/60 bg-gradient-to-r from-indigo-50 to-cyan-50 px-5 py-2 text-sm font-black text-indigo-600 backdrop-blur-md shadow-lg shadow-indigo-100/50 hover:shadow-indigo-200/60 transition-all duration-300 hover:scale-105">
+                  <Sparkles className="h-4 w-4 animate-pulse" />
                   Next-Gen Mental Health Support
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-500 opacity-75"></span>
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-indigo-600"></span>
+                  </span>
                 </div>
 
-                <h1 className="text-4xl font-extrabold tracking-tight text-zinc-900 md:text-5xl lg:text-6xl lg:leading-[1.1] lg:max-w-3xl">
+                <h1 className="text-5xl font-black tracking-tight text-zinc-900 md:text-6xl lg:text-7xl lg:leading-[1.05] lg:max-w-3xl">
                   AI-Powered Care for the{" "}
-                  <span className="relative whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-[#4F46E5] to-cyan-400">
-                    Next Generation
+                  <span className="relative inline-block">
+                    <span className="absolute -inset-1 bg-gradient-to-r from-indigo-500 via-cyan-500 to-indigo-500 blur-xl opacity-30 animate-pulse"></span>
+                    <span className="relative text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-cyan-500 to-indigo-600 animate-gradient">
+                      Next Generation
+                    </span>
                   </span>
                 </h1>
 
-                <p className="mt-8 max-w-2xl text-lg leading-relaxed text-zinc-600 md:text-xl">
-                  Ethical AI meets professional counseling. NEURONET empowers schools, counselors, and guardians to detect risks early and provide secure, confidential support.
+                <p className="mt-8 max-w-2xl text-xl leading-relaxed text-zinc-600 md:text-2xl font-medium">
+                  Ethical AI meets professional counseling. <span className="font-bold text-zinc-900">NEURONET</span> empowers schools, counselors, and guardians to detect risks early and provide secure, confidential support.
                 </p>
 
-                <div className="mt-10 flex flex-col items-center gap-5 sm:flex-row lg:justify-start font-black">
+                {/* Trust Indicators */}
+                <div className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-sm">
+                  <div className="flex items-center gap-2 text-zinc-600">
+                    <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                    <span className="font-bold">HIPAA Compliant</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-zinc-600">
+                    <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                    <span className="font-bold">End-to-End Encrypted</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-zinc-600">
+                    <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                    <span className="font-bold">Research-Backed</span>
+                  </div>
+                </div>
+
+                <div className="mt-12 flex flex-col items-center gap-5 sm:flex-row lg:justify-start font-black">
                   <Link
                     href="/login"
-                    className="premium-btn-primary premium-btn-shimmer w-full sm:w-auto"
+                    className="group relative w-full sm:w-auto overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-600 to-cyan-500 px-10 py-5 text-lg font-black text-white shadow-2xl shadow-indigo-500/40 transition-all duration-300 hover:shadow-indigo-500/60 hover:scale-105 active:scale-95"
                   >
-                    Get Started 
-                    <ArrowRight className="inline-block ml-2 pointer-events-none" size={20} />
+                    <span className="relative z-10 flex items-center justify-center gap-2">
+                      Get Started Free
+                      <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                    </span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-indigo-600 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
                   </Link>
                   <a
                     href="#features"
-                    className="flex w-full items-center justify-center rounded-2xl border-2 border-zinc-200 bg-white/80 px-8 py-4 text-base font-bold text-zinc-800 backdrop-blur-md transition-all hover:bg-zinc-50 hover:border-zinc-300 hover:shadow-sm sm:w-auto active:scale-95"
+                    className="group flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-zinc-200 bg-white px-10 py-5 text-lg font-black text-zinc-800 backdrop-blur-md transition-all hover:bg-zinc-50 hover:border-zinc-300 hover:shadow-xl sm:w-auto active:scale-95"
                   >
                     Explore Features
+                    <Zap className="h-5 w-5 text-indigo-500 transition-transform group-hover:rotate-12" />
                   </a>
                 </div>
               </div>
 
               {/* Image Column */}
-              <div className="relative flex-[0.6] w-full max-w-md lg:max-w-sm xl:max-w-md">
-                <div className="relative overflow-visible rounded-[2.5rem] border border-white/40 bg-white/20 p-1.5 shadow-xl shadow-indigo-500/10 backdrop-blur-xl">
-                  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[2rem] bg-zinc-900 ring-1 ring-zinc-900/5 lg:aspect-square">
+              <div className="relative flex-[0.6] w-full max-w-md lg:max-w-sm xl:max-w-md animate-in fade-in slide-in-from-right-8 duration-1000 delay-300">
+                <div className="relative overflow-visible rounded-[3rem] border-2 border-white/60 bg-gradient-to-br from-white/40 to-white/20 p-2 shadow-2xl shadow-indigo-500/20 backdrop-blur-xl hover:shadow-indigo-500/30 transition-all duration-500 hover:scale-[1.02]">
+                  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[2.5rem] bg-zinc-900 ring-1 ring-zinc-900/5 lg:aspect-square">
                     <Image
                       src="/Images/counselor.jpg"
                       alt="Counselor Professional"
                       fill
                       sizes="(max-width: 1200px) 100vw, 1200px"
-                      className="object-cover object-[center_15%] opacity-90 transition-transform duration-700 hover:scale-105"
+                      className="object-cover object-[center_15%] opacity-90 transition-transform duration-700 hover:scale-110"
                       priority
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/40 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/60 via-transparent to-transparent" />
                     
-                    {/* Floating UI Elements - Simplified for side view */}
-                    <div className="absolute -bottom-6 -left-6 rounded-2xl border border-white/20 bg-white/80 p-5 shadow-xl backdrop-blur-md transition-transform hover:-translate-y-2 hidden xl:block">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/20">
-                          <svg className="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    {/* Enhanced Floating UI Elements */}
+                    <div className="absolute -bottom-8 -left-8 rounded-2xl border-2 border-white/30 bg-white/90 p-6 shadow-2xl backdrop-blur-xl transition-all duration-500 hover:-translate-y-3 hover:shadow-emerald-500/20 hidden xl:block animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-700">
+                      <div className="flex items-center gap-4">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/30">
+                          <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                             <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
                         </div>
                         <div>
-                          <h4 className="font-semibold text-zinc-900">Risk Resolved</h4>
-                          <p className="text-xs text-zinc-500">Counselor assigned</p>
+                          <h4 className="font-black text-zinc-900 text-base">Risk Resolved</h4>
+                          <p className="text-xs text-zinc-500 font-bold">Counselor assigned</p>
                         </div>
                       </div>
                     </div>
 
-                    <div className="absolute -top-6 -right-6 rounded-2xl border border-white/20 bg-white/80 p-5 shadow-xl backdrop-blur-md transition-transform hover:-translate-y-2 hidden xl:block">
-                       <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500/20">
-                          <span className="text-lg font-bold text-blue-600">AI</span>
+                    <div className="absolute -top-8 -right-8 rounded-2xl border-2 border-white/30 bg-white/90 p-6 shadow-2xl backdrop-blur-xl transition-all duration-500 hover:-translate-y-3 hover:shadow-blue-500/20 hidden xl:block animate-in fade-in slide-in-from-top-4 duration-1000 delay-500">
+                       <div className="flex items-center gap-4">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/30">
+                          <span className="text-xl font-black text-white">AI</span>
                         </div>
                         <div>
-                          <h4 className="font-semibold text-zinc-900">Emotional Insight</h4>
-                          <p className="text-xs text-zinc-500">Positive trend detected</p>
+                          <h4 className="font-black text-zinc-900 text-base">Emotional Insight</h4>
+                          <p className="text-xs text-zinc-500 font-bold">Positive trend detected</p>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
+                
+                {/* Decorative Elements */}
+                <div className="absolute -z-10 -right-4 top-1/4 h-72 w-72 rounded-full bg-gradient-to-br from-cyan-400/20 to-indigo-500/20 blur-3xl animate-pulse"></div>
+                <div className="absolute -z-10 -left-4 bottom-1/4 h-64 w-64 rounded-full bg-gradient-to-tr from-indigo-400/20 to-cyan-500/20 blur-3xl animate-pulse delay-1000"></div>
               </div>
             </div>
           </div>
         </section>
 
         {/* ── FEATURES SECTION ── */}
-        <section id="features" className="relative bg-zinc-900 py-24 text-white">
-          <div className="mx-auto max-w-7xl px-5 md:px-8">
-            <div className="mb-16 max-w-2xl">
-              <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
+        <section id="features" className="relative bg-gradient-to-b from-zinc-900 via-zinc-900 to-black py-32 text-white overflow-hidden">
+          {/* Animated Background Grid */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]"></div>
+          
+          <div className="mx-auto max-w-7xl px-5 md:px-8 relative z-10">
+            <div className="mb-20 max-w-3xl mx-auto text-center">
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-5 py-2 text-sm font-black text-cyan-400 backdrop-blur-md border border-white/10 mb-6">
+                <Sparkles className="h-4 w-4" />
+                POWERFUL FEATURES
+              </div>
+              <h2 className="text-4xl font-black tracking-tight md:text-6xl bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-white">
                 A Unified Platform for Mental Well-being
               </h2>
-              <p className="mt-4 text-lg text-zinc-400">
+              <p className="mt-6 text-xl text-zinc-400 font-medium">
                 Everything you need to monitor, support, and communicate securely.
               </p>
             </div>
@@ -125,46 +162,61 @@ export default function Home() {
                   title: "AI Analysis",
                   desc: "Ethically detects emotional patterns from user journals to flag potential risks early.",
                   icon: "🧠",
+                  gradient: "from-indigo-500 to-purple-600"
                 },
                 {
                   title: "Secure Messaging",
                   desc: "End-to-end encrypted chat between students and professional counselors.",
                   icon: "💬",
+                  gradient: "from-cyan-500 to-blue-600"
                 },
                 {
                   title: "Real-time Alerts",
                   desc: "Immediate notifications to counselors and guardians when vital intervention is needed.",
                   icon: "⚡",
+                  gradient: "from-amber-500 to-orange-600"
                 },
                 {
                   title: "Counselor Dashboards",
                   desc: "Visual insights and priority queues to help professionals manage caseloads efficiently.",
                   icon: "📊",
+                  gradient: "from-emerald-500 to-teal-600"
                 },
                 {
                   title: "Privacy First",
                   desc: "Strictly adheres to HIPAA & COPPA. User data remains private and securely encrypted.",
                   icon: "🔒",
+                  gradient: "from-rose-500 to-pink-600"
                 },
                 {
                   title: "Admin Oversight",
                   desc: "Comprehensive platform management, user approving, and macro-level analytics.",
                   icon: "⚙️",
+                  gradient: "from-violet-500 to-purple-600"
                 },
-              ].map((feature) => (
+              ].map((feature, index) => (
                 <div
                   key={feature.title}
-                  className="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 p-8 transition-all hover:bg-white/10"
+                  className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 transition-all duration-500 hover:bg-white/10 hover:border-white/20 hover:scale-105 hover:-translate-y-2"
+                  style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 text-2xl shadow-inner group-hover:scale-110 transition-transform">
-                    {feature.icon}
+                  {/* Gradient Overlay on Hover */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}></div>
+                  
+                  <div className="relative z-10">
+                    <div className={`mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br ${feature.gradient} text-3xl shadow-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
+                      {feature.icon}
+                    </div>
+                    <h3 className="mb-4 text-2xl font-black text-white">
+                      {feature.title}
+                    </h3>
+                    <p className="text-zinc-400 leading-relaxed font-medium">
+                      {feature.desc}
+                    </p>
                   </div>
-                  <h3 className="mb-3 text-xl font-semibold text-white">
-                    {feature.title}
-                  </h3>
-                  <p className="text-zinc-400 leading-relaxed text-sm">
-                    {feature.desc}
-                  </p>
+                  
+                  {/* Corner Accent */}
+                  <div className="absolute -right-8 -bottom-8 h-32 w-32 rounded-full bg-gradient-to-br from-white/5 to-transparent blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
                 </div>
               ))}
             </div>
@@ -320,30 +372,63 @@ export default function Home() {
 
         {/* ── CTA SECTION ── */}
         <section className="mx-auto max-w-7xl px-5 pb-24 md:px-8">
-          <div className="relative overflow-hidden rounded-[2.5rem] bg-zinc-900 px-8 py-20 text-center shadow-2xl md:px-20 md:py-24">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#4F46E5] to-cyan-500 opacity-90" />
+          <div className="relative overflow-hidden rounded-[3rem] bg-gradient-to-br from-indigo-600 via-indigo-700 to-cyan-600 px-8 py-24 text-center shadow-2xl md:px-20 md:py-32">
+            {/* Animated Background Pattern */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff15_1px,transparent_1px),linear-gradient(to_bottom,#ffffff15_1px,transparent_1px)] bg-[size:3rem_3rem]"></div>
             
-            <div className="relative z-10 mx-auto max-w-3xl">
-              <h2 className="text-3xl font-bold text-white md:text-5xl">
-                Ready to Join the Network?
+            {/* Floating Orbs */}
+            <div className="absolute top-10 left-10 h-64 w-64 rounded-full bg-cyan-400/20 blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-10 right-10 h-64 w-64 rounded-full bg-indigo-400/20 blur-3xl animate-pulse delay-1000"></div>
+            
+            <div className="relative z-10 mx-auto max-w-4xl">
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/20 px-5 py-2 text-sm font-black text-white backdrop-blur-md border border-white/30 mb-8">
+                <Sparkles className="h-4 w-4 animate-pulse" />
+                JOIN THE MOVEMENT
+              </div>
+              
+              <h2 className="text-4xl font-black text-white md:text-6xl leading-tight">
+                Ready to Transform <br className="hidden sm:block" />
+                Mental Health Support?
               </h2>
-              <p className="mt-6 text-lg text-blue-50">
+              <p className="mt-8 text-xl text-indigo-100 font-medium max-w-2xl mx-auto">
                 Whether you're a professional counselor ready to make a difference, or an admin setting up your school's safety net.
               </p>
-              <div className="mt-10 flex flex-col items-center justify-center gap-6 sm:flex-row">
+              
+              <div className="mt-12 flex flex-col items-center justify-center gap-6 sm:flex-row">
                 <Link
                   href="/login"
-                  className="premium-btn-primary premium-btn-shimmer w-full sm:w-auto !bg-rose-50"
-                  style={{ background: 'white', color: '#4F46E5' }}
+                  className="group relative w-full sm:w-auto overflow-hidden rounded-2xl bg-white px-10 py-5 text-lg font-black text-indigo-600 shadow-2xl transition-all duration-300 hover:shadow-white/20 hover:scale-105 active:scale-95"
                 >
-                  Login to Dashboard
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    Login to Dashboard
+                    <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  </span>
                 </Link>
                 <Link
                   href="/counselor/apply"
-                  className="w-full rounded-2xl border-2 border-white/40 bg-white/10 px-8 py-4 text-base font-black text-white backdrop-blur-xl transition-all hover:bg-white/25 hover:shadow-[0_0_40px_rgba(255,255,255,0.2)] active:scale-95 sm:w-auto"
+                  className="group w-full rounded-2xl border-2 border-white/40 bg-white/10 px-10 py-5 text-lg font-black text-white backdrop-blur-xl transition-all hover:bg-white/20 hover:border-white/60 hover:shadow-2xl active:scale-95 sm:w-auto"
                 >
-                  Apply as Counselor
+                  <span className="flex items-center justify-center gap-2">
+                    Apply as Counselor
+                    <Zap className="h-5 w-5 transition-transform group-hover:rotate-12" />
+                  </span>
                 </Link>
+              </div>
+              
+              {/* Trust Badges */}
+              <div className="mt-16 flex flex-wrap items-center justify-center gap-8 text-sm text-white/80">
+                <div className="flex items-center gap-2">
+                  <Shield className="h-5 w-5" />
+                  <span className="font-bold">HIPAA Certified</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-5 w-5" />
+                  <span className="font-bold">SOC 2 Compliant</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  <span className="font-bold">Trusted by 100+ Schools</span>
+                </div>
               </div>
             </div>
           </div>
