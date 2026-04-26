@@ -19,6 +19,8 @@ import ProfileTab from "@/components/admin/dashboard/ProfileTab";
 import GuardianApprovalsTab from "@/components/admin/dashboard/GuardianApprovalsTab";
 import AIRecommendationsTab from "@/components/admin/dashboard/AIRecommendationsTab";
 import EducationalAnalyticsTab from "@/components/admin/dashboard/EducationalAnalyticsTab";
+import AlertConfigTab from "@/components/admin/dashboard/AlertConfigTab";
+import CounselorLimitsTab from "@/components/admin/dashboard/CounselorLimitsTab";
 
 type AuthMeResponse =
   | { authenticated: false }
@@ -231,8 +233,8 @@ export default function AdminDashboardPage() {
           {activeTab === "approvals" && <GuardianApprovalsTab />}
           {activeTab === "recommendations" && <AIRecommendationsTab />}
           {activeTab === "educational" && <EducationalAnalyticsTab />}
-          {activeTab === "alerts" && <div className="animate-in fade-in slide-in-from-bottom-4 duration-700"><iframe src="/admin/dashboard/alert-config" className="w-full h-[calc(100vh-120px)] border-0 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)]" /></div>}
-          {activeTab === "limits" && <div className="animate-in fade-in slide-in-from-bottom-4 duration-700"><iframe src="/admin/dashboard/counselor-limits" className="w-full h-[calc(100vh-120px)] border-0 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)]" /></div>}
+          {activeTab === "alerts" && <AlertConfigTab />}
+          {activeTab === "limits" && <CounselorLimitsTab />}
           {activeTab === "audit" && <AuditVaultTab auditLogs={auditLogs} auditLoading={auditLoading} loadAuditLogs={loadAuditLogs} />}
           {activeTab === "config" && <SystemConfigTab />}
           {activeTab === "profile" && <ProfileTab />}
