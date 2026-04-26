@@ -42,6 +42,14 @@ type Alert = {
     }[];
     recommendation_message: string;
   };
+  // Alert-triggered approval fields
+  approval_id?: string;
+  triggered_by_alert?: boolean;
+  alert_context?: {
+    risk_score: number;
+    detected_keywords: string[];
+    evaluation_method: string;
+  };
 };
 
 type Consent = {
@@ -305,12 +313,23 @@ export default function AdolescentCasePage() {
                   const aiSummary = alert.behavioral_analysis?.behavioral_summary || alert.ai_summary || alert.message || "";
                   
                   return (
-                    <div key={alert._id} className="rounded-2xl border border-red-200 bg-red-50 p-5 shadow-sm">
+                    <div key={alert._id} className={`rounded-2xl border p-5 shadow-sm ${
+                      alert.triggered_by_alert ? 'border-purple-200 bg-purple-50' : 'border-red-200 bg-red-50'
+                    }`}>
                       <div className="flex justify-between items-start mb-2">
-                         <span className="text-xs font-bold text-white bg-red-600 px-2 py-1 rounded-md uppercase">
-                           {alert.risk_level} Risk
-                         </span>
-                         <span className="text-xs font-medium text-red-500">
+                         <div className="flex items-center gap-2">
+                           <span className={`text-xs font-bold text-white px-2 py-1 rounded-md uppercase ${
+                             alert.risk_level === 'high' ? 'bg-red-600' : 'bg-orange-600'
+                           }`}>
+                             {alert.risk_level} Risk
+                           </span>
+                           {alert.triggered_by_alert && (
+                             <span className="text-xs font-bold text-white bg-purple-600 px-2 py-1 rounded-md uppercase flex items-center gap-1">
+                               <span>⚡</span> Auto-Approval
+                             </span>
+                           )}
+                         </div>
+                         <span className={`text-xs font-medium ${alert.triggered_by_alert ? 'text-purple-600' : 'text-red-500'}`}>
                            Score: {(alert.risk_score * 100).toFixed(0)}%
                          </span>
                       </div>
@@ -324,22 +343,50 @@ export default function AdolescentCasePage() {
                       )}
                       
                       {aiSummary && (
-                        <p className="text-xs text-red-800 font-medium leading-relaxed mb-2">
+                        <p className={`text-xs font-medium leading-relaxed mb-2 ${
+                          alert.triggered_by_alert ? 'text-purple-800' : 'text-red-800'
+                        }`}>
                           {aiSummary}
                         </p>
+                      )}
+                      
+                      {/* Alert Context for triggered approvals */}
+                      {alert.triggered_by_alert && alert.alert_context && (
+                        <div className="mt-3 p-3 rounded-xl bg-white/70 border border-purple-200 flex gap-2 mb-2">
+                          <div className="shrink-0">
+                            <span className="text-lg">⚡</span>
+                          </div>
+                          <div className="flex-1 text-xs">
+                            <p className="font-bold text-purple-900 mb-1">Approval Request Auto-Created</p>
+                            {alert.alert_context.detected_keywords && alert.alert_context.detected_keywords.length > 0 && (
+                              <p className="text-purple-700">
+                                <span className="font-bold">Keywords:</span> {alert.alert_context.detected_keywords.join(", ")}
+                              </p>
+                            )}
+                            <p className="text-purple-600 italic mt-1">
+                              Guardian approval pending. Communication will be enabled once approved.
+                            </p>
+                          </div>
+                        </div>
                       )}
                       
                       {emotions.length > 0 && (
                         <div className="flex flex-wrap gap-1 mb-2">
                           {emotions.slice(0, 4).map((emotion, i) => (
-                            <span key={i} className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-white/70 text-red-600 border border-red-200">
+                            <span key={i} className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${
+                              alert.triggered_by_alert 
+                                ? 'bg-white/70 text-purple-600 border-purple-200' 
+                                : 'bg-white/70 text-red-600 border-red-200'
+                            }`}>
                               {emotion}
                             </span>
                           ))}
                         </div>
                       )}
                       
-                      <p className="text-xs text-red-700 mt-1 font-medium">
+                      <p className={`text-xs mt-1 font-medium ${
+                        alert.triggered_by_alert ? 'text-purple-700' : 'text-red-700'
+                      }`}>
                         Triggered {new Date(alert.created_at).toLocaleDateString()}
                       </p>
                     </div>

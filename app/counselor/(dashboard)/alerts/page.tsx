@@ -29,6 +29,14 @@ type Alert = {
     behavioral_summary?: string;
     suggested_follow_up?: string;
   };
+  // Alert-triggered approval fields
+  approval_id?: string;
+  triggered_by_alert?: boolean;
+  alert_context?: {
+    risk_score: number;
+    detected_keywords: string[];
+    evaluation_method: string;
+  };
 };
 
 const EMOTION_COLORS: Record<string, string> = {
@@ -234,6 +242,11 @@ export default function CounselorAlertsPage() {
                           {mainConcern}
                         </span>
                       )}
+                      {alert.triggered_by_alert && (
+                        <span className="text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200 flex items-center gap-1">
+                          <span>⚡</span> Auto-Approval
+                        </span>
+                      )}
                     </div>
                     <span className="text-[10px] font-bold text-zinc-400">
                       {new Date(alert.created_at).toLocaleString()}
@@ -254,6 +267,32 @@ export default function CounselorAlertsPage() {
                     <p className="text-sm font-semibold text-zinc-800 leading-relaxed">
                       {behavioralSummary || aiSummary}
                     </p>
+                    
+                    {/* Alert Context (if triggered by alert) */}
+                    {alert.triggered_by_alert && alert.alert_context && (
+                      <div className="mt-3 p-3 rounded-xl bg-purple-50 border border-purple-200 flex gap-2">
+                        <div className="shrink-0 mt-0.5">
+                          <span className="text-lg">⚡</span>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-xs font-bold text-purple-900 mb-2">Alert-Triggered Approval</p>
+                          <div className="space-y-1">
+                            <p className="text-xs text-purple-800">
+                              <span className="font-bold">Risk Score:</span> {(alert.alert_context.risk_score * 100).toFixed(1)}%
+                            </p>
+                            {alert.alert_context.detected_keywords && alert.alert_context.detected_keywords.length > 0 && (
+                              <p className="text-xs text-purple-800">
+                                <span className="font-bold">Keywords:</span> {alert.alert_context.detected_keywords.join(", ")}
+                              </p>
+                            )}
+                            <p className="text-xs text-purple-700 italic mt-2">
+                              Guardian approval request auto-created. Awaiting response to enable communication.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
                     {suggestedFollowUp && (
                       <div className="mt-3 p-3 rounded-xl bg-slate-50 border border-slate-200 flex gap-2">
                         <Info size={16} className="text-slate-500 shrink-0 mt-0.5" />
