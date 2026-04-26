@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, ChevronDown, Sparkles } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
 
@@ -35,41 +35,34 @@ export function Navbar() {
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-1 text-sm font-bold text-zinc-600 md:flex">
-          {isHome ? (
-            <>
-              <a
-                href="#home"
-                className="px-4 py-2 rounded-xl transition-all hover:text-indigo-600 hover:bg-indigo-50"
-              >
-                Home
-              </a>
-              <a
-                href="#features"
-                className="px-4 py-2 rounded-xl transition-all hover:text-indigo-600 hover:bg-indigo-50"
-              >
-                Features
-              </a>
-              <a
-                href="#research"
-                className="px-4 py-2 rounded-xl transition-all hover:text-indigo-600 hover:bg-indigo-50"
-              >
-                Research
-              </a>
-              <a
-                href="#how-it-works"
-                className="px-4 py-2 rounded-xl transition-all hover:text-indigo-600 hover:bg-indigo-50"
-              >
-                How It Works
-              </a>
-            </>
-          ) : (
-            <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-50 to-cyan-50 px-4 py-2 text-xs font-black text-indigo-600 border border-indigo-200/60 shadow-sm">
-              <Sparkles className="h-3 w-3" />
-              Next-Gen Mental Health Support
-            </div>
-          )}
-        </nav>
+        {isHome && (
+          <nav className="hidden items-center gap-1 text-sm font-bold text-zinc-600 md:flex">
+            <a
+              href="#home"
+              className="px-4 py-2 rounded-xl transition-all hover:text-indigo-600 hover:bg-indigo-50"
+            >
+              Home
+            </a>
+            <a
+              href="#features"
+              className="px-4 py-2 rounded-xl transition-all hover:text-indigo-600 hover:bg-indigo-50"
+            >
+              Features
+            </a>
+            <a
+              href="#research"
+              className="px-4 py-2 rounded-xl transition-all hover:text-indigo-600 hover:bg-indigo-50"
+            >
+              Research
+            </a>
+            <a
+              href="#how-it-works"
+              className="px-4 py-2 rounded-xl transition-all hover:text-indigo-600 hover:bg-indigo-50"
+            >
+              How It Works
+            </a>
+          </nav>
+        )}
 
         <div className="flex items-center gap-3">
           <Link
