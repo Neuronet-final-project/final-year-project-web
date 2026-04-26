@@ -12,7 +12,7 @@ export function Navbar() {
   const isHome = pathname === "/";
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/20 bg-white/80 backdrop-blur-xl transition-all shadow-sm">
+    <header className="sticky top-0 z-50 w-full border-b border-zinc-200/60 bg-zinc-50/80 backdrop-blur-xl transition-all shadow-sm">
       <div className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-5 md:px-8">
         <Link
           href="/"
