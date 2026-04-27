@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, CheckCircle, Loader2, Sparkles, BookOpen, Tag, Image as ImageIcon, FileText, Wand2 } from "lucide-react";
+import { X, CheckCircle, Loader2, Sparkles, Tag, Wand2 } from "lucide-react";
 
 interface EducationalPageModalProps {
   isOpen: boolean;
@@ -27,7 +27,6 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [enriching, setEnriching] = useState(false);
-  const [showEnrichment, setShowEnrichment] = useState(false);
   const [tagInput, setTagInput] = useState("");
 
   useEffect(() => {
@@ -104,21 +103,22 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
       
       // Clean and validate enriched data before setting
       const cleanedData = {
-        summary: data.summary || formData.summary,
+        summary: data.summary ? data.summary.substring(0, 500) : formData.summary,
         tags: Array.isArray(data.suggested_tags) ? [...new Set([...formData.tags, ...data.suggested_tags])] : formData.tags,
         featured_image_url: (data.featured_image_url && typeof data.featured_image_url === 'string') ? data.featured_image_url : formData.featured_image_url,
       };
       
       console.log("[FRONTEND_ENRICHMENT] Cleaned data:", cleanedData);
       
-      setFormData(prev => ({
-        ...prev,
+      setFormData(formData => ({
+        ...formData,
         ...cleanedData
       }));
       setShowEnrichment(false);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("[FRONTEND_ENRICHMENT] Error:", err);
-      setError(err.message || "Failed to enrich content");
+      const errorMessage = err instanceof Error ? err.message : "Failed to enrich content";
+      setError(errorMessage);
     } finally {
       setEnriching(false);
     }
@@ -141,7 +141,7 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSaving(true);
     setError(null);
@@ -153,12 +153,12 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
         : "/api/proxy/backend/educational-pages";
 
       // Clean and validate all form data
-      const cleanPayload = {
+      const cleanPayload: any = {
         title: formData.title?.trim() || "",
         content: formData.content?.trim() || "",
         category: formData.category?.trim() || null,
         difficulty_level: formData.difficulty_level?.trim() || null,
-        summary: formData.summary?.trim() || null,
+        summary: formData.summary?.trim().substring(0, 500) || null,
         author_bio: formData.author_bio?.trim() || null,
         author_credentials: formData.author_credentials?.trim() || null,
         featured_image_url: formData.featured_image_url?.trim() || null,
@@ -202,9 +202,10 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
       }
 
       onSuccess();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("[FORM_SUBMIT] Error:", err);
-      setError(err.message || "An error occurred");
+      const errorMessage = err instanceof Error ? err.message : "An error occurred";
+      setError(errorMessage);
     } finally {
       setSaving(false);
     }
@@ -354,10 +355,18 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
               <textarea
                 placeholder="A short description representing the article content..."
                 value={formData.summary}
-                onChange={(e) => setFormData(p => ({ ...p, summary: e.target.value }))}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value.length <= 500) {
+                    setFormData(p => ({ ...p, summary: value }));
+                  }
+                }}
                 rows={2}
                 className="w-full resize-none bg-zinc-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl px-5 py-4 text-zinc-900 font-medium placeholder:text-zinc-300 outline-none transition-all"
               />
+              <div className="text-xs text-zinc-400 text-right">
+                {formData.summary.length}/500 characters
+              </div>
             </div>
 
             {/* Tags */}
@@ -369,7 +378,7 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
                   placeholder="Add a tag..."
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
+                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
                   className="flex-1 bg-zinc-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl px-5 py-3 text-zinc-900 font-medium placeholder:text-zinc-300 outline-none transition-all"
                 />
                 <button
