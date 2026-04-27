@@ -73,6 +73,7 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
     }
 
     setEnriching(true);
+    setError(null);
     try {
       const res = await fetch("/api/proxy/backend/educational-pages/enrich/comprehensive", {
         method: "POST",
@@ -80,22 +81,26 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
         body: JSON.stringify({
           title: formData.title,
           content: formData.content,
-          category: formData.category
+          category: formData.category || null
         }),
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        setFormData(prev => ({
-          ...prev,
-          summary: data.summary || prev.summary,
-          tags: [...new Set([...prev.tags, ...(data.suggested_tags || [])])],
-          featured_image_url: data.featured_image_url || prev.featured_image_url,
-        }));
-        setShowEnrichment(false);
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ detail: "Enrichment failed" }));
+        throw new Error(errorData.detail || "Failed to enrich content");
       }
+
+      const data = await res.json();
+      setFormData(prev => ({
+        ...prev,
+        summary: data.summary || prev.summary,
+        tags: [...new Set([...prev.tags, ...(data.suggested_tags || [])])],
+        featured_image_url: data.featured_image_url || prev.featured_image_url,
+      }));
+      setShowEnrichment(false);
     } catch (err: any) {
       console.error("Enrichment error:", err);
+      setError(err.message || "Failed to enrich content");
     } finally {
       setEnriching(false);
     }
