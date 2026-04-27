@@ -114,7 +114,6 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
         ...formData,
         ...cleanedData
       }));
-      setShowEnrichment(false);
     } catch (err: unknown) {
       console.error("[FRONTEND_ENRICHMENT] Error:", err);
       const errorMessage = err instanceof Error ? err.message : "Failed to enrich content";
@@ -193,7 +192,7 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
         } else if (d.message && typeof d.message === 'string') {
           errorMessage = d.message;
         } else if (Array.isArray(d.detail)) {
-          errorMessage = d.detail.map(err => err.msg || err.message || String(err)).join(', ');
+          errorMessage = d.detail.map((err: any) => err.msg || err.message || String(err)).join(', ');
         } else if (typeof d.detail === 'object') {
           errorMessage = JSON.stringify(d.detail);
         }
