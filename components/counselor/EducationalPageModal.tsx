@@ -129,10 +129,21 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
         ? `/api/proxy/backend/educational-pages/${formData.slug}`
         : "/api/proxy/backend/educational-pages";
 
+      // Convert empty strings to null for optional fields
+      const payload = {
+        ...formData,
+        category: formData.category || null,
+        difficulty_level: formData.difficulty_level || null,
+        summary: formData.summary || null,
+        author_bio: formData.author_bio || null,
+        author_credentials: formData.author_credentials || null,
+        featured_image_url: formData.featured_image_url || null,
+      };
+
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
