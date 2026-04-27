@@ -243,7 +243,11 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
                 </div>
                 <button
                   type="button"
-                  onClick={handleEnrichContent}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleEnrichContent();
+                  }}
                   disabled={enriching || !formData.title || !formData.content}
                   className="px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
                 >
