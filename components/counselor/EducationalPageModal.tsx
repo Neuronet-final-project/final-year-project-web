@@ -155,12 +155,12 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
       const cleanPayload: any = {
         title: formData.title?.trim() || "",
         content: formData.content?.trim() || "",
-        category: formData.category?.trim() || null,
-        difficulty_level: formData.difficulty_level?.trim() || null,
-        summary: formData.summary?.trim().substring(0, 500) || null,
-        author_bio: formData.author_bio?.trim() || null,
-        author_credentials: formData.author_credentials?.trim() || null,
-        featured_image_url: formData.featured_image_url?.trim() || null,
+        category: formData.category?.trim() || undefined, // Use undefined instead of null for optional fields
+        difficulty_level: formData.difficulty_level?.trim() || undefined,
+        summary: formData.summary?.trim().substring(0, 500) || undefined,
+        author_bio: formData.author_bio?.trim() || undefined,
+        author_credentials: formData.author_credentials?.trim() || undefined,
+        featured_image_url: formData.featured_image_url?.trim() || undefined,
         tags: Array.isArray(formData.tags) ? formData.tags.filter(tag => tag && typeof tag === 'string' && tag.trim()) : [],
       };
 
@@ -172,6 +172,7 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
       console.log("[FORM_SUBMIT] Method:", method);
       console.log("[FORM_SUBMIT] URL:", url);
       console.log("[FORM_SUBMIT] Payload:", cleanPayload);
+      console.log("[FORM_SUBMIT] Category value:", formData.category);
 
       const res = await fetch(url, {
         method,
@@ -180,6 +181,7 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
       });
 
       console.log("[FORM_SUBMIT] Response status:", res.status);
+      console.log("[FORM_SUBMIT] Response ok:", res.ok);
 
       if (!res.ok) {
         const d = await res.json().catch(() => ({ detail: "Failed to save" }));
