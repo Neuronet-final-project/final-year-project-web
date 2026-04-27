@@ -102,11 +102,18 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
       const data = await res.json();
       console.log("[FRONTEND_ENRICHMENT] Success data:", data);
       
+      // Clean and validate enriched data before setting
+      const cleanedData = {
+        summary: data.summary || prev.summary,
+        tags: Array.isArray(data.suggested_tags) ? [...new Set([...prev.tags, ...data.suggested_tags])] : prev.tags,
+        featured_image_url: (data.featured_image_url && typeof data.featured_image_url === 'string') ? data.featured_image_url : prev.featured_image_url,
+      };
+      
+      console.log("[FRONTEND_ENRICHMENT] Cleaned data:", cleanedData);
+      
       setFormData(prev => ({
         ...prev,
-        summary: data.summary || prev.summary,
-        tags: [...new Set([...prev.tags, ...(data.suggested_tags || [])])],
-        featured_image_url: data.featured_image_url || prev.featured_image_url,
+        ...cleanedData
       }));
       setShowEnrichment(false);
     } catch (err: any) {
@@ -145,44 +152,45 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
         ? `/api/proxy/backend/educational-pages/${formData.slug}`
         : "/api/proxy/backend/educational-pages";
 
-      // For PUT requests, don't send slug (it's in URL)
-      // For POST requests, include slug
-      const payload = initialData ? {
-        title: formData.title,
-        content: formData.content,
-        category: formData.category || null,
-        difficulty_level: formData.difficulty_level || null,
-        summary: formData.summary || null,
-        author_bio: formData.author_bio || null,
-        author_credentials: formData.author_credentials || null,
-        featured_image_url: formData.featured_image_url || null,
-        tags: formData.tags,
-      } : {
-        slug: formData.slug,
-        title: formData.title,
-        content: formData.content,
-        category: formData.category || null,
-        difficulty_level: formData.difficulty_level || null,
-        summary: formData.summary || null,
-        author_bio: formData.author_bio || null,
-        author_credentials: formData.author_credentials || null,
-        featured_image_url: formData.featured_image_url || null,
-        tags: formData.tags,
+      // Clean and validate all form data
+      const cleanPayload = {
+        title: formData.title?.trim() || "",
+        content: formData.content?.trim() || "",
+        category: formData.category?.trim() || null,
+        difficulty_level: formData.difficulty_level?.trim() || null,
+        summary: formData.summary?.trim() || null,
+        author_bio: formData.author_bio?.trim() || null,
+        author_credentials: formData.author_credentials?.trim() || null,
+        featured_image_url: formData.featured_image_url?.trim() || null,
+        tags: Array.isArray(formData.tags) ? formData.tags.filter(tag => tag && typeof tag === 'string' && tag.trim()) : [],
       };
+
+      // For POST requests, include slug
+      if (!initialData) {
+        cleanPayload.slug = formData.slug?.trim() || "";
+      }
+
+      console.log("[FORM_SUBMIT] Method:", method);
+      console.log("[FORM_SUBMIT] URL:", url);
+      console.log("[FORM_SUBMIT] Payload:", cleanPayload);
 
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(cleanPayload),
       });
+
+      console.log("[FORM_SUBMIT] Response status:", res.status);
 
       if (!res.ok) {
         const d = await res.json().catch(() => ({ detail: "Failed to save" }));
+        console.log("[FORM_SUBMIT] Error response:", d);
         throw new Error(d.detail || "Failed to save educational resource");
       }
 
       onSuccess();
     } catch (err: any) {
+      console.error("[FORM_SUBMIT] Error:", err);
       setError(err.message || "An error occurred");
     } finally {
       setSaving(false);
