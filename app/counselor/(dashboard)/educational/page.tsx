@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, BookOpen, Edit2, Pencil, RefreshCcw, Eye, Heart, TrendingUp, BarChart3, Users, FolderOpen } from "lucide-react";
+import { Plus, BookOpen, Edit2, Pencil, RefreshCcw, Eye, Heart, TrendingUp, BarChart3, Users, FolderOpen, Trash2 } from "lucide-react";
 import EducationalPageModal from "@/components/counselor/EducationalPageModal";
 import Link from "next/link";
 
@@ -63,6 +63,25 @@ export default function EducationalPagesDashboard() {
   const handleAddNew = () => {
     setEditingPage(null);
     setIsModalOpen(true);
+  };
+
+  const handleDelete = async (slug: string) => {
+    if (!confirm('Are you sure you want to delete this article? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/proxy/backend/educational-pages/${slug}`, {
+        method: 'DELETE',
+      });
+
+      if (!res.ok) throw new Error('Failed to delete article');
+      
+      // Refresh the list
+      fetchPages();
+    } catch (err: any) {
+      alert(`Error: ${err.message}`);
+    }
   };
 
   const filteredPages = selectedCategory 
@@ -250,12 +269,20 @@ export default function EducationalPagesDashboard() {
                           </span>
                         )}
                       </div>
-                      <button
-                        onClick={() => handleEdit(page)}
-                        className="p-2 bg-white rounded-xl text-zinc-400 hover:text-indigo-600 shadow-sm border border-zinc-100 opacity-0 group-hover:opacity-100 transition-all hover:scale-110 active:scale-95"
-                      >
-                        <Pencil size={16} strokeWidth={2.5} />
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleEdit(page)}
+                          className="p-2 bg-white rounded-xl text-zinc-400 hover:text-indigo-600 shadow-sm border border-zinc-100 opacity-0 group-hover:opacity-100 transition-all hover:scale-110 active:scale-95"
+                        >
+                          <Pencil size={16} strokeWidth={2.5} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(page.slug)}
+                          className="p-2 bg-white rounded-xl text-zinc-400 hover:text-red-600 shadow-sm border border-zinc-100 opacity-0 group-hover:opacity-100 transition-all hover:scale-110 active:scale-95"
+                        >
+                          <Trash2 size={16} strokeWidth={2.5} />
+                        </button>
+                      </div>
                     </div>
                     <h3 className="text-lg font-black text-zinc-900 tracking-tight leading-tight mb-2">
                       {page.title}

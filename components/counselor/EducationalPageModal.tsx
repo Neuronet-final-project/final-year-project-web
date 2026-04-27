@@ -19,8 +19,6 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
     content: "",
     tags: [] as string[],
     difficulty_level: "",
-    author_bio: "",
-    author_credentials: "",
     featured_image_url: "",
   });
 
@@ -41,8 +39,6 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
           content: initialData.content || "",
           tags: initialData.tags || [],
           difficulty_level: initialData.difficulty_level || "",
-          author_bio: initialData.author_bio || "",
-          author_credentials: initialData.author_credentials || "",
           featured_image_url: initialData.featured_image_url || "",
         });
       } else {
@@ -54,8 +50,6 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
           content: "",
           tags: [],
           difficulty_level: "",
-          author_bio: "",
-          author_credentials: "",
           featured_image_url: "",
         });
       }
@@ -155,11 +149,9 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
       const cleanPayload: any = {
         title: formData.title?.trim() || "",
         content: formData.content?.trim() || "",
-        category: formData.category?.trim() || undefined, // Use undefined instead of null for optional fields
+        category: formData.category?.trim() || undefined,
         difficulty_level: formData.difficulty_level?.trim() || undefined,
         summary: formData.summary?.trim().substring(0, 500) || undefined,
-        author_bio: formData.author_bio?.trim() || undefined,
-        author_credentials: formData.author_credentials?.trim() || undefined,
         featured_image_url: formData.featured_image_url?.trim() || undefined,
         tags: Array.isArray(formData.tags) ? formData.tags.filter(tag => tag && typeof tag === 'string' && tag.trim()) : [],
       };
@@ -444,33 +436,6 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
                 rows={12}
                 className="w-full bg-zinc-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl px-5 py-4 text-zinc-900 font-medium placeholder:text-zinc-300 outline-none transition-all font-mono text-sm leading-relaxed"
               />
-            </div>
-
-            {/* Author Info */}
-            <div className="space-y-4 p-4 bg-zinc-50 rounded-2xl border border-zinc-100">
-              <h4 className="text-sm font-black text-zinc-700 uppercase tracking-widest">Author Information (Optional)</h4>
-              
-              <div className="space-y-2">
-                <label className="text-xs font-black text-zinc-400 uppercase tracking-widest pl-1">Credentials</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Licensed Clinical Psychologist, PhD"
-                  value={formData.author_credentials}
-                  onChange={(e) => setFormData(p => ({ ...p, author_credentials: e.target.value }))}
-                  className="w-full bg-white border-2 border-transparent focus:border-indigo-500 rounded-xl px-4 py-3 text-zinc-900 font-medium placeholder:text-zinc-300 outline-none transition-all"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs font-black text-zinc-400 uppercase tracking-widest pl-1">Bio</label>
-                <textarea
-                  placeholder="Brief professional bio..."
-                  value={formData.author_bio}
-                  onChange={(e) => setFormData(p => ({ ...p, author_bio: e.target.value }))}
-                  rows={3}
-                  className="w-full resize-none bg-white border-2 border-transparent focus:border-indigo-500 rounded-xl px-4 py-3 text-zinc-900 font-medium placeholder:text-zinc-300 outline-none transition-all"
-                />
-              </div>
             </div>
 
           </form>
