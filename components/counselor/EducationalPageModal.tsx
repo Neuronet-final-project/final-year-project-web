@@ -129,8 +129,24 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
     setError(null);
 
     try {
-      // Convert empty strings to null for optional fields
-      const payload = {
+      const method = initialData ? "PUT" : "POST";
+      const url = initialData 
+        ? `/api/proxy/backend/educational-pages/${formData.slug}`
+        : "/api/proxy/backend/educational-pages";
+
+      // For PUT requests, don't send slug (it's in URL)
+      // For POST requests, include slug
+      const payload = initialData ? {
+        title: formData.title,
+        content: formData.content,
+        category: formData.category || null,
+        difficulty_level: formData.difficulty_level || null,
+        summary: formData.summary || null,
+        author_bio: formData.author_bio || null,
+        author_credentials: formData.author_credentials || null,
+        featured_image_url: formData.featured_image_url || null,
+        tags: formData.tags,
+      } : {
         slug: formData.slug,
         title: formData.title,
         content: formData.content,
@@ -142,11 +158,6 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
         featured_image_url: formData.featured_image_url || null,
         tags: formData.tags,
       };
-
-      const method = initialData ? "PUT" : "POST";
-      const url = initialData 
-        ? `/api/proxy/backend/educational-pages/${formData.slug}`
-        : "/api/proxy/backend/educational-pages";
 
       const res = await fetch(url, {
         method,
