@@ -129,21 +129,24 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
     setError(null);
 
     try {
-      const method = initialData ? "PUT" : "POST";
-      const url = initialData 
-        ? `/api/proxy/backend/educational-pages/${formData.slug}`
-        : "/api/proxy/backend/educational-pages";
-
       // Convert empty strings to null for optional fields
       const payload = {
-        ...formData,
+        slug: formData.slug,
+        title: formData.title,
+        content: formData.content,
         category: formData.category || null,
         difficulty_level: formData.difficulty_level || null,
         summary: formData.summary || null,
         author_bio: formData.author_bio || null,
         author_credentials: formData.author_credentials || null,
         featured_image_url: formData.featured_image_url || null,
+        tags: formData.tags,
       };
+
+      const method = initialData ? "PUT" : "POST";
+      const url = initialData 
+        ? `/api/proxy/backend/educational-pages/${formData.slug}`
+        : "/api/proxy/backend/educational-pages";
 
       const res = await fetch(url, {
         method,
@@ -152,13 +155,13 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
       });
 
       if (!res.ok) {
-        const d = await res.json();
+        const d = await res.json().catch(() => ({ detail: "Failed to save" }));
         throw new Error(d.detail || "Failed to save educational resource");
       }
 
       onSuccess();
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || "An error occurred");
     } finally {
       setSaving(false);
     }
