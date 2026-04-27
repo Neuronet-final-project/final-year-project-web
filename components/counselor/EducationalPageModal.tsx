@@ -185,7 +185,20 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
       if (!res.ok) {
         const d = await res.json().catch(() => ({ detail: "Failed to save" }));
         console.log("[FORM_SUBMIT] Error response:", d);
-        throw new Error(d.detail || "Failed to save educational resource");
+        
+        // Handle different error response formats
+        let errorMessage = "Failed to save educational resource";
+        if (typeof d.detail === 'string') {
+          errorMessage = d.detail;
+        } else if (d.message && typeof d.message === 'string') {
+          errorMessage = d.message;
+        } else if (Array.isArray(d.detail)) {
+          errorMessage = d.detail.map(err => err.msg || err.message || String(err)).join(', ');
+        } else if (typeof d.detail === 'object') {
+          errorMessage = JSON.stringify(d.detail);
+        }
+        
+        throw new Error(errorMessage);
       }
 
       onSuccess();
