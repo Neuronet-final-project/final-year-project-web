@@ -316,22 +316,29 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-xs font-black text-zinc-400 uppercase tracking-widest pl-1">Category</label>
+                <label className="text-xs font-black text-zinc-400 uppercase tracking-widest pl-1 flex items-center gap-2">
+                  Category (Topic)
+                  <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-black rounded">REQUIRED</span>
+                </label>
                 <select
+                  required
                   value={formData.category}
                   onChange={(e) => setFormData(p => ({ ...p, category: e.target.value }))}
                   className="w-full bg-zinc-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl px-5 py-4 text-zinc-900 font-bold outline-none transition-all"
                 >
-                  <option value="">Select category</option>
-                  <option value="anxiety">Anxiety</option>
-                  <option value="depression">Depression</option>
+                  <option value="">Select a topic...</option>
+                  <option value="anxiety">Understanding Anxiety</option>
+                  <option value="depression">Coping with Depression</option>
                   <option value="stress">Stress Management</option>
-                  <option value="self-care">Self-Care</option>
-                  <option value="relationships">Relationships</option>
+                  <option value="self-care">Self-Care & Wellness</option>
+                  <option value="relationships">Healthy Relationships</option>
                   <option value="coping">Coping Strategies</option>
-                  <option value="mindfulness">Mindfulness</option>
-                  <option value="wellness">Wellness</option>
+                  <option value="mindfulness">Mindfulness & Meditation</option>
+                  <option value="wellness">Mental Wellness</option>
                 </select>
+                <p className="text-xs text-zinc-500 font-medium pl-1">
+                  Students follow topics to see your articles in their feed
+                </p>
               </div>
 
               <div className="space-y-2">

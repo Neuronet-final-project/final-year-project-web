@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Eye, Heart, TrendingUp, Calendar, Users, Clock } from "lucide-react";
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { ArrowLeft, Eye, Heart, TrendingUp, Users, Clock, FolderOpen } from "lucide-react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 export default function PageAnalyticsPage() {
   const params = useParams();
@@ -12,6 +12,7 @@ export default function PageAnalyticsPage() {
 
   const [page, setPage] = useState<any>(null);
   const [analytics, setAnalytics] = useState<any>(null);
+  const [categoryInfo, setCategoryInfo] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState(30); // days
 
@@ -27,6 +28,16 @@ export default function PageAnalyticsPage() {
       if (pageRes.ok) {
         const pageData = await pageRes.json();
         setPage(pageData);
+
+        // Fetch category info if page has a category
+        if (pageData.category) {
+          const categoryRes = await fetch(`/api/proxy/backend/category-follows/available-categories`);
+          if (categoryRes.ok) {
+            const categories = await categoryRes.json();
+            const catInfo = categories.find((c: any) => c.value === pageData.category);
+            setCategoryInfo(catInfo);
+          }
+        }
       }
 
       // Fetch analytics
@@ -116,7 +127,7 @@ export default function PageAnalyticsPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
         <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-3xl p-6 text-white shadow-lg shadow-indigo-200">
           <div className="flex items-center justify-between mb-4">
             <Eye className="h-8 w-8 opacity-80" />
@@ -152,6 +163,17 @@ export default function PageAnalyticsPage() {
           <div className="text-3xl font-black mb-1">{page.estimated_read_time || 0}</div>
           <div className="text-sm font-medium opacity-90">Min Read Time</div>
         </div>
+
+        {categoryInfo && (
+          <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-3xl p-6 text-white shadow-lg shadow-purple-200">
+            <div className="flex items-center justify-between mb-4">
+              <FolderOpen className="h-8 w-8 opacity-80" />
+              <TrendingUp className="h-5 w-5 opacity-60" />
+            </div>
+            <div className="text-3xl font-black mb-1">{categoryInfo.follower_count}</div>
+            <div className="text-sm font-medium opacity-90">Topic Followers</div>
+          </div>
+        )}
       </div>
 
       {/* Views Chart */}
@@ -226,6 +248,13 @@ export default function PageAnalyticsPage() {
               <span className="text-zinc-600 font-bold">Category</span>
               <span className="text-zinc-900 font-black">{page.category || 'N/A'}</span>
             </div>
+            {categoryInfo && (
+              <div className="p-3 bg-purple-50 rounded-xl border border-purple-100">
+                <p className="text-xs text-purple-700 font-medium">
+                  <span className="font-black">{categoryInfo.follower_count} students</span> follow the <span className="font-black">{categoryInfo.label}</span> topic and will see this article in their feed
+                </p>
+              </div>
+            )}
             <div className="flex justify-between items-center py-3 border-b border-zinc-100">
               <span className="text-zinc-600 font-bold">Difficulty</span>
               <span className="text-zinc-900 font-black">{page.difficulty_level || 'N/A'}</span>
