@@ -104,9 +104,9 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
       
       // Clean and validate enriched data before setting
       const cleanedData = {
-        summary: data.summary || prev.summary,
-        tags: Array.isArray(data.suggested_tags) ? [...new Set([...prev.tags, ...data.suggested_tags])] : prev.tags,
-        featured_image_url: (data.featured_image_url && typeof data.featured_image_url === 'string') ? data.featured_image_url : prev.featured_image_url,
+        summary: data.summary || formData.summary,
+        tags: Array.isArray(data.suggested_tags) ? [...new Set([...formData.tags, ...data.suggested_tags])] : formData.tags,
+        featured_image_url: (data.featured_image_url && typeof data.featured_image_url === 'string') ? data.featured_image_url : formData.featured_image_url,
       };
       
       console.log("[FRONTEND_ENRICHMENT] Cleaned data:", cleanedData);
