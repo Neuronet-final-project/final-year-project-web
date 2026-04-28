@@ -287,9 +287,22 @@ export default function EducationalPagesDashboard() {
                     <h3 className="text-lg font-black text-zinc-900 tracking-tight leading-tight mb-2">
                       {page.title}
                     </h3>
-                    <p className="text-sm text-zinc-500 font-medium line-clamp-3 leading-relaxed">
-                      {page.summary || "No summary provided."}
+                    <p className="text-sm text-zinc-500 font-medium line-clamp-3 leading-relaxed mb-3">
+                      {page.summary || page.content?.substring(0, 150) + (page.content?.length > 150 ? '...' : '') || "No content available."}
                     </p>
+                    
+                    {/* Read More Link */}
+                    <a
+                      href={`/learn/${page.slug}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 hover:text-indigo-700 transition-colors"
+                    >
+                      Read full article
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </a>
                     
                     {/* Tags */}
                     {page.tags && page.tags.length > 0 && (
