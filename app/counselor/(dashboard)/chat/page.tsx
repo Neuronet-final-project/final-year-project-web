@@ -38,7 +38,7 @@ export default function CounselorChatPage() {
   const [showAttachMenu, setShowAttachMenu] = useState(false);
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const [callState, setCallState] = useState<{ callId: string; callType: "voice" | "video"; peerEmail: string; peerName: string; isIncoming: boolean } | null>(null);
-  const callStateRef = useRef(callState);
+  const callStateRef = useRef<{ callId: string; callType: "voice" | "video"; peerEmail: string; peerName: string; isIncoming: boolean } | null>(callState);
   // Keep ref in sync with state so the polling closure always has the latest value
   useEffect(() => { callStateRef.current = callState; }, [callState]);
   const [searchFilter, setSearchFilter] = useState("");
@@ -129,27 +129,12 @@ export default function CounselorChatPage() {
     if (!activeConvId) return;
     let mounted = true;
     async function fetchMsgs() {
-      // Don't fetch if we're currently sending a message to avoid race conditions
-      if (sending) return;
-      
       setMsgsLoading(true);
       try {
         const res = await fetch(`/api/proxy/backend/messaging/conversations/${activeConvId}/messages`);
         if (res.ok && mounted) {
           const data = await res.json();
-          const sortedMessages = (data || []).sort((a: Message, b: Message) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-          
-          // Only update if the message count changed or content is different
-          setMessages(prev => {
-            if (prev.length !== sortedMessages.length) return sortedMessages;
-            // Check if last message is different
-            const lastPrev = prev[prev.length - 1];
-            const lastNew = sortedMessages[sortedMessages.length - 1];
-            if (lastPrev?.message_id !== lastNew?.message_id && lastPrev?._id !== lastNew?._id) {
-              return sortedMessages;
-            }
-            return prev;
-          });
+          setMessages((data || []).sort((a: Message, b: Message) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()));
         }
       } finally { if (mounted) setMsgsLoading(false); }
     }
@@ -160,63 +145,54 @@ export default function CounselorChatPage() {
     } else { setAiSummary(null); }
     const iv = setInterval(fetchMsgs, 5000);
     return () => { mounted = false; clearInterval(iv); };
-  }, [activeConvId, sending]);
+  }, [activeConvId]);
 
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
   // ---- Send text message ----
   async function handleSendMessage(e: React.FormEvent) {
     e.preventDefault();
-    console.log('[Chat] handleSendMessage called', { replyText, activeConvId, sending });
+    console.log('[SEND] 1. handleSendMessage called', { replyText: replyText.substring(0, 20), activeConvId, sending });
     
     if (!replyText.trim() || !activeConvId) {
-      console.log('[Chat] Validation failed:', { hasText: !!replyText.trim(), hasConvId: !!activeConvId });
+      console.log('[SEND] 2. Validation failed - returning early');
       return;
     }
     
-    if (sending) {
-      console.log('[Chat] Already sending, skipping');
-      return;
-    }
-    
+    console.log('[SEND] 3. Setting sending=true');
     setSending(true);
-    const messageToSend = replyText.trim();
-    setReplyText(""); // Clear input immediately for better UX
-    
-    console.log('[Chat] Sending message:', messageToSend);
     
     try {
       const url = `/api/proxy/backend/messaging/conversations/${activeConvId}/messages`;
-      console.log('[Chat] POST to:', url);
+      console.log('[SEND] 4. About to POST to:', url);
       
       const res = await fetch(url, {
         method: "POST", 
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: messageToSend, message_type: "text" }),
+        body: JSON.stringify({ content: replyText, message_type: "text" }),
       });
       
-      console.log('[Chat] Response status:', res.status);
+      console.log('[SEND] 5. POST completed, status:', res.status, 'ok:', res.ok);
       
       if (res.ok) { 
+        console.log('[SEND] 6. Response OK, clearing input and parsing response');
+        setReplyText(""); 
         const newMsg = await res.json(); 
-        console.log('[Chat] Message sent successfully:', newMsg);
+        console.log('[SEND] 7. Got new message:', newMsg.message_id || newMsg._id);
         setMessages(prev => {
-          console.log('[Chat] Adding message to state, prev count:', prev.length);
+          console.log('[SEND] 8. Adding to messages, prev count:', prev.length);
           return [...prev, newMsg];
         });
-        toast.success("Message sent");
+        console.log('[SEND] 9. Message added successfully');
       } else {
-        const error = await res.text();
-        console.error('[Chat] Failed to send message:', res.status, error);
-        toast.error(`Failed to send: ${res.status}`);
-        setReplyText(messageToSend); // Restore message on error
+        console.error('[SEND] 6. Response NOT OK, status:', res.status);
+        const errorText = await res.text();
+        console.error('[SEND] 7. Error response:', errorText);
       }
     } catch (error) {
-      console.error('[Chat] Network error sending message:', error);
-      toast.error("Network error - check console");
-      setReplyText(messageToSend); // Restore message on error
+      console.error('[SEND] ERROR in try block:', error);
     } finally { 
-      console.log('[Chat] Send complete, setting sending=false');
+      console.log('[SEND] 10. Finally block - setting sending=false');
       setSending(false); 
     }
   }
