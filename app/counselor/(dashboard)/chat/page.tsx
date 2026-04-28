@@ -167,32 +167,56 @@ export default function CounselorChatPage() {
   // ---- Send text message ----
   async function handleSendMessage(e: React.FormEvent) {
     e.preventDefault();
-    if (!replyText.trim() || !activeConvId) return;
+    console.log('[Chat] handleSendMessage called', { replyText, activeConvId, sending });
+    
+    if (!replyText.trim() || !activeConvId) {
+      console.log('[Chat] Validation failed:', { hasText: !!replyText.trim(), hasConvId: !!activeConvId });
+      return;
+    }
+    
+    if (sending) {
+      console.log('[Chat] Already sending, skipping');
+      return;
+    }
+    
     setSending(true);
     const messageToSend = replyText.trim();
     setReplyText(""); // Clear input immediately for better UX
     
+    console.log('[Chat] Sending message:', messageToSend);
+    
     try {
-      const res = await fetch(`/api/proxy/backend/messaging/conversations/${activeConvId}/messages`, {
-        method: "POST", headers: { "Content-Type": "application/json" },
+      const url = `/api/proxy/backend/messaging/conversations/${activeConvId}/messages`;
+      console.log('[Chat] POST to:', url);
+      
+      const res = await fetch(url, {
+        method: "POST", 
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: messageToSend, message_type: "text" }),
       });
       
+      console.log('[Chat] Response status:', res.status);
+      
       if (res.ok) { 
         const newMsg = await res.json(); 
-        setMessages(prev => [...prev, newMsg]);
         console.log('[Chat] Message sent successfully:', newMsg);
+        setMessages(prev => {
+          console.log('[Chat] Adding message to state, prev count:', prev.length);
+          return [...prev, newMsg];
+        });
+        toast.success("Message sent");
       } else {
         const error = await res.text();
-        console.error('[Chat] Failed to send message:', error);
-        toast.error("Failed to send message");
+        console.error('[Chat] Failed to send message:', res.status, error);
+        toast.error(`Failed to send: ${res.status}`);
         setReplyText(messageToSend); // Restore message on error
       }
     } catch (error) {
       console.error('[Chat] Network error sending message:', error);
-      toast.error("Network error");
+      toast.error("Network error - check console");
       setReplyText(messageToSend); // Restore message on error
     } finally { 
+      console.log('[Chat] Send complete, setting sending=false');
       setSending(false); 
     }
   }
