@@ -14,7 +14,6 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
   const [formData, setFormData] = useState({
     slug: "",
     title: "",
-    summary: "",
     category: "",
     content: "",
     tags: [] as string[],
@@ -34,7 +33,6 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
         setFormData({
           slug: initialData.slug || "",
           title: initialData.title || "",
-          summary: initialData.summary || "",
           category: initialData.category || "",
           content: initialData.content || "",
           tags: initialData.tags || [],
@@ -45,7 +43,6 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
         setFormData({
           slug: "",
           title: "",
-          summary: "",
           category: "",
           content: "",
           tags: [],
@@ -97,7 +94,6 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
       
       // Clean and validate enriched data before setting
       const cleanedData = {
-        summary: data.summary ? data.summary.substring(0, 500) : formData.summary,
         tags: Array.isArray(data.suggested_tags) ? [...new Set([...formData.tags, ...data.suggested_tags])] : formData.tags,
         featured_image_url: (data.featured_image_url && typeof data.featured_image_url === 'string') ? data.featured_image_url : formData.featured_image_url,
       };
