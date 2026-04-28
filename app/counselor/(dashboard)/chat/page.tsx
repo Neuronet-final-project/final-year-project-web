@@ -129,12 +129,27 @@ export default function CounselorChatPage() {
     if (!activeConvId) return;
     let mounted = true;
     async function fetchMsgs() {
+      // Don't fetch if we're currently sending a message to avoid race conditions
+      if (sending) return;
+      
       setMsgsLoading(true);
       try {
         const res = await fetch(`/api/proxy/backend/messaging/conversations/${activeConvId}/messages`);
         if (res.ok && mounted) {
           const data = await res.json();
-          setMessages((data || []).sort((a: Message, b: Message) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()));
+          const sortedMessages = (data || []).sort((a: Message, b: Message) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+          
+          // Only update if the message count changed or content is different
+          setMessages(prev => {
+            if (prev.length !== sortedMessages.length) return sortedMessages;
+            // Check if last message is different
+            const lastPrev = prev[prev.length - 1];
+            const lastNew = sortedMessages[sortedMessages.length - 1];
+            if (lastPrev?.message_id !== lastNew?.message_id && lastPrev?._id !== lastNew?._id) {
+              return sortedMessages;
+            }
+            return prev;
+          });
         }
       } finally { if (mounted) setMsgsLoading(false); }
     }
@@ -145,7 +160,7 @@ export default function CounselorChatPage() {
     } else { setAiSummary(null); }
     const iv = setInterval(fetchMsgs, 5000);
     return () => { mounted = false; clearInterval(iv); };
-  }, [activeConvId]);
+  }, [activeConvId, sending]);
 
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
@@ -154,13 +169,32 @@ export default function CounselorChatPage() {
     e.preventDefault();
     if (!replyText.trim() || !activeConvId) return;
     setSending(true);
+    const messageToSend = replyText.trim();
+    setReplyText(""); // Clear input immediately for better UX
+    
     try {
       const res = await fetch(`/api/proxy/backend/messaging/conversations/${activeConvId}/messages`, {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: replyText, message_type: "text" }),
+        body: JSON.stringify({ content: messageToSend, message_type: "text" }),
       });
-      if (res.ok) { setReplyText(""); const newMsg = await res.json(); setMessages(prev => [...prev, newMsg]); }
-    } finally { setSending(false); }
+      
+      if (res.ok) { 
+        const newMsg = await res.json(); 
+        setMessages(prev => [...prev, newMsg]);
+        console.log('[Chat] Message sent successfully:', newMsg);
+      } else {
+        const error = await res.text();
+        console.error('[Chat] Failed to send message:', error);
+        toast.error("Failed to send message");
+        setReplyText(messageToSend); // Restore message on error
+      }
+    } catch (error) {
+      console.error('[Chat] Network error sending message:', error);
+      toast.error("Network error");
+      setReplyText(messageToSend); // Restore message on error
+    } finally { 
+      setSending(false); 
+    }
   }
 
   // ---- Edit message ----
