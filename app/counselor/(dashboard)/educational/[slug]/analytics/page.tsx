@@ -75,18 +75,25 @@ export default function PageAnalyticsPage() {
     );
   }
 
-  if (!page || !analytics) {
+  if (!page) {
     return (
       <div className="p-8 max-w-7xl mx-auto">
+        <button
+          onClick={() => router.back()}
+          className="mb-4 p-3 bg-zinc-100 hover:bg-zinc-200 rounded-2xl transition-all inline-flex items-center gap-2"
+        >
+          <ArrowLeft className="h-5 w-5 text-zinc-600" />
+          <span className="font-bold text-zinc-600">Back</span>
+        </button>
         <div className="text-center py-20">
-          <p className="text-zinc-500 font-bold">Analytics not available</p>
+          <p className="text-zinc-500 font-bold">Page not found</p>
         </div>
       </div>
     );
   }
 
-  // Prepare chart data
-  const viewsData = analytics.daily_views || [];
+  // Prepare chart data - use empty array if no analytics
+  const viewsData = analytics?.daily_views || [];
   const chartData = viewsData.map((item: any) => ({
     date: new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
     views: item.views,
@@ -127,23 +134,14 @@ export default function PageAnalyticsPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-3xl p-6 text-white shadow-lg shadow-indigo-200">
           <div className="flex items-center justify-between mb-4">
             <Eye className="h-8 w-8 opacity-80" />
             <TrendingUp className="h-5 w-5 opacity-60" />
           </div>
-          <div className="text-3xl font-black mb-1">{analytics.total_views?.toLocaleString() || page.view_count}</div>
+          <div className="text-3xl font-black mb-1">{analytics?.total_views?.toLocaleString() || page.view_count || 0}</div>
           <div className="text-sm font-medium opacity-90">Total Views</div>
-        </div>
-
-        <div className="bg-gradient-to-br from-rose-500 to-rose-600 rounded-3xl p-6 text-white shadow-lg shadow-rose-200">
-          <div className="flex items-center justify-between mb-4">
-            <Heart className="h-8 w-8 opacity-80" />
-            <TrendingUp className="h-5 w-5 opacity-60" />
-          </div>
-          <div className="text-3xl font-black mb-1">{page.follow_count}</div>
-          <div className="text-sm font-medium opacity-90">Followers</div>
         </div>
 
         <div className="bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-3xl p-6 text-white shadow-lg shadow-cyan-200">
@@ -151,7 +149,7 @@ export default function PageAnalyticsPage() {
             <Users className="h-8 w-8 opacity-80" />
             <TrendingUp className="h-5 w-5 opacity-60" />
           </div>
-          <div className="text-3xl font-black mb-1">{analytics.unique_viewers || 0}</div>
+          <div className="text-3xl font-black mb-1">{analytics?.unique_viewers || 0}</div>
           <div className="text-sm font-medium opacity-90">Unique Viewers</div>
         </div>
 
@@ -177,70 +175,65 @@ export default function PageAnalyticsPage() {
       </div>
 
       {/* Views Chart */}
-      <div className="bg-white rounded-3xl p-8 shadow-sm border border-zinc-100">
-        <h3 className="text-xl font-black text-zinc-900 mb-6">Views Over Time</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" />
-            <XAxis 
-              dataKey="date" 
-              stroke="#71717a"
-              style={{ fontSize: '12px', fontWeight: 'bold' }}
-            />
-            <YAxis 
-              stroke="#71717a"
-              style={{ fontSize: '12px', fontWeight: 'bold' }}
-            />
-            <Tooltip 
-              contentStyle={{
-                backgroundColor: '#fff',
-                border: '2px solid #e4e4e7',
-                borderRadius: '12px',
-                fontWeight: 'bold'
-              }}
-            />
-            <Legend 
-              wrapperStyle={{ fontWeight: 'bold', fontSize: '12px' }}
-            />
-            <Line 
-              type="monotone" 
-              dataKey="views" 
-              stroke="#6366f1" 
-              strokeWidth={3}
-              dot={{ fill: '#6366f1', r: 4 }}
-              activeDot={{ r: 6 }}
-              name="Total Views"
-            />
-            <Line 
-              type="monotone" 
-              dataKey="uniqueViewers" 
-              stroke="#06b6d4" 
-              strokeWidth={3}
-              dot={{ fill: '#06b6d4', r: 4 }}
-              activeDot={{ r: 6 }}
-              name="Unique Viewers"
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      {chartData.length > 0 ? (
+        <div className="bg-white rounded-3xl p-8 shadow-sm border border-zinc-100">
+          <h3 className="text-xl font-black text-zinc-900 mb-6">Views Over Time</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" />
+              <XAxis 
+                dataKey="date" 
+                stroke="#71717a"
+                style={{ fontSize: '12px', fontWeight: 'bold' }}
+              />
+              <YAxis 
+                stroke="#71717a"
+                style={{ fontSize: '12px', fontWeight: 'bold' }}
+              />
+              <Tooltip 
+                contentStyle={{
+                  backgroundColor: '#fff',
+                  border: '2px solid #e4e4e7',
+                  borderRadius: '12px',
+                  fontWeight: 'bold'
+                }}
+              />
+              <Legend 
+                wrapperStyle={{ fontWeight: 'bold', fontSize: '12px' }}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="views" 
+                stroke="#6366f1" 
+                strokeWidth={3}
+                dot={{ fill: '#6366f1', r: 4 }}
+                activeDot={{ r: 6 }}
+                name="Total Views"
+              />
+              <Line 
+                type="monotone" 
+                dataKey="uniqueViewers" 
+                stroke="#06b6d4" 
+                strokeWidth={3}
+                dot={{ fill: '#06b6d4', r: 4 }}
+                activeDot={{ r: 6 }}
+                name="Unique Viewers"
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      ) : (
+        <div className="bg-white rounded-3xl p-8 shadow-sm border border-zinc-100">
+          <h3 className="text-xl font-black text-zinc-900 mb-6">Views Over Time</h3>
+          <div className="text-center py-12 text-zinc-400">
+            <p className="font-bold">No view data available yet</p>
+            <p className="text-sm mt-2">Data will appear once students start viewing this article</p>
+          </div>
+        </div>
+      )}
 
       {/* Engagement Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-3xl p-8 shadow-sm border border-zinc-100">
-          <h3 className="text-xl font-black text-zinc-900 mb-6">Engagement Rate</h3>
-          <div className="flex items-center justify-center py-8">
-            <div className="text-center">
-              <div className="text-6xl font-black text-indigo-600 mb-2">
-                {((page.follow_count / (page.view_count || 1)) * 100).toFixed(1)}%
-              </div>
-              <p className="text-zinc-500 font-bold">Follow Rate</p>
-              <p className="text-sm text-zinc-400 mt-2">
-                {page.follow_count} follows / {page.view_count} views
-              </p>
-            </div>
-          </div>
-        </div>
-
         <div className="bg-white rounded-3xl p-8 shadow-sm border border-zinc-100">
           <h3 className="text-xl font-black text-zinc-900 mb-6">Page Info</h3>
           <div className="space-y-4">
@@ -269,6 +262,26 @@ export default function PageAnalyticsPage() {
               <span className="text-zinc-600 font-bold">Tags</span>
               <span className="text-zinc-900 font-black">{page.tags?.length || 0}</span>
             </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-3xl p-8 shadow-sm border border-zinc-100">
+          <h3 className="text-xl font-black text-zinc-900 mb-6">Quick Actions</h3>
+          <div className="space-y-3">
+            <a
+              href={`/learn/${page.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full px-6 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold text-center transition-all"
+            >
+              View Public Page
+            </a>
+            <button
+              onClick={() => router.push('/counselor/educational')}
+              className="block w-full px-6 py-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-900 rounded-2xl font-bold text-center transition-all"
+            >
+              Back to All Articles
+            </button>
           </div>
         </div>
       </div>

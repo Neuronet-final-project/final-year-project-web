@@ -323,10 +323,6 @@ export default function EducationalPagesDashboard() {
                         <Eye className="h-4 w-4" />
                         {page.view_count || 0} views
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Heart className="h-4 w-4" />
-                        {page.follow_count || 0} follows
-                      </div>
                     </div>
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-zinc-400 font-medium">/learn/{page.slug}</span>
