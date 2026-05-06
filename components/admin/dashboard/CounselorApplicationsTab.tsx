@@ -1,7 +1,7 @@
 "use client";
 
-import React from 'react';
-import { UserCheck, UserX, Clock, MapPin, Briefcase, ShieldCheck } from 'lucide-react';
+import React, { useState } from 'react';
+import { UserCheck, UserX, Clock, MapPin, Briefcase, ShieldCheck, Image as ImageIcon } from 'lucide-react';
 
 interface CounselorApplicationsProps {
   applications: any[];
@@ -12,8 +12,33 @@ interface CounselorApplicationsProps {
 export default function CounselorApplicationsTab({ 
   applications, appsLoading, handleApplication 
 }: CounselorApplicationsProps) {
+  const [selectedIdPhoto, setSelectedIdPhoto] = useState<string | null>(null);
+
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-10">
+      {/* ID Photo Modal */}
+      {selectedIdPhoto && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setSelectedIdPhoto(null)}
+        >
+          <div className="relative max-w-4xl max-h-[90vh] rounded-3xl overflow-hidden shadow-2xl">
+            <img 
+              src={selectedIdPhoto} 
+              alt="ID Photo" 
+              className="w-full h-full object-contain"
+            />
+            <button
+              onClick={() => setSelectedIdPhoto(null)}
+              className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white rounded-full p-3 transition-all"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
       {/* Header Info */}
       <div className="bg-zinc-900 p-10 md:p-14 rounded-[3rem] text-white relative overflow-hidden shadow-2xl">
         <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-[100px] pointer-events-none" />
@@ -70,6 +95,15 @@ export default function CounselorApplicationsTab({
                            <MapPin className="h-4 w-4 text-zinc-400 group-hover:text-indigo-500 transition-colors" />
                            <span className="text-xs font-black text-zinc-600 uppercase tracking-tight truncate max-w-[200px]">{app.qualification}</span>
                          </div>
+                         {app.id_photo_url && (
+                           <button
+                             onClick={() => setSelectedIdPhoto(app.id_photo_url)}
+                             className="flex items-center gap-2.5 px-4 py-2 bg-indigo-50 rounded-2xl border border-indigo-100/50 hover:bg-indigo-100 transition-colors"
+                           >
+                             <ImageIcon className="h-4 w-4 text-indigo-600" />
+                             <span className="text-xs font-black text-indigo-600 uppercase tracking-tight">View ID Photo</span>
+                           </button>
+                         )}
                       </div>
                    </div>
                 </div>
