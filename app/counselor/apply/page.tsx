@@ -11,10 +11,25 @@ export default function CounselorApplyPage() {
   const [password, setPassword] = useState("");
   const [qualification, setQualification] = useState("");
   const [experienceYears, setExperienceYears] = useState<number>(0);
+  const [idPhoto, setIdPhoto] = useState<File | null>(null);
+  const [idPhotoPreview, setIdPhotoPreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<null | { ok: boolean; message: string }>(
     null,
   );
+
+  function handleIdPhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) {
+      setIdPhoto(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setIdPhotoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -22,6 +37,31 @@ export default function CounselorApplyPage() {
     setResult(null);
 
     try {
+      let idPhotoUrl = null;
+
+      // Upload ID photo if provided
+      if (idPhoto) {
+        setUploading(true);
+        const formData = new FormData();
+        formData.append("file", idPhoto);
+
+        const uploadRes = await fetch("/api/proxy/backend/messaging/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!uploadRes.ok) {
+          setResult({ ok: false, message: "Failed to upload ID photo" });
+          setUploading(false);
+          setSubmitting(false);
+          return;
+        }
+
+        const uploadData = await uploadRes.json();
+        idPhotoUrl = uploadData.url;
+        setUploading(false);
+      }
+
       const res = await fetch("/api/proxy/backend/counselor/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -31,6 +71,7 @@ export default function CounselorApplyPage() {
           full_name: fullName,
           qualification,
           experience_years: experienceYears,
+          id_photo_url: idPhotoUrl,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -148,6 +189,33 @@ export default function CounselorApplyPage() {
               />
             </div>
 
+            {/* ID Photo Upload */}
+            <div className="space-y-1.5 sm:col-span-2">
+              <label className="text-sm font-medium text-zinc-900">
+                ID Photo (Optional)
+              </label>
+              <div className="flex flex-col gap-3">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleIdPhotoChange}
+                  className="neuro-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                />
+                {idPhotoPreview && (
+                  <div className="relative w-32 h-32 rounded-xl overflow-hidden border-2 border-indigo-200">
+                    <img
+                      src={idPhotoPreview}
+                      alt="ID Preview"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+              </div>
+              <p className="text-xs text-zinc-500">
+                Upload a clear photo of your professional ID or license for verification
+              </p>
+            </div>
+
             {/* Result message */}
             {result && (
               <div
@@ -163,11 +231,11 @@ export default function CounselorApplyPage() {
 
             {/* Submit */}
             <button
-              disabled={submitting}
+              disabled={submitting || uploading}
               className="sm:col-span-2 inline-flex w-full items-center justify-center rounded-xl bg-[#4F46E5] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:opacity-50"
               type="submit"
             >
-              {submitting ? "Submitting..." : "Submit Application"}
+              {uploading ? "Uploading ID Photo..." : submitting ? "Submitting..." : "Submit Application"}
             </button>
           </form>
 
