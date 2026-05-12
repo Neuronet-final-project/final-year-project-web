@@ -31,19 +31,44 @@ export default function EducationalAnalyticsTab() {
     setLoading(true);
     try {
       console.log('Fetching educational analytics...');
-      const res = await fetch('/api/proxy/backend/educational-follows/admin/analytics', {
-        cache: "no-store"
-      });
-      console.log('Response status:', res.status);
       
-      if (res.ok) {
-        const data = await res.json();
-        console.log('Educational analytics data:', data);
-        setStats(data);
+      // Fetch the same data as counselor dashboard
+      const [analyticsRes, categoryRes] = await Promise.all([
+        fetch('/api/proxy/backend/analytics/counselor/my-analytics?days=30', {
+          cache: "no-store"
+        }),
+        fetch('/api/proxy/backend/category-follows/available-categories', {
+          cache: "no-store"
+        })
+      ]);
+      
+      console.log('Analytics response status:', analyticsRes.status);
+      console.log('Category response status:', categoryRes.status);
+      
+      if (analyticsRes.ok && categoryRes.ok) {
+        const analyticsData = await analyticsRes.json();
+        const categoryData = await categoryRes.json();
+        
+        console.log('Analytics data:', analyticsData);
+        console.log('Category data:', categoryData);
+        
+        // Transform to match our interface
+        const transformedStats = {
+          total_pages: analyticsData.total_pages || 0,
+          total_follows: categoryData.reduce((sum: number, cat: any) => sum + cat.follower_count, 0),
+          most_followed_pages: categoryData.map((cat: any) => ({
+            page_slug: cat.value,
+            page_title: cat.label,
+            follow_count: cat.follower_count
+          })),
+          recent_follows: [] // Not available in this endpoint
+        };
+        
+        setStats(transformedStats);
       } else {
-        const errorText = await res.text();
+        const errorText = await analyticsRes.text();
         console.error('Failed to load educational analytics:', errorText);
-        toast.error(`Failed to load analytics: ${res.status}`);
+        toast.error(`Failed to load analytics: ${analyticsRes.status}`);
       }
     } catch (error) {
       console.error('Error loading analytics:', error);
