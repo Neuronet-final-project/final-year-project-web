@@ -18,6 +18,11 @@ export default function CounselorApplicationDetailModal({
 }: CounselorApplicationDetailModalProps) {
   const [showIdPhoto, setShowIdPhoto] = React.useState(false);
 
+  // Debug logging
+  React.useEffect(() => {
+    console.log('Application data:', application);
+  }, [application]);
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -75,12 +80,16 @@ export default function CounselorApplicationDetailModal({
           className="relative w-full max-w-5xl bg-white rounded-[2.5rem] shadow-2xl my-8 animate-in zoom-in-95 duration-300"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Close Button */}
+          {/* Close Button - Fixed positioning with dark background */}
           <button
-            onClick={onClose}
-            className="absolute top-8 right-8 z-10 p-3 rounded-2xl bg-white/90 hover:bg-white border border-zinc-200 hover:border-zinc-300 transition-all shadow-lg hover:shadow-xl active:scale-95"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }}
+            className="fixed top-4 right-4 z-[60] p-4 rounded-2xl bg-zinc-900 hover:bg-zinc-800 text-white transition-all shadow-2xl hover:shadow-xl active:scale-95 border-2 border-white/20"
+            title="Close"
           >
-            <X className="h-5 w-5 text-zinc-700" />
+            <X className="h-6 w-6" />
           </button>
 
           {/* Header Section */}
@@ -103,18 +112,22 @@ export default function CounselorApplicationDetailModal({
 
               {/* Info */}
               <div className="flex-1">
-                <h2 className="text-4xl font-black text-white mb-3 tracking-tight">{application.full_name}</h2>
+                <h2 className="text-4xl font-black text-white mb-3 tracking-tight">
+                  {application.full_name || application.fullName || application.name || 'Unknown Applicant'}
+                </h2>
                 <div className="flex flex-wrap items-center gap-4 text-white/90">
                   <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl">
                     <Mail className="h-4 w-4" />
-                    <span className="text-sm font-semibold">{application.email}</span>
+                    <span className="text-sm font-semibold">{application.email || 'No email'}</span>
                   </div>
-                  <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl">
-                    <Calendar className="h-4 w-4" />
-                    <span className="text-sm font-semibold">
-                      {application.applied_at ? formatDate(application.applied_at) : 'N/A'}
-                    </span>
-                  </div>
+                  {application.applied_at && (
+                    <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl">
+                      <Calendar className="h-4 w-4" />
+                      <span className="text-sm font-semibold">
+                        {formatDate(application.applied_at)}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -141,7 +154,7 @@ export default function CounselorApplicationDetailModal({
                       </div>
                       <span className="text-xs font-black uppercase tracking-widest text-zinc-400">Qualification</span>
                     </div>
-                    <p className="text-2xl font-black text-zinc-900">{application.qualification}</p>
+                    <p className="text-2xl font-black text-zinc-900">{application.qualification || 'Not specified'}</p>
                   </div>
                 </div>
 
@@ -155,7 +168,7 @@ export default function CounselorApplicationDetailModal({
                       </div>
                       <span className="text-xs font-black uppercase tracking-widest text-zinc-400">Experience</span>
                     </div>
-                    <p className="text-2xl font-black text-zinc-900">{application.experience_years} Years</p>
+                    <p className="text-2xl font-black text-zinc-900">{application.experience_years || application.experienceYears || 0} Years</p>
                   </div>
                 </div>
               </div>
@@ -203,7 +216,7 @@ export default function CounselorApplicationDetailModal({
                 <div className="absolute top-4 left-4 text-6xl text-indigo-100 font-serif">"</div>
                 <div className="absolute bottom-4 right-4 text-6xl text-indigo-100 font-serif rotate-180">"</div>
                 <p className="relative text-base leading-relaxed text-zinc-700 whitespace-pre-wrap font-medium">
-                  {application.personal_statement || 'No personal statement provided.'}
+                  {application.personal_statement || application.personalStatement || 'No personal statement provided.'}
                 </p>
               </div>
             </div>
