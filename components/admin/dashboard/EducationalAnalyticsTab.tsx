@@ -53,32 +53,6 @@ export default function EducationalAnalyticsTab() {
     }
   };
 
-  const seedTestData = async () => {
-    setSeeding(true);
-    try {
-      const res = await fetch('/api/proxy/backend/test-data/seed-analytics', {
-        method: 'POST'
-      });
-      
-      if (res.ok) {
-        const result = await res.json();
-        toast.success('Test data added successfully!');
-        console.log('Seed result:', result);
-        // Refresh the data
-        await fetchStats();
-      } else {
-        const errorText = await res.text();
-        console.error('Failed to seed data:', errorText);
-        toast.error('Failed to seed test data');
-      }
-    } catch (error) {
-      console.error('Error seeding data:', error);
-      toast.error('Error seeding test data');
-    } finally {
-      setSeeding(false);
-    }
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
