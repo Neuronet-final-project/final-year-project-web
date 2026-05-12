@@ -30,11 +30,11 @@ export default function EducationalAnalyticsTab() {
   const fetchStats = async () => {
     setLoading(true);
     try {
-      console.log('Fetching educational analytics...');
+      console.log('Fetching educational analytics for admin...');
       
-      // Fetch the same data as counselor dashboard
+      // Fetch admin-specific analytics endpoint
       const [analyticsRes, categoryRes] = await Promise.all([
-        fetch('/api/proxy/backend/analytics/counselor/my-analytics?days=30', {
+        fetch('/api/proxy/backend/analytics/admin/all-analytics?days=30', {
           cache: "no-store"
         }),
         fetch('/api/proxy/backend/category-follows/available-categories', {

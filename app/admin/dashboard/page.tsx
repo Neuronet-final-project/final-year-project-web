@@ -17,7 +17,6 @@ import AISettingsTab from "@/components/admin/dashboard/AISettingsTab";
 import SystemConfigTab from "@/components/admin/dashboard/SystemConfigTab";
 import ProfileTab from "@/components/admin/dashboard/ProfileTab";
 import GuardianApprovalsTab from "@/components/admin/dashboard/GuardianApprovalsTab";
-import AIRecommendationsTab from "@/components/admin/dashboard/AIRecommendationsTab";
 import EducationalAnalyticsTab from "@/components/admin/dashboard/EducationalAnalyticsTab";
 import AlertConfigTab from "@/components/admin/dashboard/AlertConfigTab";
 import CounselorLimitsTab from "@/components/admin/dashboard/CounselorLimitsTab";
@@ -26,7 +25,7 @@ type AuthMeResponse =
   | { authenticated: false }
   | { authenticated: true; email: string; role: string; _id: string };
 
-type TabNode = "overview" | "users" | "applications" | "assign" | "approvals" | "recommendations" | "educational" | "alerts" | "limits" | "config" | "audit" | "profile";
+type TabNode = "overview" | "users" | "applications" | "assign" | "approvals" | "educational" | "alerts" | "limits" | "config" | "audit" | "profile";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -217,7 +216,6 @@ export default function AdminDashboardPage() {
     applications: "Counselor Applications",
     assign: "Relational Mapping",
     approvals: "Guardian Approval System",
-    recommendations: "AI Recommendation Analytics",
     educational: "Educational Content Analytics",
     alerts: "Alert Threshold Configuration",
     limits: "Counselor Assignment Limits",
@@ -247,7 +245,6 @@ export default function AdminDashboardPage() {
           {activeTab === "applications" && <CounselorApplicationsTab applications={applications} appsLoading={appsLoading} handleApplication={handleApplication} handleDeleteApplication={handleDeleteApplication} />}
           {activeTab === "assign" && <AssignmentsTab assignLoading={assignLoading} assignResult={assignResult} setAssignResult={setAssignResult} handleAssign={handleAssign} />}
           {activeTab === "approvals" && <GuardianApprovalsTab />}
-          {activeTab === "recommendations" && <AIRecommendationsTab />}
           {activeTab === "educational" && <EducationalAnalyticsTab />}
           {activeTab === "alerts" && <AlertConfigTab />}
           {activeTab === "limits" && <CounselorLimitsTab />}
