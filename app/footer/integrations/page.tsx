@@ -2,7 +2,7 @@
 
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Plug, Zap, Database, Mail, Calendar, FileText, MessageSquare, BarChart } from "lucide-react";
+import { Plug, Zap, Database, Mail, Calendar, FileText, MessageSquare, BarChart, Activity } from "lucide-react";
 
 export default function IntegrationsPage() {
   return (
