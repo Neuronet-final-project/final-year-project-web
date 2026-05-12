@@ -19,6 +19,7 @@ type Conversation = {
 type AssignedAdolescent = { adolescent_id: string; adolescent_email: string; full_name?: string; guardian_email?: string; guardian_id?: string; matched_at: string; status: string };
 type Message = { _id?: string; message_id?: string; conversation_id: string; sender_email: string; sender_role: string; content: string; message_type?: string; attachment_url?: string | null; created_at: string; is_edited?: boolean; };
 type IncomingCall = { call_id: string; conversation_id: string; call_type: string; caller_email: string; caller_name?: string; callee_email: string; callee_name?: string; status: string };
+type CallState = { callId: string; callType: "voice" | "video"; peerEmail: string; peerName: string; isIncoming: boolean } | null;
 
 export default function CounselorChatPage() {
   const router = useRouter();
@@ -37,8 +38,8 @@ export default function CounselorChatPage() {
   const [previewFile, setPreviewFile] = useState<File | null>(null);
   const [showAttachMenu, setShowAttachMenu] = useState(false);
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
-  const [callState, setCallState] = useState<{ callId: string; callType: "voice" | "video"; peerEmail: string; peerName: string; isIncoming: boolean } | null>(null);
-  const callStateRef = useRef<{ callId: string; callType: "voice" | "video"; peerEmail: string; peerName: string; isIncoming: boolean } | null>(callState);
+  const [callState, setCallState] = useState<CallState>(null);
+  const callStateRef = useRef<CallState>(callState);
   // Keep ref in sync with state so the polling closure always has the latest value
   useEffect(() => { callStateRef.current = callState; }, [callState]);
   const [searchFilter, setSearchFilter] = useState("");
@@ -78,14 +79,15 @@ export default function CounselorChatPage() {
 
     callPollRef.current = setInterval(async () => {
       // Use the ref to avoid stale closure — always has the latest value
-      if (callStateRef.current) return;
+      const currentCallState = callStateRef.current;
+      if (currentCallState) return;
       try {
         const r = await fetch("/api/proxy/backend/messaging/calls/incoming");
         if (r.ok) {
           const data = await r.json();
           if (data.call && !callStateRef.current) {
             const c = data.call as IncomingCall;
-            const newState = { 
+            const newState: CallState = { 
               callId: c.call_id, 
               callType: c.call_type as "voice" | "video", 
               peerEmail: c.caller_email, 
@@ -109,10 +111,6 @@ export default function CounselorChatPage() {
                 });
               } catch {}
             }
-          } else if (!data.call && callStateRef.current?.isIncoming) {
-             // BUG FIX: Clear ghost call state if backend reports no ringing call
-             setCallState(null);
-             callStateRef.current = null;
           }
         }
       } catch {}
