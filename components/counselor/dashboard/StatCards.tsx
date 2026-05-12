@@ -1,12 +1,13 @@
 import React from "react";
 import Link from "next/link";
-import { AlertCircle, Users, MessageSquare, Radio } from "lucide-react";
+import { AlertCircle, Users, MessageSquare, Radio, BookOpen } from "lucide-react";
 
 type StatCardsProps = {
   activeAlerts: number;
   assignedAdolescents: number;
   unreadMessages: number;
   activeChannels: number;
+  articlesCount: number;
 };
 
 export default function StatCards({
@@ -14,6 +15,7 @@ export default function StatCards({
   assignedAdolescents,
   unreadMessages,
   activeChannels,
+  articlesCount,
 }: StatCardsProps) {
   const stats = [
     { 
@@ -56,10 +58,20 @@ export default function StatCards({
       href: "/counselor/channels",
       desc: "Group broadcasts"
     },
+    { 
+      label: "Educational", 
+      value: articlesCount, 
+      icon: BookOpen, 
+      color: "text-emerald-600", 
+      bg: "bg-emerald-50", 
+      border: "border-emerald-200", 
+      href: "/counselor/educational",
+      desc: "Learning resources"
+    },
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mt-8">
+    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5 mt-8">
       {stats.map((stat, i) => (
         <Link 
           key={i} 

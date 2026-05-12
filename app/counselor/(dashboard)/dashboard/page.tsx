@@ -19,6 +19,7 @@ export default function CounselorDashboardPage() {
   const [alerts, setAlerts] = useState<any[]>([]);
   const [conversations, setConversations] = useState<any[]>([]);
   const [channels, setChannels] = useState<any[]>([]);
+  const [articlesCount, setArticlesCount] = useState<number>(0);
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,11 +40,12 @@ export default function CounselorDashboardPage() {
         }
 
         // Fetch all required data concurrently
-        const [dashRes, alertsRes, convsRes, chansRes] = await Promise.all([
+        const [dashRes, alertsRes, convsRes, chansRes, articlesRes] = await Promise.all([
           fetch("/api/proxy/backend/dashboard/counselor", { cache: "no-store" }),
           fetch("/api/proxy/backend/alerts/counselor/me", { cache: "no-store" }),
           fetch("/api/proxy/backend/messaging/conversations", { cache: "no-store" }),
-          fetch("/api/proxy/backend/channels/me", { cache: "no-store" })
+          fetch("/api/proxy/backend/channels/me", { cache: "no-store" }),
+          fetch("/api/proxy/backend/educational/pages", { cache: "no-store" })
         ]);
 
         if (dashRes.ok) setDashData(await dashRes.json());
@@ -52,6 +54,10 @@ export default function CounselorDashboardPage() {
         if (alertsRes.ok) setAlerts(await alertsRes.json());
         if (convsRes.ok) setConversations(await convsRes.json());
         if (chansRes.ok) setChannels(await chansRes.json());
+        if (articlesRes.ok) {
+          const articlesData = await articlesRes.json();
+          setArticlesCount(Array.isArray(articlesData) ? articlesData.length : 0);
+        }
 
       } catch (err) {
         setError("Failed to load dashboard data.");
@@ -122,6 +128,7 @@ export default function CounselorDashboardPage() {
           assignedAdolescents={assignedCount}
           unreadMessages={unreadMessagesCount}
           activeChannels={activeChannelsCount}
+          articlesCount={articlesCount}
         />
 
         <div className="mt-12 grid grid-cols-1 gap-6 lg:grid-cols-[1.5fr_1fr]">
