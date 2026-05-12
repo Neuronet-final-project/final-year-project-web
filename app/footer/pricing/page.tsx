@@ -2,7 +2,7 @@
 
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Check, Sparkles, Zap, Crown } from "lucide-react";
+import { Check, Zap, Crown } from "lucide-react";
 import Link from "next/link";
 
 export default function PricingPage() {
@@ -17,7 +17,7 @@ export default function PricingPage() {
           <div className="mx-auto max-w-7xl px-5 md:px-8">
             <div className="text-center mb-20">
               <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-50 to-cyan-50 px-5 py-2 text-sm font-black text-indigo-600 border border-indigo-200/60 mb-8">
-                <Sparkles className="h-4 w-4" />
+                <Crown className="h-4 w-4" />
                 FLEXIBLE PRICING
               </div>
               <h1 className="text-5xl font-black tracking-tight text-zinc-900 md:text-7xl mb-8">

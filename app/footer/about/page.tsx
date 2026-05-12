@@ -2,7 +2,7 @@
 
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Users, Target, Award, Heart, Sparkles, TrendingUp } from "lucide-react";
+import { Users, Target, Award, Heart, TrendingUp } from "lucide-react";
 
 export default function AboutPage() {
   return (
@@ -17,7 +17,7 @@ export default function AboutPage() {
           <div className="mx-auto max-w-7xl px-5 md:px-8">
             <div className="text-center max-w-4xl mx-auto">
               <div className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-5 py-2 text-sm font-black text-indigo-600 backdrop-blur-md border border-indigo-100 mb-8">
-                <Sparkles className="h-4 w-4" />
+                <Heart className="h-4 w-4" />
                 ABOUT NEURONET
               </div>
               

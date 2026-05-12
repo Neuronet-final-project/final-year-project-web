@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { TrendingUp, Users, Shield, Brain, Heart, Activity, ArrowRight, Sparkles, Zap, CheckCircle2, Award } from "lucide-react";
+import { TrendingUp, Users, Shield, Brain, Heart, Activity, ArrowRight, Zap, CheckCircle2, Award } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 
@@ -27,7 +27,7 @@ export default function Home() {
               {/* Text Column */}
               <div className="flex-1 text-center lg:text-left animate-in fade-in slide-in-from-bottom-8 duration-1000">
                 <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-200/60 bg-gradient-to-r from-indigo-50 to-cyan-50 px-5 py-2 text-sm font-black text-indigo-600 backdrop-blur-md shadow-lg shadow-indigo-100/50 hover:shadow-indigo-200/60 transition-all duration-300 hover:scale-105">
-                  <Sparkles className="h-4 w-4 animate-pulse" />
+                  <Heart className="h-4 w-4 animate-pulse" />
                   Next-Gen Mental Health Support
                   <span className="relative flex h-2 w-2">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-500 opacity-75"></span>
@@ -145,7 +145,7 @@ export default function Home() {
           <div className="mx-auto max-w-7xl px-5 md:px-8 relative z-10">
             <div className="mb-20 max-w-3xl mx-auto text-center">
               <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-5 py-2 text-sm font-black text-cyan-400 backdrop-blur-md border border-white/10 mb-6">
-                <Sparkles className="h-4 w-4" />
+                <Zap className="h-4 w-4" />
                 POWERFUL FEATURES
               </div>
               <h2 className="text-4xl font-black tracking-tight md:text-6xl bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-white">
@@ -387,7 +387,7 @@ export default function Home() {
             
             <div className="relative z-10 mx-auto max-w-4xl">
               <div className="inline-flex items-center gap-2 rounded-full bg-white/20 px-5 py-2 text-sm font-black text-white backdrop-blur-md border border-white/30 mb-8">
-                <Sparkles className="h-4 w-4 animate-pulse" />
+                <Users className="h-4 w-4 animate-pulse" />
                 JOIN THE MOVEMENT
               </div>
               

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, CheckCircle, Loader2, Sparkles, Tag, Wand2 } from "lucide-react";
+import { X, CheckCircle, Loader2, Tag, Wand2 } from "lucide-react";
 
 interface EducationalPageModalProps {
   isOpen: boolean;
@@ -272,7 +272,7 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
                     </>
                   ) : (
                     <>
-                      <Sparkles className="h-4 w-4" />
+                      <Wand2 className="h-4 w-4" />
                       Enrich
                     </>
                   )}

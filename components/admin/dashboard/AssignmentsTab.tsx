@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Send, CheckCircle, AlertTriangle, Users, Bot, Sparkles, Activity, Search } from 'lucide-react';
+import { Send, CheckCircle, AlertTriangle, Users, Bot, Activity, Search } from 'lucide-react';
 
 interface AssignmentsProps {
   assignLoading: boolean;
@@ -127,7 +127,7 @@ export default function AssignmentsTab({
             </h3>
             <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mt-2">{selectedAdolescent ? `Evaluating: ${selectedAdolescent.full_name}` : "Awaiting Target Selection"}</p>
           </div>
-          {selectedAdolescent && <Sparkles className="h-8 w-8 text-amber-400 animate-pulse" />}
+          {selectedAdolescent && <Activity className="h-8 w-8 text-amber-400 animate-pulse" />}
         </div>
 
         <div className="flex-1 overflow-y-auto p-10 z-10 relative">
