@@ -45,13 +45,14 @@ export default function CounselorApplyPage() {
         const formData = new FormData();
         formData.append("file", idPhoto);
 
-        const uploadRes = await fetch("/api/proxy/backend/messaging/upload", {
+        const uploadRes = await fetch("/api/proxy/backend/counselor/upload-id-photo", {
           method: "POST",
           body: formData,
         });
 
         if (!uploadRes.ok) {
-          setResult({ ok: false, message: "Failed to upload ID photo" });
+          const errorData = await uploadRes.json().catch(() => ({}));
+          setResult({ ok: false, message: errorData?.detail || "Failed to upload ID photo" });
           setUploading(false);
           setSubmitting(false);
           return;
