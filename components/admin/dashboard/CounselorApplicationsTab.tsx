@@ -1,19 +1,26 @@
 "use client";
 
 import React, { useState } from 'react';
-import { UserCheck, UserX, Clock, MapPin, Briefcase, ShieldCheck, Eye } from 'lucide-react';
+import { UserCheck, UserX, Clock, MapPin, Briefcase, ShieldCheck, Eye, Trash2 } from 'lucide-react';
 import CounselorApplicationDetailModal from './CounselorApplicationDetailModal';
 
 interface CounselorApplicationsProps {
   applications: any[];
   appsLoading: boolean;
   handleApplication: (email: string, action: 'approve' | 'reject') => void;
+  handleDeleteApplication: (email: string) => void;
 }
 
 export default function CounselorApplicationsTab({ 
-  applications, appsLoading, handleApplication 
+  applications, appsLoading, handleApplication, handleDeleteApplication
 }: CounselorApplicationsProps) {
   const [selectedApplication, setSelectedApplication] = useState<any | null>(null);
+
+  const confirmDelete = (email: string, name: string) => {
+    if (window.confirm(`Are you sure you want to permanently delete the application for ${name}? This action cannot be undone.`)) {
+      handleDeleteApplication(email);
+    }
+  };
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-10">
@@ -89,6 +96,13 @@ export default function CounselorApplicationsTab({
                            <Eye className="h-4 w-4 text-indigo-600" />
                            <span className="text-xs font-black text-indigo-600 uppercase tracking-tight">View Details</span>
                          </button>
+                         <button
+                           onClick={() => confirmDelete(app.email, app.full_name)}
+                           className="flex items-center gap-2.5 px-4 py-2 bg-rose-50 rounded-2xl border border-rose-100/50 hover:bg-rose-100 transition-colors"
+                         >
+                           <Trash2 className="h-4 w-4 text-rose-600" />
+                           <span className="text-xs font-black text-rose-600 uppercase tracking-tight">Delete</span>
+                         </button>
                       </div>
                    </div>
                 </div>
@@ -108,6 +122,18 @@ export default function CounselorApplicationsTab({
                      >
                         <UserX className="h-4 w-4" />
                         Decline
+                     </button>
+                  </div>
+                )}
+                
+                {app.status !== 'pending' && (
+                  <div className="flex items-center gap-4 shrink-0">
+                     <button 
+                        onClick={() => confirmDelete(app.email, app.full_name)}
+                        className="h-16 px-10 border-2 border-rose-200 bg-white text-rose-600 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-rose-50 hover:border-rose-300 transition-all active:scale-95 flex items-center justify-center gap-3"
+                     >
+                        <Trash2 className="h-4 w-4" />
+                        Remove Application
                      </button>
                   </div>
                 )}

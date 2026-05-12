@@ -18,6 +18,33 @@ export default function CounselorApplicationDetailModal({
 }: CounselorApplicationDetailModalProps) {
   const [showIdPhoto, setShowIdPhoto] = React.useState(false);
 
+  // Prevent body scroll when modal is open
+  React.useEffect(() => {
+    // Store original styles
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    const originalHtmlStyle = window.getComputedStyle(document.documentElement).overflow;
+    
+    // Find and lock the main content area
+    const mainElement = document.querySelector('main');
+    const originalMainStyle = mainElement ? window.getComputedStyle(mainElement).overflow : '';
+    
+    // Prevent scrolling on all levels
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    if (mainElement) {
+      (mainElement as HTMLElement).style.overflow = 'hidden';
+    }
+    
+    return () => {
+      // Restore original styles
+      document.body.style.overflow = originalStyle;
+      document.documentElement.style.overflow = originalHtmlStyle;
+      if (mainElement) {
+        (mainElement as HTMLElement).style.overflow = originalMainStyle;
+      }
+    };
+  }, []);
+
   // Debug logging
   React.useEffect(() => {
     console.log('Application data:', application);
@@ -73,11 +100,11 @@ export default function CounselorApplicationDetailModal({
     <>
       {/* Modal Overlay */}
       <div 
-        className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-300"
+        className="fixed inset-0 z-[100] bg-black flex items-center justify-center animate-in fade-in duration-300"
         onClick={onClose}
       >
         <div 
-          className="relative w-full max-w-5xl bg-white rounded-[2.5rem] shadow-2xl my-8 animate-in zoom-in-95 duration-300"
+          className="relative w-full h-full max-w-5xl bg-white shadow-2xl overflow-y-auto animate-in zoom-in-95 duration-300"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close Button - Fixed positioning with dark background */}
@@ -86,7 +113,7 @@ export default function CounselorApplicationDetailModal({
               e.stopPropagation();
               onClose();
             }}
-            className="fixed top-4 right-4 z-[60] p-4 rounded-2xl bg-zinc-900 hover:bg-zinc-800 text-white transition-all shadow-2xl hover:shadow-xl active:scale-95 border-2 border-white/20"
+            className="absolute top-6 right-6 z-[60] p-4 rounded-2xl bg-zinc-900 hover:bg-zinc-800 text-white transition-all shadow-2xl hover:shadow-xl active:scale-95 border-2 border-white/20"
             title="Close"
           >
             <X className="h-6 w-6" />
@@ -100,30 +127,30 @@ export default function CounselorApplicationDetailModal({
             
             <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-8">
               {/* Avatar */}
-              <div className="relative">
-                <div className="h-32 w-32 rounded-[2rem] bg-white/20 backdrop-blur-xl flex items-center justify-center text-5xl font-black text-white shrink-0 ring-4 ring-white/40 shadow-2xl">
-                  {application.full_name?.substring(0, 1) || "C"}
+              <div className="relative shrink-0">
+                <div className="h-32 w-32 rounded-[2rem] bg-white/20 backdrop-blur-xl flex items-center justify-center text-5xl font-black text-white ring-4 ring-white/40 shadow-2xl">
+                  {(application.full_name || application.fullName || application.name || 'C').substring(0, 1).toUpperCase()}
                 </div>
-                <div className={`absolute -bottom-3 -right-3 ${statusConfig.bg} ${statusConfig.text} px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider shadow-lg flex items-center gap-2`}>
+                <div className={`absolute -bottom-3 -right-3 ${statusConfig.bg} ${statusConfig.text} px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider shadow-lg flex items-center gap-2 whitespace-nowrap`}>
                   <StatusIcon className="h-3 w-3" />
                   {statusConfig.label}
                 </div>
               </div>
 
               {/* Info */}
-              <div className="flex-1">
-                <h2 className="text-4xl font-black text-white mb-3 tracking-tight">
+              <div className="flex-1 min-w-0">
+                <h2 className="text-4xl font-black text-white mb-4 tracking-tight break-words">
                   {application.full_name || application.fullName || application.name || 'Unknown Applicant'}
                 </h2>
-                <div className="flex flex-wrap items-center gap-4 text-white/90">
-                  <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl">
-                    <Mail className="h-4 w-4" />
-                    <span className="text-sm font-semibold">{application.email || 'No email'}</span>
+                <div className="flex flex-col gap-3 text-white/90">
+                  <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl w-fit">
+                    <Mail className="h-4 w-4 shrink-0" />
+                    <span className="text-sm font-semibold break-all">{application.email || 'No email'}</span>
                   </div>
                   {application.applied_at && (
-                    <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl">
-                      <Calendar className="h-4 w-4" />
-                      <span className="text-sm font-semibold">
+                    <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl w-fit">
+                      <Calendar className="h-4 w-4 shrink-0" />
+                      <span className="text-sm font-semibold whitespace-nowrap">
                         {formatDate(application.applied_at)}
                       </span>
                     </div>

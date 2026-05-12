@@ -154,6 +154,22 @@ export default function AdminDashboardPage() {
     }
   }
 
+  async function handleDeleteApplication(email: string) {
+    const tid = toast.loading("Deleting application...");
+    try {
+      const res = await fetch(`/api/proxy/backend/counselor/application/${encodeURIComponent(email)}`, { method: "DELETE" });
+      if (res.ok) {
+        toast.success("Application deleted successfully", { id: tid });
+        loadApplications();
+        fetchDashboard();
+      } else {
+        toast.error("Failed to delete application", { id: tid });
+      }
+    } catch {
+      toast.error("Network error deleting application", { id: tid });
+    }
+  }
+
   async function handleAssign(counselorEmail: string, adolescentEmail: string) {
     setAssignLoading(true);
     setAssignResult(null);
@@ -228,7 +244,7 @@ export default function AdminDashboardPage() {
         <main className="flex-1 overflow-y-auto p-10">
           {activeTab === "overview" && <OverviewTab data={data} recentUsers={users.slice(0, 4)} />}
           {activeTab === "users" && <UserManagementTab users={users} userSearch={userSearch} setUserSearch={setUserSearch} userRoleFilter={userRoleFilter} setUserRoleFilter={setUserRoleFilter} usersLoading={usersLoading} loadUsers={loadUsers} handleToggleUserStatus={handleToggleUserStatus} />}
-          {activeTab === "applications" && <CounselorApplicationsTab applications={applications} appsLoading={appsLoading} handleApplication={handleApplication} />}
+          {activeTab === "applications" && <CounselorApplicationsTab applications={applications} appsLoading={appsLoading} handleApplication={handleApplication} handleDeleteApplication={handleDeleteApplication} />}
           {activeTab === "assign" && <AssignmentsTab assignLoading={assignLoading} assignResult={assignResult} setAssignResult={setAssignResult} handleAssign={handleAssign} />}
           {activeTab === "approvals" && <GuardianApprovalsTab />}
           {activeTab === "recommendations" && <AIRecommendationsTab />}
