@@ -11,6 +11,7 @@ export default function CounselorApplyPage() {
   const [password, setPassword] = useState("");
   const [qualification, setQualification] = useState("");
   const [experienceYears, setExperienceYears] = useState<number>(0);
+  const [personalStatement, setPersonalStatement] = useState("");
   const [idPhoto, setIdPhoto] = useState<File | null>(null);
   const [idPhotoPreview, setIdPhotoPreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -72,6 +73,7 @@ export default function CounselorApplyPage() {
           full_name: fullName,
           qualification,
           experience_years: experienceYears,
+          personal_statement: personalStatement,
           id_photo_url: idPhotoUrl,
         }),
       });
@@ -193,13 +195,14 @@ export default function CounselorApplyPage() {
             {/* ID Photo Upload */}
             <div className="space-y-1.5 sm:col-span-2">
               <label className="text-sm font-medium text-zinc-900">
-                ID Photo (Optional)
+                ID Photo <span className="text-red-500">*</span>
               </label>
               <div className="flex flex-col gap-3">
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleIdPhotoChange}
+                  required
                   className="neuro-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
                 />
                 {idPhotoPreview && (
@@ -214,6 +217,25 @@ export default function CounselorApplyPage() {
               </div>
               <p className="text-xs text-zinc-500">
                 Upload a clear photo of your professional ID or license for verification
+              </p>
+            </div>
+
+            {/* Personal Statement / Essay */}
+            <div className="space-y-1.5 sm:col-span-2">
+              <label className="text-sm font-medium text-zinc-900">
+                Personal Statement <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                className="neuro-input min-h-[200px] resize-y"
+                value={personalStatement}
+                onChange={(e) => setPersonalStatement(e.target.value)}
+                placeholder="Tell us about yourself, your experience, your approach to counseling, and why you want to join our team..."
+                required
+                minLength={100}
+                maxLength={2000}
+              />
+              <p className="text-xs text-zinc-500">
+                {personalStatement.length}/2000 characters (minimum 100 characters required)
               </p>
             </div>
 
