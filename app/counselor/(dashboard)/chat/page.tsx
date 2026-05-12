@@ -465,9 +465,9 @@ export default function CounselorChatPage() {
                           const cp = activeConv?.participants || activeConv?.participant_emails || [];
                           const isAA = activeConv?.conversation_type === "counselor_adolescent" && (activeConv.adolescent_id === contact.adolescent_id || cp.some((p: string) => p.includes(contact.adolescent_id)));
                           return (
-                            <button key={`as-${contact.adolescent_id}`} onClick={() => handleInitiateContact(contact.adolescent_id, "counselor_adolescent")} className={`w-full flex items-center gap-3 p-3 text-left rounded-2xl transition-all duration-300 border ${isAA ? "bg-white border-indigo-200 shadow-md ring-1 ring-indigo-50" : "bg-white/50 border-zinc-100 hover:bg-white hover:border-indigo-100"}`}>
-                              <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg font-black text-[9px] shadow-sm ${isAA ? "bg-indigo-600 text-white" : "bg-zinc-100 text-zinc-500"}`}>{ini}</div>
-                              <div className="overflow-hidden flex-1"><h4 className={`truncate text-xs font-bold ${isAA ? "text-indigo-600" : "text-zinc-700"}`}>{contact.full_name || contact.adolescent_email.split("@")[0]}</h4></div>
+                            <button key={`as-${contact.adolescent_id}`} onClick={() => handleInitiateContact(contact.adolescent_id, "counselor_adolescent")} className={`w-full flex items-center gap-3 p-3 text-left rounded-2xl transition-all duration-300 ${isAA ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200" : "bg-white/50 border border-zinc-100 hover:bg-white hover:border-indigo-100"}`}>
+                              <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg font-black text-[9px] shadow-sm ${isAA ? "bg-white/20 text-white" : "bg-zinc-100 text-zinc-500"}`}>{ini}</div>
+                              <div className="overflow-hidden flex-1"><h4 className={`truncate text-xs font-bold ${isAA ? "text-white" : "text-zinc-700"}`}>{contact.full_name || contact.adolescent_email.split("@")[0]}</h4></div>
                             </button>
                           );
                         })}
@@ -483,11 +483,11 @@ export default function CounselorChatPage() {
                       const ip = activeConv?.participants || activeConv?.participant_emails || [];
                       const isAA = activeConv?.conversation_type === "counselor_adolescent" && (activeConv.adolescent_id === contact.adolescent_id || ip.some((p: string) => p.includes(contact.adolescent_id)));
                       return (
-                        <button key={`dc-${contact.adolescent_id}`} onClick={() => handleInitiateContact(contact.adolescent_id, "counselor_adolescent")} className={`w-full flex items-center gap-3 p-4 text-left rounded-[1.5rem] transition-all duration-300 border ${isAA ? "bg-white border-indigo-200 shadow-lg ring-1 ring-indigo-50" : "bg-white/60 border-zinc-50 hover:bg-white hover:border-indigo-100"}`}>
-                          <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl font-black text-xs shadow-sm ${isAA ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-500"}`}>{ini}</div>
+                        <button key={`dc-${contact.adolescent_id}`} onClick={() => handleInitiateContact(contact.adolescent_id, "counselor_adolescent")} className={`w-full flex items-center gap-3 p-4 text-left rounded-[1.5rem] transition-all duration-300 ${isAA ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200" : "bg-white/60 border border-zinc-50 hover:bg-white hover:border-indigo-100"}`}>
+                          <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl font-black text-xs shadow-sm ${isAA ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500"}`}>{ini}</div>
                           <div className="overflow-hidden flex-1">
-                            <h4 className={`truncate text-sm font-bold ${isAA ? "text-indigo-600" : "text-zinc-900"}`}>{contact.full_name || contact.adolescent_email.split("@")[0]}</h4>
-                            <p className="truncate text-[10px] mt-1 font-bold text-zinc-400 uppercase tracking-tighter">E2E Secured</p>
+                            <h4 className={`truncate text-sm font-bold ${isAA ? "text-white" : "text-zinc-900"}`}>{contact.full_name || contact.adolescent_email.split("@")[0]}</h4>
+                            <p className={`truncate text-[10px] mt-1 font-bold uppercase tracking-tighter ${isAA ? "text-white/70" : "text-zinc-400"}`}>E2E Secured</p>
                           </div>
                         </button>
                       );
