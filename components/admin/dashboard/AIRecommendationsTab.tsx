@@ -30,6 +30,7 @@ interface AIRecommendationAnalytics {
 export default function AIRecommendationsTab() {
   const [analytics, setAnalytics] = useState<AIRecommendationAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
+  const [seeding, setSeeding] = useState(false);
 
   useEffect(() => {
     fetchAnalytics();
@@ -56,6 +57,32 @@ export default function AIRecommendationsTab() {
       toast.error('Error loading analytics');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const seedTestData = async () => {
+    setSeeding(true);
+    try {
+      const res = await fetch('/api/proxy/backend/test-data/seed-analytics', {
+        method: 'POST'
+      });
+      
+      if (res.ok) {
+        const result = await res.json();
+        toast.success('Test data added successfully!');
+        console.log('Seed result:', result);
+        // Refresh the data
+        await fetchAnalytics();
+      } else {
+        const errorText = await res.text();
+        console.error('Failed to seed data:', errorText);
+        toast.error('Failed to seed test data');
+      }
+    } catch (error) {
+      console.error('Error seeding data:', error);
+      toast.error('Error seeding test data');
+    } finally {
+      setSeeding(false);
     }
   };
 
@@ -98,12 +125,21 @@ export default function AIRecommendationsTab() {
             <p className="text-[11px] font-bold text-zinc-400 capitalize">Monitor medium-risk pattern detection</p>
           </div>
         </div>
-        <button 
-          onClick={fetchAnalytics}
-          className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest bg-purple-600 text-white hover:bg-purple-700 shadow-lg shadow-purple-100 active:scale-95 transition-all"
-        >
-          Refresh Data
-        </button>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={seedTestData}
+            disabled={seeding}
+            className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-100 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {seeding ? 'Adding...' : 'Add Test Data'}
+          </button>
+          <button 
+            onClick={fetchAnalytics}
+            className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest bg-purple-600 text-white hover:bg-purple-700 shadow-lg shadow-purple-100 active:scale-95 transition-all"
+          >
+            Refresh Data
+          </button>
+        </div>
       </div>
 
       {/* Stats Grid */}
