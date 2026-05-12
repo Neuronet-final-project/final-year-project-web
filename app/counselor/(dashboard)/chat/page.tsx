@@ -452,11 +452,11 @@ export default function CounselorChatPage() {
                   const isGA = activeConv?.conversation_type === "counselor_guardian" && (activeConv.adolescent_id === repId || aConvP.some((p: string) => p.includes(repId)));
                   return (
                     <div key={`gg-${gEmail}`} className="space-y-2">
-                      <button onClick={() => handleInitiateContact(repId, "counselor_guardian")} className={`w-full flex items-center gap-3 p-3 text-left rounded-2xl transition-all duration-300 border ${isGA ? "bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-100" : "bg-white hover:bg-slate-50 border-zinc-100"}`}>
-                        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-black text-[10px] shadow-sm ${isGA ? "bg-white/20 text-white" : "bg-indigo-50 text-indigo-600"}`}>GRP</div>
+                      <button onClick={() => handleInitiateContact(repId, "counselor_guardian")} className={`w-full flex items-center gap-3 p-3 text-left rounded-2xl transition-all duration-300 border ${isGA ? "bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-100" : "bg-white hover:bg-indigo-500 hover:text-white hover:border-indigo-500 border-zinc-100 group"}`}>
+                        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-black text-[10px] shadow-sm transition-all ${isGA ? "bg-white/20 text-white" : "bg-indigo-50 text-indigo-600 group-hover:bg-white/20 group-hover:text-white"}`}>GRP</div>
                         <div className="overflow-hidden flex-1">
                           <h4 className="truncate text-xs font-black uppercase tracking-tight">Parent/Guardian</h4>
-                          <p className={`truncate text-[10px] font-bold ${isGA ? "text-indigo-100/70" : "text-zinc-400"}`}>{gEmail}</p>
+                          <p className={`truncate text-[10px] font-bold ${isGA ? "text-indigo-100/70" : "text-zinc-400 group-hover:text-white/70"}`}>{gEmail}</p>
                         </div>
                       </button>
                       <div className="pl-4 space-y-2">
@@ -465,9 +465,9 @@ export default function CounselorChatPage() {
                           const cp = activeConv?.participants || activeConv?.participant_emails || [];
                           const isAA = activeConv?.conversation_type === "counselor_adolescent" && (activeConv.adolescent_id === contact.adolescent_id || cp.some((p: string) => p.includes(contact.adolescent_id)));
                           return (
-                            <button key={`as-${contact.adolescent_id}`} onClick={() => handleInitiateContact(contact.adolescent_id, "counselor_adolescent")} className={`w-full flex items-center gap-3 p-3 text-left rounded-2xl transition-all duration-300 ${isAA ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200" : "bg-white/50 border border-zinc-100 hover:bg-white hover:border-indigo-100"}`}>
-                              <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg font-black text-[9px] shadow-sm ${isAA ? "bg-white/20 text-white" : "bg-zinc-100 text-zinc-500"}`}>{ini}</div>
-                              <div className="overflow-hidden flex-1"><h4 className={`truncate text-xs font-bold ${isAA ? "text-white" : "text-zinc-700"}`}>{contact.full_name || contact.adolescent_email.split("@")[0]}</h4></div>
+                            <button key={`as-${contact.adolescent_id}`} onClick={() => handleInitiateContact(contact.adolescent_id, "counselor_adolescent")} className={`w-full flex items-center gap-3 p-3 text-left rounded-2xl transition-all duration-300 ${isAA ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200" : "bg-white/50 border border-zinc-100 hover:bg-indigo-500 hover:text-white hover:border-indigo-500 group"}`}>
+                              <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg font-black text-[9px] shadow-sm transition-all ${isAA ? "bg-white/20 text-white" : "bg-zinc-100 text-zinc-500 group-hover:bg-white/20 group-hover:text-white"}`}>{ini}</div>
+                              <div className="overflow-hidden flex-1"><h4 className={`truncate text-xs font-bold ${isAA ? "text-white" : "text-zinc-700 group-hover:text-white"}`}>{contact.full_name || contact.adolescent_email.split("@")[0]}</h4></div>
                             </button>
                           );
                         })}
@@ -483,11 +483,11 @@ export default function CounselorChatPage() {
                       const ip = activeConv?.participants || activeConv?.participant_emails || [];
                       const isAA = activeConv?.conversation_type === "counselor_adolescent" && (activeConv.adolescent_id === contact.adolescent_id || ip.some((p: string) => p.includes(contact.adolescent_id)));
                       return (
-                        <button key={`dc-${contact.adolescent_id}`} onClick={() => handleInitiateContact(contact.adolescent_id, "counselor_adolescent")} className={`w-full flex items-center gap-3 p-4 text-left rounded-[1.5rem] transition-all duration-300 ${isAA ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200" : "bg-white/60 border border-zinc-50 hover:bg-white hover:border-indigo-100"}`}>
-                          <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl font-black text-xs shadow-sm ${isAA ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500"}`}>{ini}</div>
+                        <button key={`dc-${contact.adolescent_id}`} onClick={() => handleInitiateContact(contact.adolescent_id, "counselor_adolescent")} className={`w-full flex items-center gap-3 p-4 text-left rounded-[1.5rem] transition-all duration-300 ${isAA ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200" : "bg-white/60 border border-zinc-50 hover:bg-indigo-500 hover:text-white hover:border-indigo-500 group"}`}>
+                          <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl font-black text-xs shadow-sm transition-all ${isAA ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500 group-hover:bg-white/20 group-hover:text-white"}`}>{ini}</div>
                           <div className="overflow-hidden flex-1">
-                            <h4 className={`truncate text-sm font-bold ${isAA ? "text-white" : "text-zinc-900"}`}>{contact.full_name || contact.adolescent_email.split("@")[0]}</h4>
-                            <p className={`truncate text-[10px] mt-1 font-bold uppercase tracking-tighter ${isAA ? "text-white/70" : "text-zinc-400"}`}>E2E Secured</p>
+                            <h4 className={`truncate text-sm font-bold ${isAA ? "text-white" : "text-zinc-900 group-hover:text-white"}`}>{contact.full_name || contact.adolescent_email.split("@")[0]}</h4>
+                            <p className={`truncate text-[10px] mt-1 font-bold uppercase tracking-tighter ${isAA ? "text-white/70" : "text-zinc-400 group-hover:text-white/70"}`}>E2E Secured</p>
                           </div>
                         </button>
                       );
