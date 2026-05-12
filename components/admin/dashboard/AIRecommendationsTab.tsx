@@ -38,14 +38,18 @@ export default function AIRecommendationsTab() {
   const fetchAnalytics = async () => {
     setLoading(true);
     try {
+      console.log('Fetching AI recommendation analytics...');
       const res = await fetch('/api/proxy/backend/ai-recommendations/admin/analytics');
+      console.log('Response status:', res.status);
+      
       if (res.ok) {
         const data = await res.json();
+        console.log('AI recommendation analytics data:', data);
         setAnalytics(data);
       } else {
         const errorText = await res.text();
         console.error('Failed to load AI recommendation analytics:', errorText);
-        toast.error('Failed to load AI recommendation analytics');
+        toast.error(`Failed to load analytics: ${res.status}`);
       }
     } catch (error) {
       console.error('Error loading analytics:', error);

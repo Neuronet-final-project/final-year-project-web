@@ -30,14 +30,18 @@ export default function EducationalAnalyticsTab() {
   const fetchStats = async () => {
     setLoading(true);
     try {
+      console.log('Fetching educational analytics...');
       const res = await fetch('/api/proxy/backend/educational-follows/admin/analytics');
+      console.log('Response status:', res.status);
+      
       if (res.ok) {
         const data = await res.json();
+        console.log('Educational analytics data:', data);
         setStats(data);
       } else {
         const errorText = await res.text();
         console.error('Failed to load educational analytics:', errorText);
-        toast.error('Failed to load educational analytics');
+        toast.error(`Failed to load analytics: ${res.status}`);
       }
     } catch (error) {
       console.error('Error loading analytics:', error);
