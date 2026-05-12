@@ -108,7 +108,7 @@ export default function IntegrationsPage() {
                 <p className="text-xl text-zinc-300 mb-8">
                   Build custom integrations using our comprehensive REST API. Full documentation and developer support included.
                 </p>
-                <a href="/contact" className="inline-block rounded-xl bg-white px-8 py-4 font-black text-zinc-900 transition-all hover:shadow-xl hover:scale-105">
+                <a href="/footer/contact" className="inline-block rounded-xl bg-white px-8 py-4 font-black text-zinc-900 transition-all hover:shadow-xl hover:scale-105">
                   Request API Access
                 </a>
               </div>

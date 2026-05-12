@@ -129,7 +129,7 @@ export default function PricingPage() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/contact" className="block w-full rounded-xl bg-zinc-900 py-4 text-center font-black text-white transition-all hover:bg-zinc-800">
+                <Link href="/footer/contact" className="block w-full rounded-xl bg-zinc-900 py-4 text-center font-black text-white transition-all hover:bg-zinc-800">
                   Contact Sales
                 </Link>
               </div>

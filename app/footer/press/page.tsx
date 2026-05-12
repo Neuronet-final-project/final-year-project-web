@@ -63,7 +63,7 @@ export default function PressPage() {
                 </div>
                 <h3 className="text-xl font-black mb-3">Media Contact</h3>
                 <p className="text-zinc-600 mb-6">Get in touch with our team</p>
-                <Link href="/contact" className="inline-flex items-center gap-2 rounded-xl bg-zinc-900 px-6 py-3 font-black text-white transition-all hover:bg-zinc-800">
+                <Link href="/footer/contact" className="inline-flex items-center gap-2 rounded-xl bg-zinc-900 px-6 py-3 font-black text-white transition-all hover:bg-zinc-800">
                   Contact Us
                 </Link>
               </div>

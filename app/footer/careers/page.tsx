@@ -101,7 +101,7 @@ export default function CareersPage() {
                           </span>
                         </div>
                       </div>
-                      <Link href="/contact" className="rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 px-8 py-3 font-black text-white transition-all hover:shadow-xl hover:scale-105 text-center">
+                      <Link href="/footer/contact" className="rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 px-8 py-3 font-black text-white transition-all hover:shadow-xl hover:scale-105 text-center">
                         Apply Now
                       </Link>
                     </div>
@@ -116,7 +116,7 @@ export default function CareersPage() {
               <p className="text-xl mb-8 text-indigo-100">
                 We're always looking for talented people. Send us your resume!
               </p>
-              <Link href="/contact" className="inline-block rounded-xl bg-white px-8 py-4 font-black text-indigo-600 transition-all hover:shadow-xl hover:scale-105">
+              <Link href="/footer/contact" className="inline-block rounded-xl bg-white px-8 py-4 font-black text-indigo-600 transition-all hover:shadow-xl hover:scale-105">
                 Get in Touch
               </Link>
             </div>

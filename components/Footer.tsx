@@ -49,19 +49,19 @@ export function Footer() {
             <div className="flex flex-col gap-5">
               <h3 className="text-sm font-black uppercase tracking-widest text-zinc-900">Platform</h3>
               <ul className="flex flex-col gap-3">
-                <li><Link href="/features" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
+                <li><Link href="/footer/features" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
                   <span className="h-1 w-1 rounded-full bg-zinc-300 group-hover:bg-indigo-600 transition-colors"></span>
                   Features
                 </Link></li>
-                <li><Link href="/pricing" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
+                <li><Link href="/footer/pricing" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
                   <span className="h-1 w-1 rounded-full bg-zinc-300 group-hover:bg-indigo-600 transition-colors"></span>
                   Pricing
                 </Link></li>
-                <li><Link href="/security" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
+                <li><Link href="/footer/security" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
                   <span className="h-1 w-1 rounded-full bg-zinc-300 group-hover:bg-indigo-600 transition-colors"></span>
                   Security
                 </Link></li>
-                <li><Link href="/integrations" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
+                <li><Link href="/footer/integrations" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
                   <span className="h-1 w-1 rounded-full bg-zinc-300 group-hover:bg-indigo-600 transition-colors"></span>
                   Integrations
                 </Link></li>
@@ -71,19 +71,19 @@ export function Footer() {
             <div className="flex flex-col gap-5">
               <h3 className="text-sm font-black uppercase tracking-widest text-zinc-900">Company</h3>
               <ul className="flex flex-col gap-3">
-                <li><Link href="/about" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
+                <li><Link href="/footer/about" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
                   <span className="h-1 w-1 rounded-full bg-zinc-300 group-hover:bg-indigo-600 transition-colors"></span>
                   About Us
                 </Link></li>
-                <li><Link href="/careers" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
+                <li><Link href="/footer/careers" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
                   <span className="h-1 w-1 rounded-full bg-zinc-300 group-hover:bg-indigo-600 transition-colors"></span>
                   Careers
                 </Link></li>
-                <li><Link href="/blog" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
+                <li><Link href="/footer/blog" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
                   <span className="h-1 w-1 rounded-full bg-zinc-300 group-hover:bg-indigo-600 transition-colors"></span>
                   Blog
                 </Link></li>
-                <li><Link href="/press" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
+                <li><Link href="/footer/press" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
                   <span className="h-1 w-1 rounded-full bg-zinc-300 group-hover:bg-indigo-600 transition-colors"></span>
                   Press Kit
                 </Link></li>
@@ -93,19 +93,19 @@ export function Footer() {
             <div className="flex flex-col gap-5">
               <h3 className="text-sm font-black uppercase tracking-widest text-zinc-900">Legal</h3>
               <ul className="flex flex-col gap-3">
-                <li><Link href="/privacy" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
+                <li><Link href="/footer/privacy" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
                   <span className="h-1 w-1 rounded-full bg-zinc-300 group-hover:bg-indigo-600 transition-colors"></span>
                   Privacy Policy
                 </Link></li>
-                <li><Link href="/terms" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
+                <li><Link href="/footer/terms" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
                   <span className="h-1 w-1 rounded-full bg-zinc-300 group-hover:bg-indigo-600 transition-colors"></span>
                   Terms of Service
                 </Link></li>
-                <li><Link href="/cookies" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
+                <li><Link href="/footer/cookies" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
                   <span className="h-1 w-1 rounded-full bg-zinc-300 group-hover:bg-indigo-600 transition-colors"></span>
                   Cookie Policy
                 </Link></li>
-                <li><Link href="/compliance" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
+                <li><Link href="/footer/compliance" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
                   <span className="h-1 w-1 rounded-full bg-zinc-300 group-hover:bg-indigo-600 transition-colors"></span>
                   Compliance
                 </Link></li>
@@ -124,7 +124,7 @@ export function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/contact" className="flex items-center gap-3 text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors group">
+                  <Link href="/footer/contact" className="flex items-center gap-3 text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors group">
                     <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-50 transition-all group-hover:bg-cyan-100 group-hover:scale-110">
                       <Send className="h-4 w-4 text-cyan-600" />
                     </div>
