@@ -2,7 +2,7 @@
 
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Brain, MessageSquare, Bell, BarChart3, Shield, Settings, Users, Zap, Heart, Activity, Lock, CheckCircle2 } from "lucide-react";
+import { Brain, MessageSquare, Bell, BarChart3, Shield, Settings, Users, Zap, Heart, Activity, Lock, CheckCircle2, TrendingUp } from "lucide-react";
 
 export default function FeaturesPage() {
   return (
