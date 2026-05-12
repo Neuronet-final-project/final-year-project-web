@@ -45,7 +45,7 @@ export default function CounselorDashboardPage() {
           fetch("/api/proxy/backend/alerts/counselor/me", { cache: "no-store" }),
           fetch("/api/proxy/backend/messaging/conversations", { cache: "no-store" }),
           fetch("/api/proxy/backend/channels/me", { cache: "no-store" }),
-          fetch("/api/proxy/backend/educational/pages", { cache: "no-store" })
+          fetch("/api/proxy/backend/educational-pages", { cache: "no-store" })
         ]);
 
         if (dashRes.ok) setDashData(await dashRes.json());
