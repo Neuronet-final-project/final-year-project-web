@@ -17,7 +17,7 @@ export default function FeaturesPage() {
           <div className="mx-auto max-w-7xl px-5 md:px-8">
             <div className="text-center">
               <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-50 to-cyan-50 px-5 py-2 text-sm font-black text-indigo-600 border border-indigo-200/60 mb-8">
-                <Zap className="h-4 w-4" />
+                <TrendingUp className="h-4 w-4" />
                 PLATFORM FEATURES
               </div>
               <h1 className="text-5xl font-black tracking-tight text-zinc-900 md:text-7xl mb-8">

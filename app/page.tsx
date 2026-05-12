@@ -81,7 +81,7 @@ export default function Home() {
                     className="group flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-zinc-200 bg-white px-10 py-5 text-lg font-black text-zinc-800 backdrop-blur-md transition-all hover:bg-zinc-50 hover:border-zinc-300 hover:shadow-xl sm:w-auto active:scale-95"
                   >
                     Explore Features
-                    <Zap className="h-5 w-5 text-indigo-500 transition-transform group-hover:rotate-12" />
+                    <ArrowRight className="h-5 w-5 text-indigo-500 transition-transform group-hover:translate-x-1" />
                   </a>
                 </div>
               </div>
@@ -145,7 +145,7 @@ export default function Home() {
           <div className="mx-auto max-w-7xl px-5 md:px-8 relative z-10">
             <div className="mb-20 max-w-3xl mx-auto text-center">
               <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-5 py-2 text-sm font-black text-cyan-400 backdrop-blur-md border border-white/10 mb-6">
-                <Zap className="h-4 w-4" />
+                <Shield className="h-4 w-4" />
                 POWERFUL FEATURES
               </div>
               <h2 className="text-4xl font-black tracking-tight md:text-6xl bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-white">
@@ -415,7 +415,7 @@ export default function Home() {
                 >
                   <span className="flex items-center justify-center gap-2">
                     Apply as Counselor
-                    <Zap className="h-5 w-5 transition-transform group-hover:rotate-12" />
+                    <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                   </span>
                 </Link>
               </div>

@@ -103,7 +103,7 @@ export default function IntegrationsPage() {
             {/* API Section */}
             <div className="mt-20 rounded-3xl bg-gradient-to-br from-zinc-900 to-zinc-800 p-12 text-white">
               <div className="max-w-3xl mx-auto text-center">
-                <Zap className="h-12 w-12 text-cyan-400 mx-auto mb-6" />
+                <Activity className="h-12 w-12 text-cyan-400 mx-auto mb-6" />
                 <h2 className="text-3xl font-black mb-6">Custom Integrations with Our API</h2>
                 <p className="text-xl text-zinc-300 mb-8">
                   Build custom integrations using our comprehensive REST API. Full documentation and developer support included.
