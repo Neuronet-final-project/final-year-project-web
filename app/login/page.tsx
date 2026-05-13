@@ -176,6 +176,15 @@ export default function LoginPage() {
               </div>
             )}
 
+            <div className="flex justify-end">
+              <a
+                href="/forgot-password"
+                className="text-sm font-medium text-indigo-600 hover:text-indigo-800 hover:underline transition-colors"
+              >
+                Forgot password?
+              </a>
+            </div>
+
             <button
               disabled={submitting}
               className={`inline-flex w-full items-center justify-center rounded-xl px-4 py-2.5 text-sm font-medium text-white transition disabled:opacity-50 ${accent.btn}`}
