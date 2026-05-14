@@ -56,7 +56,7 @@ export default function DashboardHeader({ title, onProfileClick }: HeaderProps) 
         {/* Action Icons */}
         <div className="flex items-center gap-3 relative">
           <button 
-            onClick={() => setShowNotifs(!showNotifs)}
+            onClick={() => { setShowNotifs(!showNotifs); if (!showNotifs) setNotifications([]); }}
             className="relative p-2.5 rounded-xl bg-zinc-100 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-900 transition-all active:scale-90"
           >
             <Bell className="h-5 w-5" />
@@ -74,7 +74,7 @@ export default function DashboardHeader({ title, onProfileClick }: HeaderProps) 
                 <span className="text-xs font-black text-zinc-900 uppercase tracking-widest">Active Alerts</span>
                 <button onClick={() => setShowNotifs(false)} className="text-zinc-400 hover:text-zinc-900"><X className="h-4 w-4" /></button>
               </div>
-              <div className="max-h-80 overflow-y-auto p-2">
+              <div className="max-h-72 overflow-y-auto p-2">
                 {notifications.length === 0 ? (
                   <div className="p-6 text-center text-xs font-bold text-zinc-400">System operating normally. No alerts.</div>
                 ) : (

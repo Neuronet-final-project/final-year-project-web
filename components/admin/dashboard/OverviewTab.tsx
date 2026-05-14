@@ -11,10 +11,10 @@ interface OverviewProps {
 
 export default function OverviewTab({ data, recentUsers }: OverviewProps) {
   const stats = [
-    { label: "Total Users", value: data?.total_users || 0, icon: <Users className="h-6 w-6" />, trend: "12%", trendType: "up", color: "#6366f1" },
-    { label: "Active Counselors", value: data?.role_counts?.counselor || 0, icon: <UserPlus className="h-6 w-6" />, trend: "3", trendType: "up", color: "#0ea5e9" },
-    { label: "Total Alerts", value: data?.total_alerts || 0, icon: <AlertCircle className="h-6 w-6" />, trend: "8%", trendType: "down", color: "#f59e0b" },
-    { label: "System Health", value: "99.9%", icon: <Monitor className="h-6 w-6" />, color: "#10b981" },
+    { label: "Total Users", value: data?.total_users || 0, icon: <Users className="h-6 w-6" />, trend: "12%", trendType: "up", color: "#1e40af" },
+    { label: "Active Counselors", value: data?.role_counts?.counselor || 0, icon: <UserPlus className="h-6 w-6" />, trend: "3", trendType: "up", color: "#3b82f6" },
+    { label: "Total Alerts", value: data?.total_alerts || 0, icon: <AlertCircle className="h-6 w-6" />, trend: "8%", trendType: "down", color: "#0f172a" },
+    { label: "System Health", value: "99.9%", icon: <Monitor className="h-6 w-6" />, color: "#1d4ed8" },
   ];
 
   const systemHealth = [

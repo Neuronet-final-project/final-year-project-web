@@ -68,7 +68,7 @@ export default function UserManagementTab({
               </button>
 
               {roleOpen && (
-                <div className="absolute left-0 top-full mt-2 w-full min-w-[200px] bg-white rounded-2xl shadow-2xl border border-zinc-100 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="absolute left-0 top-full mt-2 w-full min-w-[200px] bg-white rounded-2xl shadow-2xl border border-zinc-100 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150 max-h-60 overflow-y-auto">
                   {ROLE_OPTIONS.map(opt => (
                     <button
                       key={opt.value}
