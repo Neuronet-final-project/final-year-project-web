@@ -29,6 +29,7 @@ export default function CounselorChatPage() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [assignedContacts, setAssignedContacts] = useState<AssignedAdolescent[]>([]);
   const [activeConvId, setActiveConvId] = useState<string | null>(null);
+  const [isOpeningChat, setIsOpeningChat] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [msgsLoading, setMsgsLoading] = useState(false);
   const [replyText, setReplyText] = useState("");
@@ -245,6 +246,7 @@ export default function CounselorChatPage() {
 
   // ---- Initiate contact ----
   async function handleInitiateContact(adolescentId: string, type: "counselor_adolescent" | "counselor_guardian") {
+    setIsOpeningChat(true);
     // 1. First Check Alert Status (Clinical workflow requirement)
     try {
       const alertRes = await fetch(`/api/proxy/backend/alerts/adolescent/${adolescentId}/summary`);
@@ -267,6 +269,7 @@ export default function CounselorChatPage() {
                 <button
                   onClick={() => {
                     toast.dismiss(t.id);
+                    setIsOpeningChat(false);
                   }}
                   className="px-3 py-1 text-xs font-medium bg-zinc-800 hover:bg-zinc-700 rounded-md transition-colors"
                 >
@@ -306,6 +309,7 @@ export default function CounselorChatPage() {
 
     if (existing) { 
       setActiveConvId(existing.conversation_id || existing._id || existing.id || null); 
+      setIsOpeningChat(false);
       window.dispatchEvent(new CustomEvent('close-counselor-sidebar'));
       return; 
     }
@@ -332,6 +336,8 @@ export default function CounselorChatPage() {
       }
     } catch { 
       toast.error("Network Error: Could not reach the clinical gateway.", { id: toastId });
+    } finally {
+      setIsOpeningChat(false);
     }
   }
 
@@ -498,15 +504,25 @@ export default function CounselorChatPage() {
         </div>
 
         {/* CHAT AREA */}
-        <div className={`flex-1 flex flex-col rounded-[2.5rem] border border-white bg-white/90 backdrop-blur-2xl shadow-2xl overflow-hidden transition-all duration-500 ring-1 ring-slate-200/60 ${!activeConvId ? "hidden" : "flex"}`}>
-          {!activeConvId ? (
+        <div className={`flex-1 flex flex-col rounded-[2.5rem] border border-white bg-white/90 backdrop-blur-2xl shadow-2xl overflow-hidden transition-all duration-500 ring-1 ring-slate-200/60 ${(!activeConvId && !isOpeningChat) ? "hidden md:flex" : "flex"}`}>
+          {!activeConvId || isOpeningChat ? (
             <div className="flex flex-1 flex-col items-center justify-center text-center p-12 bg-gradient-to-br from-slate-50 via-white to-indigo-50/30">
               <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
-              <div className="relative mb-8 flex h-28 w-28 items-center justify-center rounded-[2.5rem] bg-white text-indigo-600 shadow-xl shadow-indigo-100 ring-1 ring-indigo-50 animate-in zoom-in duration-700">
-                <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
-              </div>
-              <h3 className="relative text-3xl font-black tracking-tight text-slate-800">Quiet Zone</h3>
-              <p className="relative mt-5 text-sm font-medium text-slate-500 max-w-md mx-auto leading-relaxed">Select a verified contact from the directory to establish a private, end-to-end encrypted communication link.</p>
+              {isOpeningChat ? (
+                <div className="relative flex flex-col items-center animate-in fade-in zoom-in duration-500">
+                  <div className="h-16 w-16 animate-spin rounded-full border-4 border-solid border-indigo-600 border-r-transparent mb-6 shadow-sm" />
+                  <h3 className="text-xl font-black tracking-tight text-indigo-900">Establishing Secure Link</h3>
+                  <p className="mt-3 text-xs font-bold uppercase tracking-widest text-indigo-400">Clinical Gateway Authorization...</p>
+                </div>
+              ) : (
+                <>
+                  <div className="relative mb-8 flex h-28 w-28 items-center justify-center rounded-[2.5rem] bg-white text-indigo-600 shadow-xl shadow-indigo-100 ring-1 ring-indigo-50 animate-in zoom-in duration-700">
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
+                  </div>
+                  <h3 className="relative text-3xl font-black tracking-tight text-slate-800">Quiet Zone</h3>
+                  <p className="relative mt-5 text-sm font-medium text-slate-500 max-w-md mx-auto leading-relaxed">Select a verified contact from the directory to establish a private, end-to-end encrypted communication link.</p>
+                </>
+              )}
             </div>
           ) : (
             <>
@@ -555,7 +571,10 @@ export default function CounselorChatPage() {
                 <div className="relative z-10 space-y-4">
 
                 {msgsLoading && messages.length === 0 ? (
-                  <div className="flex items-center justify-center py-20 text-xs font-black text-zinc-400 uppercase tracking-[0.3em] animate-pulse">Decrypting thread...</div>
+                  <div className="flex flex-col items-center justify-center py-20 animate-in fade-in duration-500">
+                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-solid border-indigo-600 border-r-transparent mb-4" />
+                    <div className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em]">Decrypting thread...</div>
+                  </div>
                 ) : messages.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-20 text-center opacity-40">
                     <div className="h-24 w-24 bg-zinc-100 rounded-full mb-6 flex items-center justify-center text-zinc-400">
