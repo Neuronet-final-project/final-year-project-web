@@ -22,7 +22,6 @@ export default function CounselorProfilePage() {
   
   const [fullName, setFullName] = useState("");
   const [qualification, setQualification] = useState("");
-  const [experience, setExperience] = useState<number | "">("");
   
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -48,7 +47,6 @@ export default function CounselorProfilePage() {
           const data = (await profRes.json()) as CounselorProfile;
           setFullName(data.full_name || "");
           setQualification(data.qualification || "");
-          setExperience(data.experience_years !== undefined ? data.experience_years : "");
         } else {
           setError("Failed to load profile data.");
         }
@@ -68,8 +66,7 @@ export default function CounselorProfilePage() {
     try {
       const payload = {
         full_name: fullName,
-        qualification: qualification,
-        experience_years: typeof experience === "number" ? experience : parseInt(experience, 10)
+        qualification: qualification
       };
 
       const res = await fetch("/api/proxy/backend/counselor/profile", {
@@ -148,18 +145,6 @@ export default function CounselorProfilePage() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-zinc-400 pl-1">Years of Field Experience</label>
-                <input
-                  type="number"
-                  min="0"
-                  max="60"
-                  required
-                  value={experience}
-                  onChange={(e) => setExperience(e.target.value ? parseInt(e.target.value, 10) : "")}
-                  className="w-full rounded-2xl border border-zinc-200 bg-zinc-50/50 px-5 py-3.5 text-sm font-semibold text-zinc-900 placeholder:text-zinc-400 focus:border-[#6366f1] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#6366f1]/10 transition-all"
-                />
-              </div>
 
               <div className="pt-6 border-t border-zinc-100 flex justify-end">
                 <button
