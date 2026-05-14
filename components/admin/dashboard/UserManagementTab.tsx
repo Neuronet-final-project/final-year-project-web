@@ -68,9 +68,9 @@ export default function UserManagementTab({
               <tr className="border-b border-zinc-100">
                 <th className="pb-6 px-4">Entity Profile</th>
                 <th className="pb-6 px-4">Classification</th>
-                <th className="pb-6 px-4">Onboarding</th>
-                <th className="pb-6 px-4">Status</th>
-                <th className="pb-6 px-4 text-right">Access Controls</th>
+                <th className="pb-6 px-4 hidden md:table-cell">Onboarding</th>
+                <th className="pb-6 px-4 hidden md:table-cell">Status</th>
+                <th className="pb-6 px-4 text-right">Controls</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-100">
@@ -87,12 +87,17 @@ export default function UserManagementTab({
                       </div>
                       <div className="flex flex-col">
                         <span className="text-sm font-black text-zinc-800 leading-none mb-2">{user.full_name || "Unidentified Unit"}</span>
-                        <span className="text-[11px] font-medium text-zinc-400">{user.email}</span>
+                        <span className="text-[11px] font-medium text-zinc-400 truncate max-w-[120px] sm:max-w-none">{user.email}</span>
+                        {/* Mobile-only inline status */}
+                        <div className="flex items-center gap-1.5 mt-2 md:hidden">
+                          <div className={`h-1.5 w-1.5 rounded-full ${user.is_active ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                          <span className={`text-[9px] font-black uppercase tracking-widest ${user.is_active ? 'text-emerald-700' : 'text-red-700'}`}>{user.is_active ? 'Active' : 'Restricted'}</span>
+                        </div>
                       </div>
                     </div>
                   </td>
                   <td className="py-6 px-4">
-                    <span className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest shadow-sm ring-1 ring-inset ${
+                    <span className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest shadow-sm ring-1 ring-inset ${
                       user.role === 'admin' ? 'bg-zinc-900 text-white ring-zinc-800' :
                       user.role === 'counselor' ? 'bg-indigo-50 text-indigo-600 ring-indigo-200' :
                       user.role === 'adolescent' ? 'bg-emerald-50 text-emerald-600 ring-emerald-200' :
@@ -101,10 +106,10 @@ export default function UserManagementTab({
                       {user.role}
                     </span>
                   </td>
-                  <td className="py-6 px-4 text-[11px] font-bold text-zinc-400">
+                  <td className="py-6 px-4 text-[11px] font-bold text-zinc-400 hidden md:table-cell">
                     {user.created_at ? new Date(user.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : "Historical Record"}
                   </td>
-                  <td className="py-6 px-4">
+                  <td className="py-6 px-4 hidden md:table-cell">
                     <div className="flex items-center gap-2">
                        <div className={`h-1.5 w-1.5 rounded-full ${user.is_active ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-red-500 shadow-[0_0_8px_#ef4444]'}`} />
                        <span className={`text-[10px] font-black uppercase tracking-widest ${user.is_active ? 'text-emerald-700' : 'text-red-700'}`}>{user.is_active ? 'Authorized' : 'Restricted'}</span>
@@ -113,13 +118,14 @@ export default function UserManagementTab({
                   <td className="py-6 px-4 text-right">
                     <button 
                       onClick={() => handleToggleUserStatus(user.email, user.is_active)}
-                      className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 border ${
+                      className={`px-4 sm:px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 border ${
                         user.is_active 
                           ? 'border-rose-100 bg-rose-50/50 text-rose-600 hover:bg-rose-600 hover:text-white hover:border-rose-600 hover:shadow-lg hover:shadow-rose-100' 
                           : 'border-emerald-100 bg-emerald-50/50 text-emerald-600 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 hover:shadow-lg hover:shadow-emerald-100'
                       }`}
                     >
-                      {user.is_active ? 'Revoke Session' : 'Grant Session'}
+                      {user.is_active ? <span className="hidden sm:inline">Revoke Session</span> : <span className="hidden sm:inline">Grant Session</span>}
+                      {user.is_active ? <span className="sm:hidden">Revoke</span> : <span className="sm:hidden">Grant</span>}
                     </button>
                   </td>
                 </tr>
