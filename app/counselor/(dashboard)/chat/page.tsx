@@ -436,7 +436,7 @@ export default function CounselorChatPage() {
       )}
       <main className="relative z-10 flex flex-1 overflow-hidden p-4 md:p-6 gap-6">
         {/* SIDEBAR */}
-        <div className={`w-full shrink-0 flex flex-col rounded-[2rem] border border-white bg-white/70 backdrop-blur-xl shadow-lg overflow-hidden transition-all duration-300 ring-1 ring-zinc-200/50 ${activeConvId ? "hidden md:flex md:w-80" : "flex max-w-2xl mx-auto"}`}>
+        <div className={`w-full shrink-0 flex flex-col rounded-[2rem] border border-white bg-white/70 backdrop-blur-xl shadow-lg overflow-hidden transition-all duration-300 ring-1 ring-zinc-200/50 ${activeConvId || isOpeningChat ? "hidden md:flex md:w-80" : "flex max-w-2xl mx-auto"}`}>
           <div className="p-5 border-b border-zinc-100/50 bg-white/40">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-black tracking-widest text-zinc-400 uppercase">Contacts</h2>
