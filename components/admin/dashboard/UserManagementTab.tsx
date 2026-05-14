@@ -1,7 +1,15 @@
 "use client";
 
-import React from 'react';
-import { Search, RefreshCw, ShieldCheck } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Search, RefreshCw, ChevronDown } from 'lucide-react';
+
+const ROLE_OPTIONS = [
+  { value: '', label: 'All Role Tiers' },
+  { value: 'adolescent', label: 'Adolescent' },
+  { value: 'counselor', label: 'Counselor' },
+  { value: 'guardian', label: 'Guardian' },
+  { value: 'admin', label: 'Administrator' },
+];
 
 interface UserManagementProps {
   users: any[];
@@ -17,6 +25,22 @@ interface UserManagementProps {
 export default function UserManagementTab({ 
   users, userSearch, setUserSearch, userRoleFilter, setUserRoleFilter, usersLoading, loadUsers, handleToggleUserStatus 
 }: UserManagementProps) {
+  const [roleOpen, setRoleOpen] = useState(false);
+  const roleRef = useRef<HTMLDivElement>(null);
+
+  // Close on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (roleRef.current && !roleRef.current.contains(e.target as Node)) {
+        setRoleOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
+  const selectedLabel = ROLE_OPTIONS.find(o => o.value === userRoleFilter)?.label || 'All Role Tiers';
+
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-10">
       {/* Search & Filter Header */}
@@ -33,23 +57,41 @@ export default function UserManagementTab({
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 group-focus-within:text-indigo-600 transition-colors" />
         </div>
         <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto">
-            <select 
-              value={userRoleFilter} 
-              onChange={e => setUserRoleFilter(e.target.value)}
-              className="flex-1 xl:flex-none bg-zinc-100/50 border border-zinc-200/50 rounded-2xl px-8 py-4 text-[13px] font-black text-zinc-700 outline-none hover:bg-zinc-200/50 transition-colors appearance-none text-center uppercase tracking-widest"
-            >
-              <option value="">All Role Tiers</option>
-              <option value="adolescent">Adolescent</option>
-              <option value="counselor">Counselor</option>
-              <option value="guardian">Guardian</option>
-              <option value="admin">Administrator</option>
-            </select>
+            {/* Custom compact dropdown — replaces native select to avoid full-screen iOS/Android picker */}
+            <div className="relative flex-1 xl:flex-none" ref={roleRef}>
+              <button
+                onClick={() => setRoleOpen(prev => !prev)}
+                className="w-full xl:w-auto flex items-center justify-between gap-3 bg-zinc-100/50 border border-zinc-200/50 rounded-2xl px-6 py-4 text-[13px] font-black text-zinc-700 outline-none hover:bg-zinc-200/50 transition-colors uppercase tracking-widest min-w-[180px]"
+              >
+                <span>{selectedLabel}</span>
+                <ChevronDown className={`h-4 w-4 text-zinc-400 transition-transform duration-200 ${roleOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {roleOpen && (
+                <div className="absolute left-0 top-full mt-2 w-full min-w-[200px] bg-white rounded-2xl shadow-2xl border border-zinc-100 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
+                  {ROLE_OPTIONS.map(opt => (
+                    <button
+                      key={opt.value}
+                      onClick={() => { setUserRoleFilter(opt.value); setRoleOpen(false); }}
+                      className={`w-full text-left px-5 py-3.5 text-xs font-black uppercase tracking-widest transition-colors ${
+                        userRoleFilter === opt.value
+                          ? 'bg-indigo-600 text-white'
+                          : 'text-zinc-600 hover:bg-zinc-50'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <button onClick={loadUsers} className="flex-1 xl:flex-none h-14 bg-zinc-900 text-white rounded-2xl px-8 flex items-center justify-center gap-3 text-xs font-black uppercase tracking-widest shadow-lg shadow-zinc-200 hover:bg-zinc-800 transition-all active:scale-95 disabled:opacity-50">
               <RefreshCw className={`h-4 w-4 ${usersLoading ? 'animate-spin' : ''}`} />
               Synchronize
             </button>
         </div>
       </div>
+
 
       {/* Main Table View */}
       <div className="overflow-hidden rounded-[3rem] border border-white/40 bg-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md min-h-[500px]">
