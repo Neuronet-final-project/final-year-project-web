@@ -55,7 +55,6 @@ export default function DashboardSidebar({ activeTab, setActiveTab, pendingApps,
     },
   ];
 
-  return (
   const [isMobileOpen, setIsMobileOpen] = React.useState(false);
 
   React.useEffect(() => {
