@@ -222,8 +222,8 @@ export default function CounselorAlertsPage() {
                   className="group rounded-[2.5rem] border border-white bg-white/70 backdrop-blur-md p-8 shadow-sm transition-all duration-500 hover:shadow-xl hover:shadow-indigo-100 hover:-translate-y-1 ring-1 ring-zinc-200/50"
                 >
                   {/* Top Row: Risk Badge + Date */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4 sm:gap-0">
+                    <div className="flex items-center gap-3 flex-wrap">
                       <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl shadow-inner ${
                         alert.risk_level === 'high' ? 'bg-rose-50 text-rose-600 border border-rose-100' :
                         alert.risk_level === 'medium' ? 'bg-amber-50 text-amber-600 border border-amber-100' :
@@ -335,13 +335,13 @@ export default function CounselorAlertsPage() {
                   )}
 
                   {/* Bottom Row: Adolescent Info + Actions */}
-                  <div className="flex items-center justify-between pt-4 border-t border-zinc-100">
-                    <div className="flex items-center gap-4">
+                  <div className="flex flex-wrap sm:flex-nowrap flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-zinc-100">
+                    <div className="flex items-center gap-4 flex-wrap sm:flex-nowrap">
                        <p className="text-xs font-medium text-zinc-500">Adolescent: <span className="text-indigo-600 font-bold">{alert.adolescent_name || "Unknown Case"}</span></p>
-                       <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest border-l border-zinc-100 pl-4">Case ID: {alert.adolescent_id.substring(0, 8)}</p>
+                       <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest sm:border-l sm:border-zinc-100 sm:pl-4">Case ID: {alert.adolescent_id.substring(0, 8)}</p>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <button 
                         onClick={() => handleViewCase(alert.adolescent_id)}
                         className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-zinc-800 shadow-lg shadow-zinc-200 transition-all hover:scale-105 active:scale-95"

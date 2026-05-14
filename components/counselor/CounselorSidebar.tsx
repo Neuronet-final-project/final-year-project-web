@@ -26,7 +26,7 @@ const navItems = [
   { name: "Learner's Nook", icon: BookOpen, href: "/counselor/educational" },
 ];
 
-export default function CounselorSidebar() {
+export default function CounselorSidebar({ onMobileClose }: { onMobileClose?: () => void }) {
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
@@ -73,6 +73,7 @@ export default function CounselorSidebar() {
           const isActive = pathname === item.href || (item.href !== "/counselor/dashboard" && pathname.startsWith(item.href));
           return (
             <Link
+              onClick={() => onMobileClose?.()}
               key={item.name}
               href={item.href}
               className={`group flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 ${
@@ -96,6 +97,7 @@ export default function CounselorSidebar() {
       {/* FOOTER ACTIONS */}
       <div className="p-4 space-y-2 border-t border-slate-800">
         <Link 
+          onClick={() => onMobileClose?.()}
           href="/counselor/profile"
           className="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all"
         >
@@ -103,7 +105,7 @@ export default function CounselorSidebar() {
           {!collapsed && <span className="font-bold text-sm tracking-tight">Account</span>}
         </Link>
         <button
-          onClick={handleLogout}
+          onClick={() => { handleLogout(); onMobileClose?.(); }}
           className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-red-400 hover:bg-red-950/50 hover:text-red-300 transition-all font-bold text-sm tracking-tight"
         >
           <LogOut size={20} className="shrink-0" />
