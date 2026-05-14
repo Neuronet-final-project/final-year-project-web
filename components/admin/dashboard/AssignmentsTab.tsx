@@ -67,7 +67,7 @@ export default function AssignmentsTab({
   );
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 h-[calc(100vh-140px)] flex flex-col lg:flex-row gap-8">
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 lg:h-[calc(100vh-140px)] flex flex-col lg:flex-row gap-8">
       {/* Left Panel: Queue */}
       <div className="w-full lg:w-1/3 flex flex-col bg-white/60 border border-white/40 rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md overflow-hidden">
         <div className="p-8 border-b border-zinc-100/50 bg-zinc-50/30">

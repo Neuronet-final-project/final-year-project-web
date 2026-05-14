@@ -71,7 +71,7 @@ export default function SystemConfigTab() {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex items-center justify-between bg-white/40 border border-white/60 p-6 rounded-3xl backdrop-blur-md mb-8">
+      <div className="flex flex-col md:flex-row items-center justify-between bg-white/40 border border-white/60 p-6 rounded-3xl backdrop-blur-md mb-8 gap-4">
         <div className="flex items-center gap-4">
           <div className="h-10 w-10 flex items-center justify-center bg-zinc-900 text-white rounded-xl">
              <Settings className="h-5 w-5" />
@@ -99,7 +99,7 @@ export default function SystemConfigTab() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {configs.map((group, idx) => (
-          <div key={idx} className="overflow-hidden rounded-[2.5rem] border border-white/40 bg-white/60 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md">
+          <div key={idx} className="overflow-hidden rounded-[2.5rem] border border-white/40 bg-white/60 p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md">
             <div className="flex items-center gap-4 mb-10">
               <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${
                 group.color === 'blue' ? 'bg-blue-50 text-blue-600' : 'bg-orange-50 text-orange-600'

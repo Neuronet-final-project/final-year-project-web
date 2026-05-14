@@ -63,21 +63,21 @@ export default function ProfileTab() {
           <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20" />
         </div>
         
-        <div className="px-10 pb-10">
-          <div className="relative flex justify-between items-end -mt-12 mb-10">
-            <div className="flex gap-6 items-end">
-              <div className="h-24 w-24 rounded-3xl bg-white flex items-center justify-center text-4xl font-black text-indigo-600 shadow-xl ring-4 ring-white">
-                {fullName.substring(0, 2).toUpperCase() || "SA"}
-              </div>
-              <div className="mb-2">
-                <h2 className="text-2xl font-black text-zinc-900">{fullName}</h2>
-                <div className="flex items-center gap-2 mt-1">
-                  <Shield className="h-3.5 w-3.5 text-indigo-500" />
-                  <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-500">Level 4 Auth • Admin Node</span>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div className="px-6 md:px-10 pb-10">
+          <div className="relative flex flex-col md:flex-row justify-between items-start md:items-end -mt-12 mb-10 gap-6">
+    <div className="flex flex-col md:flex-row gap-6 items-start md:items-end">
+      <div className="h-24 w-24 rounded-3xl bg-white flex items-center justify-center text-4xl font-black text-indigo-600 shadow-xl ring-4 ring-white shrink-0">
+        {fullName.substring(0, 2).toUpperCase() || "SA"}
+      </div>
+      <div className="mb-2">
+        <h2 className="text-2xl font-black text-zinc-900">{fullName}</h2>
+        <div className="flex items-center gap-2 mt-1">
+          <Shield className="h-3.5 w-3.5 text-indigo-500" />
+          <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-500">Level 4 Auth • Admin Node</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
           <form onSubmit={handleSave} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

@@ -20,7 +20,7 @@ export default function UserManagementTab({
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-10">
       {/* Search & Filter Header */}
-      <div className="flex flex-col xl:flex-row gap-6 items-center justify-between rounded-[2.5rem] border border-white/40 bg-white/60 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md">
+      <div className="flex flex-col xl:flex-row gap-6 items-center justify-between rounded-[2.5rem] border border-white/40 bg-white/60 p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md">
         <div className="relative w-full xl:w-[500px] group">
           <input 
             type="text" 
@@ -53,7 +53,7 @@ export default function UserManagementTab({
 
       {/* Main Table View */}
       <div className="overflow-hidden rounded-[3rem] border border-white/40 bg-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md min-h-[500px]">
-        <div className="p-10 border-b border-zinc-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="p-6 md:p-10 border-b border-zinc-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h3 className="text-xl font-black text-zinc-900 tracking-tight">Enterprise User Directory</h3>
               <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest mt-1">Authorized entity registry</p>

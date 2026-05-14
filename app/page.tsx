@@ -35,7 +35,7 @@ export default function Home() {
                   </span>
                 </div>
 
-                <h1 className="text-5xl font-black tracking-tight text-zinc-900 md:text-6xl lg:text-7xl lg:leading-[1.05] lg:max-w-3xl">
+                <h1 className="text-4xl font-black tracking-tight text-zinc-900 md:text-6xl lg:text-7xl lg:leading-[1.05] lg:max-w-3xl">
                   AI-Powered Care for the{" "}
                   <span className="relative inline-block">
                     <span className="absolute -inset-1 bg-gradient-to-r from-indigo-500 via-cyan-500 to-indigo-500 blur-xl opacity-30 animate-pulse"></span>

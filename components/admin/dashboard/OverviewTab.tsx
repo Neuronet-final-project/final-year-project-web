@@ -35,7 +35,7 @@ export default function OverviewTab({ data, recentUsers }: OverviewProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         {/* Recent Registered Table */}
-        <div className="lg:col-span-2 overflow-hidden rounded-[2.5rem] border border-white/40 bg-white/60 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md">
+        <div className="lg:col-span-2 overflow-hidden rounded-[2.5rem] border border-white/40 bg-white/60 p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
             <div>
               <h3 className="text-xl font-black text-zinc-900 tracking-tight">Recent Activity Log</h3>
@@ -110,7 +110,7 @@ export default function OverviewTab({ data, recentUsers }: OverviewProps) {
         </div>
 
         {/* System Health Card */}
-        <div className="overflow-hidden rounded-[2.5rem] border border-white/40 bg-white/60 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md flex flex-col">
+        <div className="overflow-hidden rounded-[2.5rem] border border-white/40 bg-white/60 p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md flex flex-col">
           <div className="flex justify-between items-center mb-10">
             <div>
               <h3 className="text-xl font-black text-zinc-900 tracking-tight">System Status</h3>

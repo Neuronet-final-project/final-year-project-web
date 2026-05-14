@@ -34,7 +34,7 @@ export default function CounselorApplicationsTab({
         />
       )}
       {/* Header Info */}
-      <div className="bg-zinc-900 p-10 md:p-14 rounded-[3rem] text-white relative overflow-hidden shadow-2xl">
+      <div className="bg-zinc-900 p-8 md:p-14 rounded-[3rem] text-white relative overflow-hidden shadow-2xl">
         <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-[100px] pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-500/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-[80px] pointer-events-none" />
         <div className="relative z-10 max-w-2xl">
@@ -64,7 +64,7 @@ export default function CounselorApplicationsTab({
           </div>
         ) : applications.map((app) => (
           <div key={app.email} className="group relative overflow-hidden rounded-[3rem] border border-white/40 bg-white/60 p-1 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md hover:shadow-xl transition-all duration-500">
-             <div className="p-8 md:p-10 flex flex-col lg:flex-row lg:items-center justify-between gap-10">
+             <div className="p-6 md:p-10 flex flex-col lg:flex-row lg:items-center justify-between gap-10">
                 <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
                    <div className="h-24 w-24 rounded-[2rem] bg-white shadow-lg ring-1 ring-zinc-100 flex items-center justify-center text-3xl font-black text-indigo-600 group-hover:scale-105 transition-transform duration-500 shrink-0">
                      {app.full_name?.substring(0, 1) || "C"}
