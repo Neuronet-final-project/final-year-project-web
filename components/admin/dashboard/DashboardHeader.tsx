@@ -26,10 +26,20 @@ export default function DashboardHeader({ title, onProfileClick }: HeaderProps) 
   }
 
   return (
-    <header className="h-20 shrink-0 flex items-center justify-between px-10 bg-white/40 backdrop-blur-md border-b border-white/60 sticky top-0 z-30 shadow-[0_4px_20px_rgb(0,0,0,0.02)]">
-      <div className="flex flex-col">
-        <h2 className="text-xl font-black text-zinc-900 tracking-tight leading-tight">{title}</h2>
-        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] mt-1.5">Administrative Node</p>
+    <header className="h-20 shrink-0 flex items-center justify-between px-6 md:px-10 bg-white/40 backdrop-blur-md border-b border-white/60 sticky top-0 z-30 shadow-[0_4px_20px_rgb(0,0,0,0.02)]">
+      <div className="flex items-center gap-4">
+        {/* MOBILE TOGGLE */}
+        <button 
+          onClick={() => window.dispatchEvent(new CustomEvent('open-admin-mobile-sidebar'))}
+          className="lg:hidden p-2 rounded-xl bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+
+        <div className="flex flex-col">
+          <h2 className="text-lg md:text-xl font-black text-zinc-900 tracking-tight leading-tight truncate max-w-[150px] md:max-w-none">{title}</h2>
+          <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-[0.2em] mt-1.5">Administrative Node</p>
+        </div>
       </div>
 
       <div className="flex items-center gap-8">

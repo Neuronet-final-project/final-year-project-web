@@ -15,7 +15,7 @@ export default function AuditVaultTab({
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-10">
       {/* Vault Header */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-6 px-10 py-8 bg-zinc-900 rounded-[3rem] text-white shadow-2xl relative overflow-hidden">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 md:px-10 md:py-8 bg-zinc-900 rounded-[3rem] text-white shadow-2xl relative overflow-hidden">
          <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-600/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl pointer-events-none" />
          <div className="relative z-10 flex items-center gap-6">
             <div className="h-14 w-14 bg-white/10 rounded-2xl flex items-center justify-center border border-white/10 backdrop-blur-md">
@@ -36,7 +36,7 @@ export default function AuditVaultTab({
       </div>
 
       <div className="overflow-hidden rounded-[3.5rem] border border-white/40 bg-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md min-h-[600px]">
-        <div className="p-10 border-b border-zinc-100 flex items-center justify-between">
+        <div className="p-6 md:p-10 border-b border-zinc-100 flex items-center justify-between">
            <div className="flex items-center gap-3">
               <Terminal className="h-5 w-5 text-zinc-400" />
               <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em]">Streaming Real-Time System Events</p>

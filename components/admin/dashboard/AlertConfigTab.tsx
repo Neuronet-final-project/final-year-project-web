@@ -85,7 +85,7 @@ export default function AlertConfigTab() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Header */}
-      <div className="flex items-center justify-between bg-white/40 border border-white/60 p-6 rounded-3xl backdrop-blur-md">
+      <div className="flex flex-col md:flex-row items-center justify-between bg-white/40 border border-white/60 p-6 rounded-3xl backdrop-blur-md gap-4">
         <div className="flex items-center gap-4">
           <div className="h-10 w-10 flex items-center justify-center bg-rose-600 text-white rounded-xl">
             <AlertTriangle className="h-5 w-5" />
@@ -105,7 +105,7 @@ export default function AlertConfigTab() {
       </div>
 
       {/* Risk Thresholds */}
-      <div className="overflow-hidden rounded-[2.5rem] border border-white/40 bg-white/60 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md">
+      <div className="overflow-hidden rounded-[2.5rem] border border-white/40 bg-white/60 p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md">
         <div className="flex items-center gap-3 mb-6">
           <TrendingUp className="h-5 w-5 text-rose-600" />
           <h2 className="text-sm font-black text-zinc-900 uppercase tracking-widest">Risk Thresholds</h2>
@@ -193,7 +193,7 @@ export default function AlertConfigTab() {
       </div>
 
       {/* Alert Behavior */}
-      <div className="overflow-hidden rounded-[2.5rem] border border-white/40 bg-white/60 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md">
+      <div className="overflow-hidden rounded-[2.5rem] border border-white/40 bg-white/60 p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md">
         <div className="flex items-center gap-3 mb-6">
           <Clock className="h-5 w-5 text-indigo-600" />
           <h2 className="text-sm font-black text-zinc-900 uppercase tracking-widest">Alert Behavior</h2>

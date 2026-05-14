@@ -239,7 +239,7 @@ export default function AdminDashboardPage() {
           onProfileClick={() => setActiveTab("profile")}
         />
 
-        <main className="flex-1 overflow-y-auto p-10">
+        <main className="flex-1 overflow-y-auto p-6 md:p-10">
           {activeTab === "overview" && <OverviewTab data={data} recentUsers={users.slice(0, 4)} />}
           {activeTab === "users" && <UserManagementTab users={users} userSearch={userSearch} setUserSearch={setUserSearch} userRoleFilter={userRoleFilter} setUserRoleFilter={setUserRoleFilter} usersLoading={usersLoading} loadUsers={loadUsers} handleToggleUserStatus={handleToggleUserStatus} />}
           {activeTab === "applications" && <CounselorApplicationsTab applications={applications} appsLoading={appsLoading} handleApplication={handleApplication} handleDeleteApplication={handleDeleteApplication} />}
