@@ -41,23 +41,12 @@ export default function OverviewTab({ data, recentUsers }: OverviewProps) {
               <h3 className="text-xl font-black text-zinc-900 tracking-tight">Recent Activity Log</h3>
               <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest mt-1">Real-time registration feed</p>
             </div>
-            <div className="flex gap-2">
-               <button 
-                 onClick={() => window.open('/api/proxy/backend/admin/users/export', '_blank')}
-                 className="flex h-10 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-xs font-bold text-zinc-500 transition-all hover:bg-zinc-50 active:scale-95"
-               >
-                 Export CSV
-               </button>
-               <button 
-                 onClick={() => {
-                   const sidebar = document.querySelector('[data-tab="users"]') as HTMLElement;
-                   if (sidebar) sidebar.click();
-                 }}
-                 className="flex h-10 items-center justify-center space-x-2 rounded-xl bg-zinc-900 px-4 text-xs font-bold text-white transition-all hover:bg-zinc-800 active:scale-95"
-               >
-                 <span>Add Entry</span>
-               </button>
-            </div>
+            <button 
+               onClick={() => window.open('/api/proxy/backend/admin/users/export', '_blank')}
+               className="flex h-10 items-center justify-center rounded-xl border border-zinc-200 bg-white px-4 text-xs font-bold text-zinc-500 transition-all hover:bg-zinc-50 active:scale-95"
+             >
+               Export CSV
+             </button>
           </div>
 
           <div className="overflow-x-auto">
@@ -147,9 +136,7 @@ export default function OverviewTab({ data, recentUsers }: OverviewProps) {
             ))}
           </div>
 
-          <button className="mt-10 w-full rounded-2xl bg-zinc-100 py-3 text-xs font-black uppercase tracking-widest text-zinc-500 hover:bg-zinc-200 transition-colors">
-            Access Full Ledger
-          </button>
+
         </div>
       </div>
 
@@ -166,9 +153,7 @@ export default function OverviewTab({ data, recentUsers }: OverviewProps) {
               All administrative operations are encrypted and audited via high-frequency protocols. Please maintain standard security hygiene (HIPAA/GDPR compliance) when accessing protected health identifiers.
             </p>
           </div>
-          <div className="md:ml-auto">
-            <button className="px-5 py-2 bg-white text-zinc-900 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-zinc-200 transition-all">Details</button>
-          </div>
+
         </div>
       </div>
     </div>
