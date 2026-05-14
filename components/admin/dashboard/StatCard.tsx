@@ -13,7 +13,14 @@ interface Stat {
 
 export default function StatCard({ label, value, icon, trend, trendType, color }: Stat) {
   return (
-    <div className="group relative overflow-hidden rounded-3xl border border-white/30 bg-gradient-to-br from-white/70 to-white/50 p-5 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.06)] backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgb(0,0,0,0.12)] hover:border-white/50">
+    <div
+      className="group relative overflow-hidden rounded-3xl border p-5 md:p-8 backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)]"
+      style={{
+        borderColor: `${color}35`,
+        background: `linear-gradient(145deg, ${color}18 0%, ${color}0d 38%, rgba(255,255,255,0.72) 72%, rgba(255,255,255,0.55) 100%)`,
+        boxShadow: `0 10px 36px ${color}14, 0 2px 8px rgba(15,23,42,0.06)`,
+      }}
+    >
       {/* Animated Gradient Background */}
       <div 
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"

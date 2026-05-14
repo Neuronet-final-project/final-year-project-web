@@ -237,6 +237,12 @@ export default function AdminDashboardPage() {
         <DashboardHeader 
           title={tabTitles[activeTab] || "Admin"} 
           onProfileClick={() => setActiveTab("profile")}
+          userSearch={userSearch}
+          setUserSearch={setUserSearch}
+          onHeaderSearchSubmit={() => {
+            setActiveTab("users");
+            void loadUsers();
+          }}
         />
 
         <main className="flex-1 overflow-y-auto p-6 md:p-10">

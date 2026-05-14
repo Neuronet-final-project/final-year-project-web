@@ -8,7 +8,7 @@ const ROLE_OPTIONS = [
   { value: 'adolescent', label: 'Adolescent' },
   { value: 'counselor', label: 'Counselor' },
   { value: 'guardian', label: 'Guardian' },
-  { value: 'admin', label: 'Administrator' },
+  { value: 'admin', label: 'Admin' },
 ];
 
 interface UserManagementProps {
@@ -44,35 +44,35 @@ export default function UserManagementTab({
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-10">
       {/* Search & Filter Header */}
-      <div className="flex flex-col xl:flex-row gap-6 items-center justify-between rounded-[2.5rem] border border-white/40 bg-white/60 p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md">
-        <div className="relative w-full xl:w-[500px] group">
+      <div className="flex flex-col xl:flex-row gap-4 md:gap-5 items-stretch xl:items-center justify-between rounded-[2rem] md:rounded-[2.5rem] border border-indigo-100/50 bg-gradient-to-br from-indigo-50/40 via-white/70 to-violet-50/35 p-4 md:p-6 shadow-[0_8px_30px_rgba(79,70,229,0.06)] backdrop-blur-md">
+        <div className="relative w-full xl:w-[min(100%,420px)] xl:max-w-md group">
           <input 
             type="text" 
-            placeholder="Search users by name, email, or unique identifier..." 
+            placeholder="Search users by name or email…" 
             value={userSearch}
             onChange={e => setUserSearch(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && loadUsers()}
-            className="w-full bg-zinc-100/50 border border-zinc-200/50 rounded-2xl px-12 py-4 text-[13px] font-bold text-zinc-900 outline-none focus:ring-4 focus:ring-indigo-600/10 focus:bg-white focus:border-indigo-600/20 transition-all" 
+            className="w-full bg-white/80 border border-indigo-100/70 rounded-xl px-10 py-2.5 text-[13px] font-semibold text-zinc-900 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:bg-white focus:border-indigo-300/50 transition-all shadow-sm" 
           />
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 group-focus-within:text-indigo-600 transition-colors" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 group-focus-within:text-indigo-600 transition-colors pointer-events-none" />
         </div>
         <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto">
             {/* Custom compact dropdown — replaces native select to avoid full-screen iOS/Android picker */}
             <div className="relative flex-1 xl:flex-none" ref={roleRef}>
               <button
                 onClick={() => setRoleOpen(prev => !prev)}
-                className="w-full xl:w-auto flex items-center justify-between gap-3 bg-zinc-100/50 border border-zinc-200/50 rounded-2xl px-6 py-4 text-[13px] font-black text-zinc-700 outline-none hover:bg-zinc-200/50 transition-colors uppercase tracking-widest min-w-[180px]"
+                className="w-full xl:w-auto flex items-center justify-between gap-3 bg-white/80 border border-indigo-100/70 rounded-xl px-5 py-2.5 text-[12px] font-black text-zinc-700 outline-none hover:bg-white transition-colors uppercase tracking-widest min-w-[180px] shadow-sm"
               >
                 <span>{selectedLabel}</span>
                 <ChevronDown className={`h-4 w-4 text-zinc-400 transition-transform duration-200 ${roleOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {roleOpen && (
-                <div className="absolute left-0 top-full mt-2 w-full min-w-[200px] bg-white rounded-2xl shadow-2xl border border-zinc-100 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150 max-h-60 overflow-y-auto">
+                <div className="absolute left-0 top-full mt-2 w-full min-w-[200px] bg-white rounded-2xl shadow-2xl border border-indigo-100/80 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150 max-h-[min(70vh,22rem)] overflow-y-auto">
                   {ROLE_OPTIONS.map(opt => (
                     <button
                       key={opt.value}
-                      onClick={() => { setUserRoleFilter(opt.value); setRoleOpen(false); }}
+                      onClick={() => { setUserRoleFilter(opt.value); setRoleOpen(false); void loadUsers(); }}
                       className={`w-full text-left px-5 py-3.5 text-xs font-black uppercase tracking-widest transition-colors ${
                         userRoleFilter === opt.value
                           ? 'bg-indigo-600 text-white'
@@ -85,7 +85,7 @@ export default function UserManagementTab({
                 </div>
               )}
             </div>
-            <button onClick={loadUsers} className="flex-1 xl:flex-none h-14 bg-zinc-900 text-white rounded-2xl px-8 flex items-center justify-center gap-3 text-xs font-black uppercase tracking-widest shadow-lg shadow-zinc-200 hover:bg-zinc-800 transition-all active:scale-95 disabled:opacity-50">
+            <button onClick={loadUsers} className="flex-1 xl:flex-none min-h-[42px] h-11 xl:h-11 bg-zinc-900 text-white rounded-xl px-6 flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest shadow-md shadow-indigo-900/10 hover:bg-zinc-800 transition-all active:scale-95 disabled:opacity-50">
               <RefreshCw className={`h-4 w-4 ${usersLoading ? 'animate-spin' : ''}`} />
               Synchronize
             </button>
@@ -94,7 +94,7 @@ export default function UserManagementTab({
 
 
       {/* Main Table View */}
-      <div className="overflow-hidden rounded-[3rem] border border-white/40 bg-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-md min-h-[500px]">
+      <div className="overflow-hidden rounded-[2rem] md:rounded-[3rem] border border-indigo-100/50 bg-gradient-to-br from-slate-50/90 via-indigo-50/25 to-violet-50/30 shadow-[0_8px_30px_rgba(79,70,229,0.07)] backdrop-blur-md min-h-[500px]">
         <div className="p-6 md:p-10 border-b border-zinc-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h3 className="text-xl font-black text-zinc-900 tracking-tight">Enterprise User Directory</h3>
@@ -143,7 +143,8 @@ export default function UserManagementTab({
                       user.role === 'admin' ? 'bg-zinc-900 text-white ring-zinc-800' :
                       user.role === 'counselor' ? 'bg-indigo-50 text-indigo-600 ring-indigo-200' :
                       user.role === 'adolescent' ? 'bg-emerald-50 text-emerald-600 ring-emerald-200' :
-                      'bg-orange-50 text-orange-600 ring-orange-200'
+                      user.role === 'guardian' ? 'bg-orange-50 text-orange-600 ring-orange-200' :
+                      'bg-violet-50 text-violet-700 ring-violet-200'
                     }`}>
                       {user.role}
                     </span>
