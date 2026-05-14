@@ -86,6 +86,15 @@ export default function CounselorApplyPage() {
         ok: true,
         message: data?.message || "Application submitted",
       });
+      // Clear form after success
+      setEmail("");
+      setFullName("");
+      setPassword("");
+      setQualification("");
+      setExperienceYears(0);
+      setPersonalStatement("");
+      setIdPhoto(null);
+      setIdPhotoPreview(null);
     } catch {
       setResult({
         ok: false,
