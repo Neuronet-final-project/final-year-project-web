@@ -13,7 +13,7 @@ interface Stat {
 
 export default function StatCard({ label, value, icon, trend, trendType, color }: Stat) {
   return (
-    <div className="group relative overflow-hidden rounded-3xl border border-white/30 bg-gradient-to-br from-white/70 to-white/50 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.06)] backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgb(0,0,0,0.12)] hover:border-white/50">
+    <div className="group relative overflow-hidden rounded-3xl border border-white/30 bg-gradient-to-br from-white/70 to-white/50 p-5 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.06)] backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgb(0,0,0,0.12)] hover:border-white/50">
       {/* Animated Gradient Background */}
       <div 
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"
@@ -65,7 +65,7 @@ export default function StatCard({ label, value, icon, trend, trendType, color }
         <div className="space-y-3">
           <div className="flex items-baseline gap-2">
             <h3 
-              className="text-4xl font-black tracking-tighter leading-none transition-colors duration-300"
+              className="text-3xl md:text-4xl font-black tracking-tighter leading-none transition-colors duration-300"
               style={{ color: color }}
             >
               {value}

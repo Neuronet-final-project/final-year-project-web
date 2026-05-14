@@ -95,17 +95,16 @@ export default function DashboardHeader({ title, onProfileClick }: HeaderProps) 
           )}
         </div>
 
-        {/* Profile */}
         <div 
           role="button"
           onClick={onProfileClick}
-          className="flex items-center gap-4 pl-8 border-l border-zinc-200 cursor-pointer group hover:opacity-80 transition-opacity"
+          className="flex items-center gap-2 sm:gap-4 sm:pl-8 sm:border-l sm:border-zinc-200 cursor-pointer group hover:opacity-80 transition-opacity"
         >
           <div className="text-right hidden sm:block">
             <p className="text-sm font-black text-zinc-900 leading-none group-hover:text-indigo-600 transition-colors">System Admin</p>
             <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mt-2 group-hover:text-indigo-400 transition-colors">Level 4 Auth</p>
           </div>
-          <div className="h-11 w-11 rounded-2xl bg-indigo-600 flex items-center justify-center text-white text-xs font-black shadow-lg shadow-indigo-100 ring-4 ring-indigo-50 border border-white group-hover:scale-105 transition-transform">
+          <div className="h-9 w-9 sm:h-11 sm:w-11 rounded-2xl bg-indigo-600 flex items-center justify-center text-white text-xs font-black shadow-lg shadow-indigo-100 ring-4 ring-indigo-50 border border-white group-hover:scale-105 transition-transform">
              SA
           </div>
         </div>

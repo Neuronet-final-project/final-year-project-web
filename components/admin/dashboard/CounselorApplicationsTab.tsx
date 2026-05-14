@@ -42,8 +42,8 @@ export default function CounselorApplicationsTab({
              <ShieldCheck className="h-4 w-4 text-indigo-400" />
              <span className="text-[10px] font-black uppercase tracking-widest">Security Protocol Level 4</span>
           </div>
-          <h2 className="text-4xl font-black mb-4 tracking-tighter leading-tight">Credential & Identity Verification</h2>
-          <p className="text-zinc-400 font-medium text-lg leading-relaxed">Review incoming counselor petitions. Verified professionals are granted cryptographic access to clinical case data and secure neuro-messaging gateways.</p>
+          <h2 className="text-2xl sm:text-4xl font-black mb-4 tracking-tighter leading-tight">Credential & Identity Verification</h2>
+          <p className="text-zinc-400 font-medium text-sm sm:text-lg leading-relaxed">Review incoming counselor petitions. Verified professionals are granted cryptographic access to clinical case data and secure neuro-messaging gateways.</p>
         </div>
       </div>
 
