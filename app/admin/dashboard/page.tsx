@@ -91,11 +91,17 @@ export default function AdminDashboardPage() {
     if (activeTab === "audit") loadAuditLogs();
   }, [activeTab]);
 
-  async function loadUsers() {
+  /**
+   * @param roleOverride When set (including ""), use this role for the request instead of
+   * `userRoleFilter` so the query matches the tier just chosen. React state from
+   * `setUserRoleFilter` is not updated until after this handler returns.
+   */
+  async function loadUsers(roleOverride?: string) {
     setUsersLoading(true);
+    const role = roleOverride !== undefined ? roleOverride : userRoleFilter;
     let url = "/api/proxy/backend/admin/users";
     const params = new URLSearchParams();
-    if (userRoleFilter) params.append("role", userRoleFilter);
+    if (role) params.append("role", role);
     if (userSearch) params.append("search", userSearch);
     if (params.toString()) url += `?${params.toString()}`;
 

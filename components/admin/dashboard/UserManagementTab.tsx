@@ -18,7 +18,7 @@ interface UserManagementProps {
   userRoleFilter: string;
   setUserRoleFilter: (v: string) => void;
   usersLoading: boolean;
-  loadUsers: () => void;
+  loadUsers: (roleOverride?: string) => void | Promise<void>;
   handleToggleUserStatus: (email: string, status: boolean) => void;
 }
 
@@ -28,15 +28,15 @@ export default function UserManagementTab({
   const [roleOpen, setRoleOpen] = useState(false);
   const roleRef = useRef<HTMLDivElement>(null);
 
-  // Close on outside click
+  // Close on outside click (use click so mousedown on an option does not race the menu button)
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (roleRef.current && !roleRef.current.contains(e.target as Node)) {
         setRoleOpen(false);
       }
     }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
   }, []);
 
   const selectedLabel = ROLE_OPTIONS.find(o => o.value === userRoleFilter)?.label || 'All Role Tiers';
@@ -71,8 +71,13 @@ export default function UserManagementTab({
                 <div className="absolute left-0 top-full mt-2 w-full min-w-[200px] bg-white rounded-2xl shadow-2xl border border-indigo-100/80 z-[100] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150 max-h-[min(70vh,22rem)] overflow-y-auto">
                   {ROLE_OPTIONS.map(opt => (
                     <button
-                      key={opt.value}
-                      onClick={() => { setUserRoleFilter(opt.value); setRoleOpen(false); void loadUsers(); }}
+                      key={opt.value === "" ? "__all_tiers__" : opt.value}
+                      type="button"
+                      onClick={() => {
+                        setUserRoleFilter(opt.value);
+                        setRoleOpen(false);
+                        void loadUsers(opt.value);
+                      }}
                       className={`w-full text-left px-5 py-3.5 text-xs font-black uppercase tracking-widest transition-colors ${
                         userRoleFilter === opt.value
                           ? 'bg-indigo-600 text-white'
@@ -85,7 +90,7 @@ export default function UserManagementTab({
                 </div>
               )}
             </div>
-            <button onClick={loadUsers} className="flex-1 xl:flex-none min-h-[42px] h-11 xl:h-11 bg-zinc-900 text-white rounded-xl px-6 flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest shadow-md shadow-indigo-900/10 hover:bg-zinc-800 transition-all active:scale-95 disabled:opacity-50">
+            <button type="button" onClick={() => void loadUsers()} className="flex-1 xl:flex-none min-h-[42px] h-11 xl:h-11 bg-zinc-900 text-white rounded-xl px-6 flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest shadow-md shadow-indigo-900/10 hover:bg-zinc-800 transition-all active:scale-95 disabled:opacity-50">
               <RefreshCw className={`h-4 w-4 ${usersLoading ? 'animate-spin' : ''}`} />
               Synchronize
             </button>

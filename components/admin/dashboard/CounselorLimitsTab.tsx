@@ -55,8 +55,9 @@ export default function CounselorLimitsTab() {
     setAssignLoading(true);
     setAssignments([]);
     try {
+      const qs = new URLSearchParams({ email: counselorEmail });
       const response = await fetch(
-        `/api/proxy/backend/counselor-assignments/counselor/${encodeURIComponent(counselorEmail)}/assignments`,
+        `/api/proxy/backend/counselor-assignments/for-counselor?${qs.toString()}`,
       );
       if (response.ok) {
         const data = (await response.json()) as CounselorAssignmentRow[];
