@@ -53,17 +53,9 @@ export function Footer() {
                   <span className="h-1 w-1 rounded-full bg-zinc-300 group-hover:bg-indigo-600 transition-colors"></span>
                   Features
                 </Link></li>
-                <li><Link href="/footer/pricing" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
-                  <span className="h-1 w-1 rounded-full bg-zinc-300 group-hover:bg-indigo-600 transition-colors"></span>
-                  Pricing
-                </Link></li>
                 <li><Link href="/footer/security" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
                   <span className="h-1 w-1 rounded-full bg-zinc-300 group-hover:bg-indigo-600 transition-colors"></span>
                   Security
-                </Link></li>
-                <li><Link href="/footer/integrations" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
-                  <span className="h-1 w-1 rounded-full bg-zinc-300 group-hover:bg-indigo-600 transition-colors"></span>
-                  Integrations
                 </Link></li>
               </ul>
             </div>
@@ -75,17 +67,9 @@ export function Footer() {
                   <span className="h-1 w-1 rounded-full bg-zinc-300 group-hover:bg-indigo-600 transition-colors"></span>
                   About Us
                 </Link></li>
-                <li><Link href="/footer/careers" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
-                  <span className="h-1 w-1 rounded-full bg-zinc-300 group-hover:bg-indigo-600 transition-colors"></span>
-                  Careers
-                </Link></li>
                 <li><Link href="/footer/blog" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
                   <span className="h-1 w-1 rounded-full bg-zinc-300 group-hover:bg-indigo-600 transition-colors"></span>
                   Blog
-                </Link></li>
-                <li><Link href="/footer/press" className="text-sm font-medium text-zinc-600 hover:text-indigo-600 transition-colors flex items-center gap-2 group">
-                  <span className="h-1 w-1 rounded-full bg-zinc-300 group-hover:bg-indigo-600 transition-colors"></span>
-                  Press Kit
                 </Link></li>
               </ul>
             </div>

@@ -2,8 +2,9 @@
 
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Mail, Phone, MapPin, Send, MessageSquare, Clock } from "lucide-react";
+import { Mail, Phone, Send, MessageSquare, Clock } from "lucide-react";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -13,12 +14,32 @@ export default function ContactPage() {
     message: ""
   });
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 3000);
+    setSending(true);
+    const tid = toast.loading("Sending message…");
+    try {
+      const res = await fetch("/api/proxy/backend/contact/submissions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(typeof data?.detail === "string" ? data.detail : "Could not send message. Try again later.", { id: tid });
+        return;
+      }
+      toast.success("Message received", { id: tid });
+      setFormData({ name: "", email: "", subject: "", message: "" });
+      setSubmitted(true);
+      setTimeout(() => setSubmitted(false), 4000);
+    } catch {
+      toast.error("Network error. Please try again.", { id: tid });
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -154,7 +175,8 @@ export default function ContactPage() {
 
                       <button
                         type="submit"
-                        className="w-full rounded-2xl bg-gradient-to-r from-indigo-600 to-cyan-500 px-8 py-4 text-lg font-black text-white hover:shadow-xl hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
+                        disabled={sending}
+                        className="w-full rounded-2xl bg-gradient-to-r from-indigo-600 to-cyan-500 px-8 py-4 text-lg font-black text-white hover:shadow-xl hover:shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2 disabled:opacity-60 disabled:pointer-events-none"
                       >
                         Send Message
                         <Send className="h-5 w-5" />

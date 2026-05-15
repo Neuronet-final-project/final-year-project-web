@@ -14,7 +14,8 @@ import {
   BarChart3, 
   FileText, 
   KeyRound,
-  LogOut
+  LogOut,
+  Inbox
 } from 'lucide-react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -51,6 +52,7 @@ export default function DashboardSidebar({ activeTab, setActiveTab, pendingApps,
         { id: 'limits', label: 'Counselor Limits', icon: KeyRound },
         { id: 'config', label: 'System Settings', icon: Settings },
         { id: 'audit', label: 'Audit Vault', icon: History },
+        { id: 'contacts', label: 'Contact Forms', icon: Inbox },
       ]
     },
   ];

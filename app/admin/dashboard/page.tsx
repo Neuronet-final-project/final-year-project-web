@@ -20,12 +20,13 @@ import GuardianApprovalsTab from "@/components/admin/dashboard/GuardianApprovals
 import EducationalAnalyticsTab from "@/components/admin/dashboard/EducationalAnalyticsTab";
 import AlertConfigTab from "@/components/admin/dashboard/AlertConfigTab";
 import CounselorLimitsTab from "@/components/admin/dashboard/CounselorLimitsTab";
+import ContactSubmissionsTab from "@/components/admin/dashboard/ContactSubmissionsTab";
 
 type AuthMeResponse =
   | { authenticated: false }
   | { authenticated: true; email: string; role: string; _id: string };
 
-type TabNode = "overview" | "users" | "applications" | "assign" | "approvals" | "educational" | "alerts" | "limits" | "config" | "audit" | "profile";
+type TabNode = "overview" | "users" | "applications" | "assign" | "approvals" | "educational" | "alerts" | "limits" | "config" | "audit" | "contacts" | "profile";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -226,6 +227,7 @@ export default function AdminDashboardPage() {
     alerts: "Alert Threshold Configuration",
     limits: "Counselor Assignment Limits",
     audit: "Audit Vault (Ledger)",
+    contacts: "Contact Form Inbox",
     config: "System Configuration",
     profile: "System Administrator Profile",
   };
@@ -261,6 +263,7 @@ export default function AdminDashboardPage() {
           {activeTab === "alerts" && <AlertConfigTab />}
           {activeTab === "limits" && <CounselorLimitsTab />}
           {activeTab === "audit" && <AuditVaultTab auditLogs={auditLogs} auditLoading={auditLoading} loadAuditLogs={loadAuditLogs} />}
+          {activeTab === "contacts" && <ContactSubmissionsTab />}
           {activeTab === "config" && <SystemConfigTab />}
           {activeTab === "profile" && <ProfileTab />}
         </main>

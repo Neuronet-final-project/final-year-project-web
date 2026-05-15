@@ -134,8 +134,8 @@ export default function AboutPage() {
               <p className="text-lg text-zinc-600 mb-8 max-w-2xl mx-auto">
                 We're always looking for passionate individuals who want to make a real impact in adolescent mental health.
               </p>
-              <a href="/footer/careers" className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-600 to-cyan-500 px-8 py-4 text-lg font-black text-white hover:shadow-xl hover:shadow-indigo-500/30 transition-all">
-                View Open Positions
+              <a href="/footer/contact" className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-600 to-cyan-500 px-8 py-4 text-lg font-black text-white hover:shadow-xl hover:shadow-indigo-500/30 transition-all">
+                Get in touch
               </a>
             </div>
           </div>
