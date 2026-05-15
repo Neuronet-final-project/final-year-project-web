@@ -305,10 +305,9 @@ export default function CounselorLimitsTab() {
                       key={a.assignment_id}
                       className="rounded-xl border border-zinc-100 bg-zinc-50/80 px-4 py-3"
                     >
-                      <p className="text-sm font-black text-zinc-900">
-                        {a.adolescent_name?.trim() || 'Unnamed adolescent'}
+                      <p className="text-sm font-semibold text-zinc-800 break-all">
+                        {a.adolescent_email?.trim() || "—"}
                       </p>
-                      <p className="text-xs text-zinc-500 mt-0.5 break-all">{a.adolescent_email || '—'}</p>
                     </li>
                   ))}
                 </ul>
