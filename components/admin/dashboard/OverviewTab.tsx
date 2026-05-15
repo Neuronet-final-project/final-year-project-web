@@ -14,28 +14,19 @@ export default function OverviewTab({ data, recentUsers }: OverviewProps) {
     { label: "Total Users", value: data?.total_users || 0, icon: <Users className="h-6 w-6" />, trend: "12%", trendType: "up", color: "#1e40af" },
     { label: "Active Counselors", value: data?.role_counts?.counselor || 0, icon: <UserPlus className="h-6 w-6" />, trend: "3", trendType: "up", color: "#3b82f6" },
     { label: "Total Alerts", value: data?.total_alerts || 0, icon: <AlertCircle className="h-6 w-6" />, trend: "8%", trendType: "down", color: "#0f172a" },
-    { label: "System Health", value: "99.9%", icon: <Monitor className="h-6 w-6" />, color: "#1d4ed8" },
-  ];
-
-  const systemHealth = [
-    { name: "API Server", desc: "Edge Nodes Active", value: 98, color: "#10b981", icon: <Monitor className="h-4 w-4" /> },
-    { name: "Database", desc: "Cloud Clusters", value: 72, color: "#3b82f6", icon: <Database className="h-4 w-4" /> },
-    { name: "AI Service", desc: "Analysis Engine", value: 85, color: "#f59e0b", icon: <Cpu className="h-4 w-4" /> },
-    { name: "Storage", desc: "Asset Vault", value: 45, color: "#8b5cf6", icon: <HardDrive className="h-4 w-4" /> },
   ];
 
   return (
     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {stats.map((stat, i) => (
           <StatCard key={i} {...stat as any} />
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        {/* Recent Registered Table */}
-        <div className="lg:col-span-2 overflow-hidden rounded-[2.5rem] border border-indigo-100/60 bg-gradient-to-br from-slate-50/95 via-indigo-50/35 to-violet-50/40 p-6 md:p-8 shadow-[0_8px_30px_rgba(79,70,229,0.08)] backdrop-blur-md">
+      {/* Recent Registered Table */}
+      <div className="w-full overflow-hidden rounded-[2.5rem] border border-indigo-100/60 bg-gradient-to-br from-slate-50/95 via-indigo-50/35 to-violet-50/40 p-6 md:p-8 shadow-[0_8px_30px_rgba(79,70,229,0.08)] backdrop-blur-md">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
             <div>
               <h3 className="text-xl font-black text-zinc-900 tracking-tight">Recent Activity Log</h3>
@@ -97,48 +88,6 @@ export default function OverviewTab({ data, recentUsers }: OverviewProps) {
             </table>
           </div>
         </div>
-
-        {/* System Health Card */}
-        <div className="overflow-hidden rounded-[2.5rem] border border-indigo-100/60 bg-gradient-to-br from-indigo-50/50 via-white/75 to-sky-50/40 p-6 md:p-8 shadow-[0_8px_30px_rgba(79,70,229,0.08)] backdrop-blur-md flex flex-col">
-          <div className="flex justify-between items-center mb-10">
-            <div>
-              <h3 className="text-xl font-black text-zinc-900 tracking-tight">System Status</h3>
-              <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest mt-1">Operational integrity</p>
-            </div>
-            <div className="h-3 w-3 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_12px_rgba(16,185,129,0.4)]" />
-          </div>
-          
-          <div className="space-y-9 flex-1">
-            {systemHealth.map((item, i) => (
-              <div key={i} className="space-y-4 group">
-                <div className="flex justify-between items-center">
-                   <div className="flex items-center gap-4">
-                      <div 
-                        className="flex h-10 w-10 items-center justify-center rounded-xl shadow-sm transition-all group-hover:bg-white group-hover:scale-110"
-                        style={{ backgroundColor: `${item.color}10`, color: item.color }}
-                      >
-                        {item.icon}
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-zinc-800 leading-none">{item.name}</p>
-                        <p className="text-[11px] font-medium text-zinc-400 mt-2">{item.desc}</p>
-                      </div>
-                   </div>
-                   <span className="text-sm font-black text-zinc-900">{item.value}%</span>
-                </div>
-                <div className="h-1.5 w-full bg-zinc-200/50 rounded-full overflow-hidden p-[1px]">
-                   <div 
-                     className="h-full rounded-full transition-all duration-1000 ease-out" 
-                     style={{ width: `${item.value}%`, backgroundColor: item.color }} 
-                   />
-                </div>
-              </div>
-            ))}
-          </div>
-
-
-        </div>
-      </div>
 
       {/* Security Context */}
       <div className="relative overflow-hidden rounded-3xl bg-zinc-900 p-6 text-white group">
