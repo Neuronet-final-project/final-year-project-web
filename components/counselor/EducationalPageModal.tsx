@@ -3,6 +3,72 @@
 import { useState, useEffect } from "react";
 import { X, CheckCircle, Loader2, Tag, Wand2 } from "lucide-react";
 
+/* ── Educational Form Validation ─────────────────────── */
+const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+interface EduFormErrors {
+  title?: string;
+  slug?: string;
+  category?: string;
+  content?: string;
+  featured_image_url?: string;
+}
+
+function validateEduForm(
+  data: { title: string; slug: string; category: string; content: string; featured_image_url: string },
+  isEditing: boolean
+): EduFormErrors {
+  const errors: EduFormErrors = {};
+
+  // Title
+  const trimmedTitle = data.title.trim();
+  if (!trimmedTitle) {
+    errors.title = "Title is required.";
+  } else if (trimmedTitle.length < 3) {
+    errors.title = "Title must be at least 3 characters.";
+  } else if (trimmedTitle.length > 200) {
+    errors.title = "Title must be under 200 characters.";
+  }
+
+  // Slug (only for new articles)
+  if (!isEditing) {
+    const trimmedSlug = data.slug.trim();
+    if (!trimmedSlug) {
+      errors.slug = "URL slug is required.";
+    } else if (trimmedSlug.length < 3) {
+      errors.slug = "Slug must be at least 3 characters.";
+    } else if (trimmedSlug.length > 100) {
+      errors.slug = "Slug must be under 100 characters.";
+    } else if (!SLUG_REGEX.test(trimmedSlug)) {
+      errors.slug = "Slug can only contain lowercase letters, numbers, and hyphens.";
+    }
+  }
+
+  // Category
+  if (!data.category) {
+    errors.category = "Please select a topic category.";
+  }
+
+  // Content
+  const trimmedContent = data.content.trim();
+  if (!trimmedContent) {
+    errors.content = "Content is required.";
+  } else if (trimmedContent.length < 50) {
+    errors.content = `Content must be at least 50 characters (currently ${trimmedContent.length}).`;
+  }
+
+  // Featured image URL (optional but must be valid if provided)
+  if (data.featured_image_url.trim()) {
+    try {
+      new URL(data.featured_image_url.trim());
+    } catch {
+      errors.featured_image_url = "Please enter a valid URL.";
+    }
+  }
+
+  return errors;
+}
+
 interface EducationalPageModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -25,6 +91,7 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
   const [error, setError] = useState<string | null>(null);
   const [enriching, setEnriching] = useState(false);
   const [tagInput, setTagInput] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<EduFormErrors>({});
 
   useEffect(() => {
     if (isOpen) {
@@ -51,6 +118,7 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
         });
       }
       setError(null);
+      setFieldErrors({});
     }
   }, [isOpen, initialData]);
 
@@ -130,10 +198,25 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
     }));
   };
 
+  /** Clear a specific field error */
+  function clearFieldError(field: keyof EduFormErrors) {
+    if (fieldErrors[field]) {
+      setFieldErrors(prev => ({ ...prev, [field]: undefined }));
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSaving(true);
     setError(null);
+
+    // Validate all fields
+    const validationErrors = validateEduForm(formData, !!initialData);
+    if (Object.keys(validationErrors).length > 0) {
+      setFieldErrors(validationErrors);
+      return;
+    }
+    setFieldErrors({});
+    setSaving(true);
 
     try {
       const method = initialData ? "PUT" : "POST";
@@ -235,7 +318,7 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
 
         {/* Content Body (Scrollable) */}
         <div className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-8">
-          <form id="resource-form" onSubmit={handleSubmit} className="space-y-6">
+          <form id="resource-form" onSubmit={handleSubmit} className="space-y-6" noValidate>
             
             {error && (
               <div className="p-4 bg-rose-50 border border-rose-100 text-rose-600 rounded-2xl font-bold text-sm tracking-tight flex items-center gap-2">
@@ -284,26 +367,26 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
               <div className="space-y-2">
                 <label className="text-xs font-black text-zinc-400 uppercase tracking-widest pl-1">Title</label>
                 <input
-                  required
                   type="text"
                   placeholder="e.g. Managing Anxiety"
                   value={formData.title}
-                  onChange={(e) => setFormData(p => ({ ...p, title: e.target.value }))}
-                  className="w-full bg-zinc-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl px-5 py-4 text-zinc-900 font-bold placeholder:text-zinc-300 outline-none transition-all"
+                  onChange={(e) => { setFormData(p => ({ ...p, title: e.target.value })); clearFieldError('title'); }}
+                  className={`w-full bg-zinc-50 border-2 focus:border-indigo-500 focus:bg-white rounded-2xl px-5 py-4 text-zinc-900 font-bold placeholder:text-zinc-300 outline-none transition-all ${fieldErrors.title ? 'border-red-400 ring-2 ring-red-100' : 'border-transparent'}`}
                 />
+                {fieldErrors.title && <p className="text-xs text-red-500 pl-1">{fieldErrors.title}</p>}
               </div>
 
               <div className="space-y-2">
                 <label className="text-xs font-black text-zinc-400 uppercase tracking-widest pl-1">Unique Slug (URL)</label>
                 <input
-                  required
                   type="text"
                   placeholder="e.g. managing-anxiety"
                   value={formData.slug}
                   disabled={!!initialData}
-                  onChange={(e) => setFormData(p => ({ ...p, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') }))}
-                  className={`w-full border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl px-5 py-4 text-zinc-900 font-bold placeholder:text-zinc-300 outline-none transition-all ${initialData ? 'bg-zinc-100 cursor-not-allowed opacity-70' : 'bg-zinc-50'}`}
+                  onChange={(e) => { setFormData(p => ({ ...p, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') })); clearFieldError('slug'); }}
+                  className={`w-full border-2 focus:border-indigo-500 focus:bg-white rounded-2xl px-5 py-4 text-zinc-900 font-bold placeholder:text-zinc-300 outline-none transition-all ${initialData ? 'bg-zinc-100 cursor-not-allowed opacity-70' : 'bg-zinc-50'} ${fieldErrors.slug ? 'border-red-400 ring-2 ring-red-100' : 'border-transparent'}`}
                 />
+                {fieldErrors.slug && <p className="text-xs text-red-500 pl-1">{fieldErrors.slug}</p>}
               </div>
             </div>
 
@@ -314,10 +397,9 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
                   <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-black rounded">REQUIRED</span>
                 </label>
                 <select
-                  required
                   value={formData.category}
-                  onChange={(e) => setFormData(p => ({ ...p, category: e.target.value }))}
-                  className="w-full bg-zinc-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl px-5 py-4 text-zinc-900 font-bold outline-none transition-all"
+                  onChange={(e) => { setFormData(p => ({ ...p, category: e.target.value })); clearFieldError('category'); }}
+                  className={`w-full bg-zinc-50 border-2 focus:border-indigo-500 focus:bg-white rounded-2xl px-5 py-4 text-zinc-900 font-bold outline-none transition-all ${fieldErrors.category ? 'border-red-400 ring-2 ring-red-100' : 'border-transparent'}`}
                 >
                   <option value="">Select a topic...</option>
                   <option value="anxiety">Understanding Anxiety</option>
@@ -329,9 +411,13 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
                   <option value="mindfulness">Mindfulness & Meditation</option>
                   <option value="wellness">Mental Wellness</option>
                 </select>
-                <p className="text-xs text-zinc-500 font-medium pl-1">
-                  Students follow topics to see your articles in their feed
-                </p>
+                {fieldErrors.category ? (
+                  <p className="text-xs text-red-500 pl-1">{fieldErrors.category}</p>
+                ) : (
+                  <p className="text-xs text-zinc-500 font-medium pl-1">
+                    Students follow topics to see your articles in their feed
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -398,10 +484,11 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
                 type="url"
                 placeholder="https://example.com/image.jpg"
                 value={formData.featured_image_url}
-                onChange={(e) => setFormData(p => ({ ...p, featured_image_url: e.target.value }))}
-                className="w-full bg-zinc-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl px-5 py-4 text-zinc-900 font-medium placeholder:text-zinc-300 outline-none transition-all"
+                onChange={(e) => { setFormData(p => ({ ...p, featured_image_url: e.target.value })); clearFieldError('featured_image_url'); }}
+                className={`w-full bg-zinc-50 border-2 focus:border-indigo-500 focus:bg-white rounded-2xl px-5 py-4 text-zinc-900 font-medium placeholder:text-zinc-300 outline-none transition-all ${fieldErrors.featured_image_url ? 'border-red-400 ring-2 ring-red-100' : 'border-transparent'}`}
               />
-              {formData.featured_image_url && (
+              {fieldErrors.featured_image_url && <p className="text-xs text-red-500 pl-1">{fieldErrors.featured_image_url}</p>}
+              {formData.featured_image_url && !fieldErrors.featured_image_url && (
                 <div className="mt-2 rounded-xl overflow-hidden border-2 border-zinc-100">
                   <img src={formData.featured_image_url} alt="Preview" className="w-full h-48 object-cover" />
                 </div>
@@ -411,13 +498,17 @@ export default function EducationalPageModal({ isOpen, onClose, onSuccess, initi
             <div className="space-y-2">
               <label className="text-xs font-black text-zinc-400 uppercase tracking-widest pl-1">Markdown Content</label>
               <textarea
-                required
                 placeholder="# Markdown Content Here\n\nStart writing..."
                 value={formData.content}
-                onChange={(e) => setFormData(p => ({ ...p, content: e.target.value }))}
+                onChange={(e) => { setFormData(p => ({ ...p, content: e.target.value })); clearFieldError('content'); }}
                 rows={12}
-                className="w-full bg-zinc-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl px-5 py-4 text-zinc-900 font-medium placeholder:text-zinc-300 outline-none transition-all font-mono text-sm leading-relaxed"
+                className={`w-full bg-zinc-50 border-2 focus:border-indigo-500 focus:bg-white rounded-2xl px-5 py-4 text-zinc-900 font-medium placeholder:text-zinc-300 outline-none transition-all font-mono text-sm leading-relaxed ${fieldErrors.content ? 'border-red-400 ring-2 ring-red-100' : 'border-transparent'}`}
               />
+              {fieldErrors.content ? (
+                <p className="text-xs text-red-500 pl-1">{fieldErrors.content}</p>
+              ) : (
+                <p className="text-xs text-zinc-400 pl-1">{formData.content.length} characters (minimum 50 required)</p>
+              )}
             </div>
 
           </form>

@@ -3,6 +3,36 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 
+/* ── Post Form Validation ─────────────────────────── */
+interface PostFormErrors {
+  title?: string;
+  content?: string;
+}
+
+function validatePostForm(title: string, content: string): PostFormErrors {
+  const errors: PostFormErrors = {};
+  const trimmedTitle = title.trim();
+  const trimmedContent = content.trim();
+
+  if (!trimmedTitle) {
+    errors.title = "Post title is required.";
+  } else if (trimmedTitle.length < 3) {
+    errors.title = "Title must be at least 3 characters.";
+  } else if (trimmedTitle.length > 150) {
+    errors.title = "Title must be under 150 characters.";
+  }
+
+  if (!trimmedContent) {
+    errors.content = "Post content is required.";
+  } else if (trimmedContent.length < 10) {
+    errors.content = `Content must be at least 10 characters (currently ${trimmedContent.length}).`;
+  } else if (trimmedContent.length > 5000) {
+    errors.content = "Content must be under 5000 characters.";
+  }
+
+  return errors;
+}
+
 type AuthMeResponse =
   | { authenticated: false }
   | { authenticated: true; email: string; role: string; _id: string };
@@ -62,6 +92,7 @@ export default function ChannelThreadPage() {
   const [commentTexts, setCommentTexts] = useState<Record<string, string>>({});
   const [expandedPost, setExpandedPost] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [postErrors, setPostErrors] = useState<PostFormErrors>({});
 
   useEffect(() => {
     (async () => {
@@ -111,7 +142,14 @@ export default function ChannelThreadPage() {
 
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newTitle.trim() || !newContent.trim() || !me.authenticated) return;
+    if (!me.authenticated) return;
+
+    const validationErrors = validatePostForm(newTitle, newContent);
+    if (Object.keys(validationErrors).length > 0) {
+      setPostErrors(validationErrors);
+      return;
+    }
+    setPostErrors({});
     setPosting(true);
 
     try {
@@ -264,7 +302,7 @@ export default function ChannelThreadPage() {
         {/* New Post Form */}
         {showNewForm && (
           <div className="shrink-0 px-6 py-5 bg-indigo-50/50 border-b border-indigo-100">
-            <form onSubmit={handleCreatePost} className="max-w-3xl space-y-4">
+            <form onSubmit={handleCreatePost} className="max-w-3xl space-y-4" noValidate>
               <div className="flex gap-3">
                 <select
                   value={postType}
@@ -275,23 +313,33 @@ export default function ChannelThreadPage() {
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}
                 </select>
-                <input
-                  value={newTitle}
-                  onChange={e => setNewTitle(e.target.value)}
-                  placeholder="Post title..."
-                  className="flex-1 px-4 py-2 rounded-xl border border-zinc-200 text-sm font-bold text-zinc-900 placeholder:text-zinc-400 bg-white focus:ring-2 focus:ring-indigo-200 outline-none"
-                />
+                <div className="flex-1">
+                  <input
+                    value={newTitle}
+                    onChange={e => { setNewTitle(e.target.value); if (postErrors.title) setPostErrors(prev => ({ ...prev, title: undefined })); }}
+                    placeholder="Post title..."
+                    className={`w-full px-4 py-2 rounded-xl border text-sm font-bold text-zinc-900 placeholder:text-zinc-400 bg-white focus:ring-2 focus:ring-indigo-200 outline-none ${postErrors.title ? 'border-red-400 ring-2 ring-red-100' : 'border-zinc-200'}`}
+                  />
+                  {postErrors.title && <p className="text-xs text-red-500 mt-1">{postErrors.title}</p>}
+                </div>
               </div>
-              <textarea
-                value={newContent}
-                onChange={e => setNewContent(e.target.value)}
-                placeholder="Write your post content..."
-                rows={4}
-                className="w-full px-4 py-3 rounded-xl border border-zinc-200 text-sm text-zinc-900 placeholder:text-zinc-400 bg-white resize-none focus:ring-2 focus:ring-indigo-200 outline-none"
-              />
+              <div>
+                <textarea
+                  value={newContent}
+                  onChange={e => { setNewContent(e.target.value); if (postErrors.content) setPostErrors(prev => ({ ...prev, content: undefined })); }}
+                  placeholder="Write your post content..."
+                  rows={4}
+                  className={`w-full px-4 py-3 rounded-xl border text-sm text-zinc-900 placeholder:text-zinc-400 bg-white resize-none focus:ring-2 focus:ring-indigo-200 outline-none ${postErrors.content ? 'border-red-400 ring-2 ring-red-100' : 'border-zinc-200'}`}
+                />
+                {postErrors.content ? (
+                  <p className="text-xs text-red-500 mt-1">{postErrors.content}</p>
+                ) : (
+                  <p className="text-xs text-zinc-400 mt-1">{newContent.length}/5000 characters (minimum 10)</p>
+                )}
+              </div>
               <button
                 type="submit"
-                disabled={posting || !newTitle.trim() || !newContent.trim()}
+                disabled={posting}
                 className="px-6 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-bold disabled:opacity-50 hover:bg-indigo-700 transition-all"
               >
                 {posting ? "Publishing..." : "Publish Post"}

@@ -5,6 +5,35 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
 
+/* ── Channel Form Validation ─────────────────────────── */
+const CHANNEL_NAME_REGEX = /^[A-Za-z0-9\s\-'&]+$/;
+
+interface ChannelFormErrors {
+  name?: string;
+  description?: string;
+}
+
+function validateChannelForm(name: string, description: string): ChannelFormErrors {
+  const errors: ChannelFormErrors = {};
+  const trimmedName = name.trim();
+
+  if (!trimmedName) {
+    errors.name = "Channel name is required.";
+  } else if (trimmedName.length < 3) {
+    errors.name = "Channel name must be at least 3 characters.";
+  } else if (trimmedName.length > 80) {
+    errors.name = "Channel name must be under 80 characters.";
+  } else if (!CHANNEL_NAME_REGEX.test(trimmedName)) {
+    errors.name = "Channel name can only contain letters, numbers, spaces, and hyphens.";
+  }
+
+  if (description.trim().length > 500) {
+    errors.description = "Description must be under 500 characters.";
+  }
+
+  return errors;
+}
+
 type AuthMeResponse =
   | { authenticated: false }
   | { authenticated: true; email: string; role: string; _id: string };
@@ -30,6 +59,7 @@ export default function CounselorChannelsPage() {
   const [newName, setNewName] = useState("");
   const [newDesc, setNewDesc] = useState("");
   const [creating, setCreating] = useState(false);
+  const [channelErrors, setChannelErrors] = useState<ChannelFormErrors>({});
 
   useEffect(() => {
     (async () => {
@@ -65,8 +95,13 @@ export default function CounselorChannelsPage() {
 
   async function handleCreateChannel(e: React.FormEvent) {
     e.preventDefault();
-    if (!newName.trim()) return;
 
+    const validationErrors = validateChannelForm(newName, newDesc);
+    if (Object.keys(validationErrors).length > 0) {
+      setChannelErrors(validationErrors);
+      return;
+    }
+    setChannelErrors({});
     setCreating(true);
     try {
       const res = await fetch("/api/proxy/backend/channels/", {
@@ -181,30 +216,35 @@ export default function CounselorChannelsPage() {
                <h3 className="text-3xl font-black text-zinc-900 tracking-tight">Propose New Topic</h3>
                <p className="text-sm text-zinc-400 font-bold mt-2 uppercase tracking-tight">Deployment Protocol Alpha</p>
 
-               <form onSubmit={handleCreateChannel} className="mt-10 flex flex-col gap-6">
+               <form onSubmit={handleCreateChannel} className="mt-10 flex flex-col gap-6" noValidate>
                  <div>
                    <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2 px-1">Channel Identifier</label>
                    <input
                      type="text"
                      value={newName}
-                     onChange={e => setNewName(e.target.value)}
-                     className="w-full rounded-2xl border border-zinc-100 bg-zinc-50 px-6 py-5 text-sm font-bold text-zinc-900 placeholder:text-zinc-200 focus:border-indigo-600 focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-100 transition-all shadow-inner"
+                     onChange={e => { setNewName(e.target.value); if (channelErrors.name) setChannelErrors(prev => ({ ...prev, name: undefined })); }}
+                     className={`w-full rounded-2xl border bg-zinc-50 px-6 py-5 text-sm font-bold text-zinc-900 placeholder:text-zinc-200 focus:border-indigo-600 focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-100 transition-all shadow-inner ${channelErrors.name ? 'border-red-400 ring-2 ring-red-100' : 'border-zinc-100'}`}
                      placeholder="e.g. Behavioral Crisis Unit"
-                     required
                    />
+                   {channelErrors.name && <p className="text-xs text-red-500 mt-1.5 px-1">{channelErrors.name}</p>}
                  </div>
                  <div>
                    <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2 px-1">Scope & Purpose</label>
                    <textarea
                      value={newDesc}
-                     onChange={e => setNewDesc(e.target.value)}
-                     className="w-full rounded-2xl border border-zinc-100 bg-zinc-50 px-6 py-5 text-sm font-bold text-zinc-900 placeholder:text-zinc-200 focus:border-indigo-600 focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-100 transition-all min-h-[120px] resize-none shadow-inner"
+                     onChange={e => { setNewDesc(e.target.value); if (channelErrors.description) setChannelErrors(prev => ({ ...prev, description: undefined })); }}
+                     className={`w-full rounded-2xl border bg-zinc-50 px-6 py-5 text-sm font-bold text-zinc-900 placeholder:text-zinc-200 focus:border-indigo-600 focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-100 transition-all min-h-[120px] resize-none shadow-inner ${channelErrors.description ? 'border-red-400 ring-2 ring-red-100' : 'border-zinc-100'}`}
                      placeholder="Describe the clinical objective of this topic..."
                    />
+                   {channelErrors.description ? (
+                     <p className="text-xs text-red-500 mt-1.5 px-1">{channelErrors.description}</p>
+                   ) : (
+                     <p className="text-xs text-zinc-400 mt-1.5 px-1">{newDesc.length}/500 characters</p>
+                   )}
                  </div>
                  <button
                    type="submit"
-                   disabled={creating || !newName.trim()}
+                   disabled={creating}
                    className="mt-4 w-full rounded-2xl bg-indigo-600 py-5 text-xs font-black text-white uppercase tracking-[0.2em] shadow-xl shadow-indigo-100 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50"
                  >
                    {creating ? "Provisioning..." : "Initialize Channel"}
