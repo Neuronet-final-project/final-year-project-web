@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
-import { Users, TrendingUp, AlertCircle, CheckCircle2, RefreshCw } from 'lucide-react';
+import { Users, TrendingUp, AlertCircle, CheckCircle2, RefreshCw, X, ChevronRight } from 'lucide-react';
 
 interface CounselorWorkload {
   counselor_email: string;
@@ -13,9 +13,22 @@ interface CounselorWorkload {
   is_at_capacity: boolean;
 }
 
+interface CounselorAssignmentRow {
+  assignment_id: string;
+  adolescent_id: string;
+  adolescent_name?: string | null;
+  adolescent_email?: string | null;
+  assigned_by?: string | null;
+  assignment_reason?: string | null;
+  created_at?: string;
+}
+
 export default function CounselorLimitsTab() {
   const [workloads, setWorkloads] = useState<CounselorWorkload[]>([]);
   const [loading, setLoading] = useState(true);
+  const [assignPanel, setAssignPanel] = useState<{ email: string; name: string } | null>(null);
+  const [assignments, setAssignments] = useState<CounselorAssignmentRow[]>([]);
+  const [assignLoading, setAssignLoading] = useState(false);
 
   useEffect(() => {
     fetchWorkloads();
@@ -30,10 +43,33 @@ export default function CounselorLimitsTab() {
       } else {
         toast.error('Failed to load counselor workloads');
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to load counselor workloads');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const openAssignments = async (counselorEmail: string, counselorName: string) => {
+    setAssignPanel({ email: counselorEmail, name: counselorName });
+    setAssignLoading(true);
+    setAssignments([]);
+    try {
+      const response = await fetch(
+        `/api/proxy/backend/counselor-assignments/counselor/${encodeURIComponent(counselorEmail)}/assignments`,
+      );
+      if (response.ok) {
+        const data = (await response.json()) as CounselorAssignmentRow[];
+        setAssignments(Array.isArray(data) ? data : []);
+      } else {
+        toast.error('Could not load assigned adolescents');
+        setAssignments([]);
+      }
+    } catch {
+      toast.error('Could not load assigned adolescents');
+      setAssignments([]);
+    } finally {
+      setAssignLoading(false);
     }
   };
 
@@ -51,7 +87,7 @@ export default function CounselorLimitsTab() {
       } else {
         toast.error('Failed to update limit');
       }
-    } catch (error) {
+    } catch {
       toast.error('Error updating limit');
     }
   };
@@ -145,8 +181,17 @@ export default function CounselorLimitsTab() {
                 <tr key={workload.counselor_email} className="hover:bg-white/50 transition-colors">
                   <td className="px-8 py-5">
                     <div>
-                      <div className="text-sm font-black text-zinc-900">{workload.counselor_name}</div>
-                      <div className="text-xs text-zinc-500">{workload.counselor_email}</div>
+                      <button
+                        type="button"
+                        onClick={() => openAssignments(workload.counselor_email, workload.counselor_name)}
+                        className="group/name text-left"
+                      >
+                        <span className="text-sm font-black text-indigo-700 group-hover/name:text-indigo-900 group-hover/name:underline underline-offset-2 inline-flex items-center gap-1">
+                          {workload.counselor_name}
+                          <ChevronRight className="h-3.5 w-3.5 opacity-60 group-hover/name:opacity-100" />
+                        </span>
+                      </button>
+                      <div className="text-xs text-zinc-500 mt-0.5">{workload.counselor_email}</div>
                     </div>
                   </td>
                   <td className="px-8 py-5">
@@ -193,7 +238,7 @@ export default function CounselorLimitsTab() {
                       max="100"
                       defaultValue={workload.max_assignments}
                       onBlur={(e) => {
-                        const newLimit = parseInt(e.target.value);
+                        const newLimit = parseInt(e.target.value, 10);
                         if (newLimit !== workload.max_assignments && newLimit > 0) {
                           updateLimit(workload.counselor_email, newLimit);
                         }
@@ -214,6 +259,63 @@ export default function CounselorLimitsTab() {
           </div>
         )}
       </div>
+
+      {/* Assigned adolescents overlay */}
+      {assignPanel && (
+        <div
+          className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center bg-zinc-900/50 p-4 sm:p-6"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="assign-panel-title"
+          onClick={() => setAssignPanel(null)}
+        >
+          <div
+            className="w-full max-w-lg max-h-[85vh] overflow-hidden rounded-2xl border border-indigo-100 bg-white shadow-2xl flex flex-col animate-in fade-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-4 p-5 border-b border-zinc-100 bg-gradient-to-r from-indigo-50 to-violet-50">
+              <div className="min-w-0">
+                <h2 id="assign-panel-title" className="text-sm font-black text-zinc-900 tracking-tight truncate">
+                  Assigned adolescents
+                </h2>
+                <p className="text-xs font-bold text-indigo-600 mt-1 truncate">{assignPanel.name}</p>
+                <p className="text-[11px] text-zinc-500 truncate">{assignPanel.email}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setAssignPanel(null)}
+                className="shrink-0 p-2 rounded-xl text-zinc-500 hover:bg-white hover:text-zinc-900 transition-colors"
+                aria-label="Close"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="overflow-y-auto p-4 flex-1">
+              {assignLoading ? (
+                <div className="flex justify-center py-12">
+                  <div className="h-10 w-10 border-4 border-indigo-600/20 border-t-indigo-600 rounded-full animate-spin" />
+                </div>
+              ) : assignments.length === 0 ? (
+                <p className="text-center text-sm font-bold text-zinc-400 py-10">No active assignments for this counselor.</p>
+              ) : (
+                <ul className="space-y-2">
+                  {assignments.map((a) => (
+                    <li
+                      key={a.assignment_id}
+                      className="rounded-xl border border-zinc-100 bg-zinc-50/80 px-4 py-3"
+                    >
+                      <p className="text-sm font-black text-zinc-900">
+                        {a.adolescent_name?.trim() || 'Unnamed adolescent'}
+                      </p>
+                      <p className="text-xs text-zinc-500 mt-0.5 break-all">{a.adolescent_email || '—'}</p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

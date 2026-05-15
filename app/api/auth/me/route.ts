@@ -47,24 +47,30 @@ export async function GET() {
         body: JSON.stringify({ refresh_token: refreshToken }),
       });
 
-      if (refreshRes.ok) {
-        const refreshData = await refreshRes.json();
-        const newToken = refreshData.access_token;
-        if (newToken) {
-          userData = await tryMe(newToken);
-          if (userData) {
-            const response = NextResponse.json({ authenticated: true, ...userData }, { status: 200 });
-            response.cookies.set("access_token", newToken, {
-              httpOnly: true,
-              sameSite: "lax",
-              secure: process.env.NODE_ENV === "production",
-              path: "/",
-              maxAge: 60 * 60, // 1h
-            });
-            return response;
+        if (refreshRes.ok) {
+          const refreshData = await refreshRes.json();
+          const newToken = refreshData.access_token;
+          const accessMaxAge = Math.max(
+            60,
+            Number.isFinite(Number(refreshData?.access_expires_in))
+              ? Number(refreshData.access_expires_in)
+              : 60 * 60,
+          );
+          if (newToken) {
+            userData = await tryMe(newToken);
+            if (userData) {
+              const response = NextResponse.json({ authenticated: true, ...userData }, { status: 200 });
+              response.cookies.set("access_token", newToken, {
+                httpOnly: true,
+                sameSite: "lax",
+                secure: process.env.NODE_ENV === "production",
+                path: "/",
+                maxAge: accessMaxAge,
+              });
+              return response;
+            }
           }
-        }
-      } else {
+        } else {
         // Refresh failed, clear tokens
         const response = NextResponse.json({ authenticated: false }, { status: 200 });
         response.cookies.set("access_token", "", { maxAge: 0, path: "/" });

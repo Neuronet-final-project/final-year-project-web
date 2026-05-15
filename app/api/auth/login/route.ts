@@ -58,6 +58,19 @@ export async function POST(req: Request) {
     );
   }
 
+  const accessExpiresIn = Math.max(
+    60,
+    Number.isFinite(Number(data?.access_expires_in))
+      ? Number(data.access_expires_in)
+      : 60 * 60,
+  );
+  const refreshExpiresIn =
+    refreshToken && Number.isFinite(Number(data?.refresh_expires_in))
+      ? Math.max(60, Number(data.refresh_expires_in))
+      : refreshToken
+        ? 7 * 24 * 60 * 60
+        : 0;
+
   const response = NextResponse.json(
     { email: data.email, role: data.role },
     { status: 200 },
@@ -68,7 +81,7 @@ export async function POST(req: Request) {
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: 60 * 60, // 1h
+    maxAge: accessExpiresIn,
   });
 
   if (refreshToken) {
@@ -77,7 +90,7 @@ export async function POST(req: Request) {
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
       path: "/",
-      maxAge: 7 * 24 * 60 * 60, // 7 days
+      maxAge: refreshExpiresIn,
     });
   }
 

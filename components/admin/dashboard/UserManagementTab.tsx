@@ -43,8 +43,8 @@ export default function UserManagementTab({
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-10">
-      {/* Search & Filter Header */}
-      <div className="flex flex-col xl:flex-row gap-4 md:gap-5 items-stretch xl:items-center justify-between rounded-[2rem] md:rounded-[2.5rem] border border-indigo-100/50 bg-gradient-to-br from-indigo-50/40 via-white/70 to-violet-50/35 p-4 md:p-6 shadow-[0_8px_30px_rgba(79,70,229,0.06)] backdrop-blur-md">
+      {/* Search & Filter — z-50 keeps the role menu above the directory card (later siblings paint on top by default). */}
+      <div className="relative z-50 flex flex-col xl:flex-row gap-4 md:gap-5 items-stretch xl:items-center justify-between rounded-[2rem] md:rounded-[2.5rem] border border-indigo-100/50 bg-gradient-to-br from-indigo-50/40 via-white/70 to-violet-50/35 p-4 md:p-6 shadow-[0_8px_30px_rgba(79,70,229,0.06)] backdrop-blur-md">
         <div className="relative w-full xl:w-[min(100%,420px)] xl:max-w-md group">
           <input 
             type="text" 
@@ -68,7 +68,7 @@ export default function UserManagementTab({
               </button>
 
               {roleOpen && (
-                <div className="absolute left-0 top-full mt-2 w-full min-w-[200px] bg-white rounded-2xl shadow-2xl border border-indigo-100/80 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150 max-h-[min(70vh,22rem)] overflow-y-auto">
+                <div className="absolute left-0 top-full mt-2 w-full min-w-[200px] bg-white rounded-2xl shadow-2xl border border-indigo-100/80 z-[100] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150 max-h-[min(70vh,22rem)] overflow-y-auto">
                   {ROLE_OPTIONS.map(opt => (
                     <button
                       key={opt.value}
@@ -93,8 +93,8 @@ export default function UserManagementTab({
       </div>
 
 
-      {/* Main Table View */}
-      <div className="overflow-hidden rounded-[2rem] md:rounded-[3rem] border border-indigo-100/50 bg-gradient-to-br from-slate-50/90 via-indigo-50/25 to-violet-50/30 shadow-[0_8px_30px_rgba(79,70,229,0.07)] backdrop-blur-md min-h-[500px]">
+      {/* Main Table View — z-10 sits below the filter strip so open menus are not covered. */}
+      <div className="relative z-10 overflow-hidden rounded-[2rem] md:rounded-[3rem] border border-indigo-100/50 bg-gradient-to-br from-slate-50/90 via-indigo-50/25 to-violet-50/30 shadow-[0_8px_30px_rgba(79,70,229,0.07)] backdrop-blur-md min-h-[500px]">
         <div className="p-6 md:p-10 border-b border-zinc-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h3 className="text-xl font-black text-zinc-900 tracking-tight">Enterprise User Directory</h3>

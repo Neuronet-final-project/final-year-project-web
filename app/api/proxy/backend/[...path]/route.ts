@@ -93,6 +93,12 @@ async function handleProxy(req: Request, { params }: { params: Promise<{ path: s
         if (refreshRes.ok) {
           const refreshData = await refreshRes.json();
           const newToken = refreshData.access_token;
+          const accessMaxAge = Math.max(
+            60,
+            Number.isFinite(Number(refreshData?.access_expires_in))
+              ? Number(refreshData.access_expires_in)
+              : 60 * 60,
+          );
 
           if (newToken) {
             // Retry the original request with the new token
@@ -114,7 +120,7 @@ async function handleProxy(req: Request, { params }: { params: Promise<{ path: s
               sameSite: "lax",
               secure: process.env.NODE_ENV === "production",
               path: "/",
-              maxAge: 60 * 60, // 1h
+              maxAge: accessMaxAge,
             });
             
             return response;
