@@ -6,7 +6,7 @@ import { toast } from "react-hot-toast";
 import Link from "next/link";
 
 /* ── Channel Form Validation ─────────────────────────── */
-const CHANNEL_NAME_REGEX = /^[A-Za-z0-9\s\-'&]+$/;
+const CHANNEL_NAME_REGEX = /^[A-Za-z][A-Za-z0-9\s\-'&]*$/;
 
 interface ChannelFormErrors {
   name?: string;
@@ -23,6 +23,8 @@ function validateChannelForm(name: string, description: string): ChannelFormErro
     errors.name = "Channel name must be at least 3 characters.";
   } else if (trimmedName.length > 80) {
     errors.name = "Channel name must be under 80 characters.";
+  } else if (!/^[A-Za-z]/.test(trimmedName)) {
+    errors.name = "Channel name must start with a letter.";
   } else if (!CHANNEL_NAME_REGEX.test(trimmedName)) {
     errors.name = "Channel name can only contain letters, numbers, spaces, and hyphens.";
   }
@@ -135,6 +137,22 @@ export default function CounselorChannelsPage() {
     }
   }
 
+  async function handleDeleteChannel(channelId: string, channelName: string) {
+    if (!confirm(`Are you sure you want to delete "${channelName}"? This action cannot be undone.`)) return;
+    try {
+      const res = await fetch(`/api/proxy/backend/channels/${channelId}`, { method: "DELETE" });
+      if (res.ok || res.status === 204) {
+        toast.success(`Channel "${channelName}" deleted successfully.`);
+        setChannels(prev => prev.filter(ch => (ch.channel_id || ch.id) !== channelId));
+      } else {
+        const err = await res.json().catch(() => ({}));
+        toast.error(err.detail || "Failed to delete channel.");
+      }
+    } catch {
+      toast.error("Network error while deleting channel.");
+    }
+  }
+
   if (loading || !me.authenticated) {
     return <div className="flex h-screen items-center justify-center bg-slate-50 text-zinc-500">Loading channel directory...</div>;
   }
@@ -179,8 +197,17 @@ export default function CounselorChannelsPage() {
                 className="group flex flex-col justify-between rounded-[2.5rem] border border-white bg-white/70 backdrop-blur-md p-10 shadow-sm transition-all duration-500 hover:shadow-2xl hover:shadow-indigo-100 hover:-translate-y-2 ring-1 ring-zinc-200/50 hover:ring-indigo-200"
               >
                 <div>
-                  <div className="mb-8 flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100 shadow-sm group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+                  <div className="mb-8 flex items-start justify-between">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100 shadow-sm group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+                    </div>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleDeleteChannel(ch.channel_id || ch.id || '', ch.name); }}
+                      className="p-2.5 rounded-xl text-zinc-300 hover:text-red-500 hover:bg-red-50 border border-transparent hover:border-red-100 opacity-0 group-hover:opacity-100 transition-all duration-300 active:scale-90"
+                      title="Delete channel"
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                    </button>
                   </div>
                   <h3 className="text-2xl font-black tracking-tight text-zinc-900 group-hover:text-indigo-600 transition-colors">
                     {ch.name}
