@@ -5,6 +5,103 @@ import Image from "next/image";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 
+/* ── Validation helpers ─────────────────────────────── */
+const NAME_REGEX = /^[A-Za-z\s.\-']+$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const QUALIFICATION_REGEX = /^[A-Za-z0-9\s.,()'/\-]+$/;
+
+interface FieldErrors {
+  fullName?: string;
+  email?: string;
+  password?: string;
+  qualification?: string;
+  experienceYears?: string;
+  personalStatement?: string;
+  idPhoto?: string;
+}
+
+function validateForm(fields: {
+  fullName: string;
+  email: string;
+  password: string;
+  qualification: string;
+  experienceYears: number;
+  personalStatement: string;
+  idPhoto: File | null;
+}): FieldErrors {
+  const errors: FieldErrors = {};
+
+  // Full name
+  const trimmedName = fields.fullName.trim();
+  if (!trimmedName) {
+    errors.fullName = "Full name is required.";
+  } else if (trimmedName.length < 2) {
+    errors.fullName = "Name must be at least 2 characters.";
+  } else if (trimmedName.length > 100) {
+    errors.fullName = "Name must be under 100 characters.";
+  } else if (!NAME_REGEX.test(trimmedName)) {
+    errors.fullName =
+      "Name can only contain letters, spaces, hyphens, periods, and apostrophes.";
+  }
+
+  // Email
+  if (!fields.email.trim()) {
+    errors.email = "Email is required.";
+  } else if (!EMAIL_REGEX.test(fields.email.trim())) {
+    errors.email = "Please enter a valid email address.";
+  }
+
+  // Password
+  if (!fields.password) {
+    errors.password = "Password is required.";
+  } else if (fields.password.length < 8) {
+    errors.password = "Password must be at least 8 characters.";
+  } else if (!/[A-Z]/.test(fields.password)) {
+    errors.password = "Password must include at least one uppercase letter.";
+  } else if (!/[a-z]/.test(fields.password)) {
+    errors.password = "Password must include at least one lowercase letter.";
+  } else if (!/[0-9]/.test(fields.password)) {
+    errors.password = "Password must include at least one digit.";
+  }
+
+  // Qualification
+  const trimmedQual = fields.qualification.trim();
+  if (!trimmedQual) {
+    errors.qualification = "Qualification is required.";
+  } else if (trimmedQual.length < 2) {
+    errors.qualification = "Qualification must be at least 2 characters.";
+  } else if (!QUALIFICATION_REGEX.test(trimmedQual)) {
+    errors.qualification =
+      "Qualification can only contain letters, numbers, spaces, and common punctuation.";
+  }
+
+  // Experience
+  if (
+    fields.experienceYears < 0 ||
+    fields.experienceYears > 80 ||
+    !Number.isFinite(fields.experienceYears)
+  ) {
+    errors.experienceYears = "Experience must be between 0 and 80 years.";
+  }
+
+  // Personal statement
+  const stmtLen = fields.personalStatement.trim().length;
+  if (!stmtLen) {
+    errors.personalStatement = "Personal statement is required.";
+  } else if (stmtLen < 100) {
+    errors.personalStatement = `Personal statement must be at least 100 characters (currently ${stmtLen}).`;
+  } else if (stmtLen > 2000) {
+    errors.personalStatement = "Personal statement must be under 2000 characters.";
+  }
+
+  // ID Photo
+  if (!fields.idPhoto) {
+    errors.idPhoto = "Please upload your professional ID photo.";
+  }
+
+  return errors;
+}
+
 export default function CounselorApplyPage() {
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
@@ -19,11 +116,13 @@ export default function CounselorApplyPage() {
   const [result, setResult] = useState<null | { ok: boolean; message: string }>(
     null,
   );
+  const [errors, setErrors] = useState<FieldErrors>({});
 
   function handleIdPhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (file) {
       setIdPhoto(file);
+      setErrors((prev) => ({ ...prev, idPhoto: undefined }));
       const reader = new FileReader();
       reader.onloadend = () => {
         setIdPhotoPreview(reader.result as string);
@@ -32,10 +131,35 @@ export default function CounselorApplyPage() {
     }
   }
 
+  /** Clear a field error when the user starts typing */
+  function clearError(field: keyof FieldErrors) {
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+  }
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmitting(true);
     setResult(null);
+
+    // Validate all fields
+    const validationErrors = validateForm({
+      fullName,
+      email,
+      password,
+      qualification,
+      experienceYears,
+      personalStatement,
+      idPhoto,
+    });
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    setErrors({});
+    setSubmitting(true);
 
     try {
       let idPhotoUrl = null;
@@ -106,6 +230,10 @@ export default function CounselorApplyPage() {
     }
   }
 
+  /* helper for red ring around invalid inputs */
+  const inputCls = (field: keyof FieldErrors) =>
+    `neuro-input ${errors[field] ? "!border-red-400 !ring-red-100" : ""}`;
+
   return (
     <>
       <Navbar />
@@ -128,6 +256,7 @@ export default function CounselorApplyPage() {
           <form
             className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2"
             onSubmit={onSubmit}
+            noValidate
           >
             {/* Full name — full width */}
             <div className="space-y-1.5 sm:col-span-2">
@@ -135,25 +264,37 @@ export default function CounselorApplyPage() {
                 Full name
               </label>
               <input
-                className="neuro-input"
+                className={inputCls("fullName")}
                 value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                onChange={(e) => {
+                  setFullName(e.target.value);
+                  clearError("fullName");
+                }}
                 placeholder="Dr. Jane Doe"
                 required
               />
+              {errors.fullName && (
+                <p className="text-xs text-red-500">{errors.fullName}</p>
+              )}
             </div>
 
             {/* Email */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-zinc-900">Email</label>
               <input
-                className="neuro-input"
+                className={inputCls("email")}
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  clearError("email");
+                }}
                 placeholder="jane@example.com"
                 type="email"
                 required
               />
+              {errors.email && (
+                <p className="text-xs text-red-500">{errors.email}</p>
+              )}
             </div>
 
             {/* Password */}
@@ -162,13 +303,24 @@ export default function CounselorApplyPage() {
                 Password
               </label>
               <input
-                className="neuro-input"
+                className={inputCls("password")}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  clearError("password");
+                }}
                 placeholder="••••••••"
                 type="password"
                 required
               />
+              {errors.password && (
+                <p className="text-xs text-red-500">{errors.password}</p>
+              )}
+              {!errors.password && (
+                <p className="text-xs text-zinc-400">
+                  Min 8 chars, with uppercase, lowercase &amp; digit
+                </p>
+              )}
             </div>
 
             {/* Qualification */}
@@ -177,12 +329,18 @@ export default function CounselorApplyPage() {
                 Qualification
               </label>
               <input
-                className="neuro-input"
+                className={inputCls("qualification")}
                 value={qualification}
-                onChange={(e) => setQualification(e.target.value)}
+                onChange={(e) => {
+                  setQualification(e.target.value);
+                  clearError("qualification");
+                }}
                 placeholder="e.g. BSc Psychology"
                 required
               />
+              {errors.qualification && (
+                <p className="text-xs text-red-500">{errors.qualification}</p>
+              )}
             </div>
 
             {/* Experience */}
@@ -191,14 +349,20 @@ export default function CounselorApplyPage() {
                 Experience (years)
               </label>
               <input
-                className="neuro-input"
+                className={inputCls("experienceYears")}
                 value={experienceYears}
-                onChange={(e) => setExperienceYears(Number(e.target.value))}
+                onChange={(e) => {
+                  setExperienceYears(Number(e.target.value));
+                  clearError("experienceYears");
+                }}
                 type="number"
                 min={0}
                 max={80}
                 required
               />
+              {errors.experienceYears && (
+                <p className="text-xs text-red-500">{errors.experienceYears}</p>
+              )}
             </div>
 
             {/* ID Photo Upload */}
@@ -211,8 +375,7 @@ export default function CounselorApplyPage() {
                   type="file"
                   accept="image/*"
                   onChange={handleIdPhotoChange}
-                  required
-                  className="neuro-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                  className={`neuro-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 ${errors.idPhoto ? "!border-red-400 !ring-red-100" : ""}`}
                 />
                 {idPhotoPreview && (
                   <div className="relative w-32 h-32 rounded-xl overflow-hidden border-2 border-indigo-200">
@@ -224,9 +387,13 @@ export default function CounselorApplyPage() {
                   </div>
                 )}
               </div>
-              <p className="text-xs text-zinc-500">
-                Upload a clear photo of your professional ID or license for verification
-              </p>
+              {errors.idPhoto ? (
+                <p className="text-xs text-red-500">{errors.idPhoto}</p>
+              ) : (
+                <p className="text-xs text-zinc-500">
+                  Upload a clear photo of your professional ID or license for verification
+                </p>
+              )}
             </div>
 
             {/* Personal Statement / Essay */}
@@ -235,17 +402,23 @@ export default function CounselorApplyPage() {
                 Personal Statement <span className="text-red-500">*</span>
               </label>
               <textarea
-                className="neuro-input min-h-[200px] resize-y"
+                className={`${inputCls("personalStatement")} min-h-[200px] resize-y`}
                 value={personalStatement}
-                onChange={(e) => setPersonalStatement(e.target.value)}
+                onChange={(e) => {
+                  setPersonalStatement(e.target.value);
+                  clearError("personalStatement");
+                }}
                 placeholder="Tell us about yourself, your experience, your approach to counseling, and why you want to join our team..."
                 required
-                minLength={100}
                 maxLength={2000}
               />
-              <p className="text-xs text-zinc-500">
-                {personalStatement.length}/2000 characters (minimum 100 characters required)
-              </p>
+              {errors.personalStatement ? (
+                <p className="text-xs text-red-500">{errors.personalStatement}</p>
+              ) : (
+                <p className="text-xs text-zinc-500">
+                  {personalStatement.length}/2000 characters (minimum 100 characters required)
+                </p>
+              )}
             </div>
 
             {/* Result message */}
