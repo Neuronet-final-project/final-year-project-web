@@ -50,7 +50,6 @@ export default function DashboardSidebar({ activeTab, setActiveTab, pendingApps,
       items: [
         { id: 'alerts', label: 'Alert Thresholds', icon: FileText },
         { id: 'limits', label: 'Counselor Limits', icon: KeyRound },
-        { id: 'config', label: 'System Settings', icon: Settings },
         { id: 'audit', label: 'Audit Vault', icon: History },
         { id: 'contacts', label: 'Contact Forms', icon: Inbox },
       ]
